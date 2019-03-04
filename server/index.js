@@ -1,23 +1,37 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import morgan from 'morgan';
+import debug from 'debug';
+import passport from 'passport';
+import session from 'express-session';
+import env from './config/env-config';
 import { sequelize } from './models';
+import routes from './routes/index';
 
-// Create global app object
 const app = express();
+const logger = debug('vale-ah::server: ');
 
 app.use(cors());
-
-// Normal express config defaults
-app.use(require('morgan')('dev'));
-
+app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(passport.initialize());
 
-app.use(require('./routes'));
+app.use(
+  session({
+    secret: 'authorshaven',
+    cookie: { maxAge: 60000 },
+    resave: false,
+    saveUninitialized: false
+  })
+);
+
+app.use(routes);
 
 sequelize.sync().then(() => {
-  const server = app.listen(process.env.PORT || 3000, () => {
-    console.log(`Listening on port ${server.address().port}`);
+  app.listen(env.PORT, () => {
+    logger(`Listening on port ${env.PORT}`);
   });
 });
+export default app;
