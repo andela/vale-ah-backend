@@ -4,6 +4,7 @@ import apiSpec from '../../swagger.json';
 
 const router = Router();
 
+
 router.use('/api-docs', serve, setup(apiSpec));
 
 router.get('/api', (req, res) => res.status(200).json({

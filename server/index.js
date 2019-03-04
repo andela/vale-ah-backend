@@ -1,10 +1,12 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import morgan from 'morgan';
 import debug from 'debug';
-import cors from 'cors';
 import passport from 'passport';
 import session from 'express-session';
+import env from './config/env-config';
+import { sequelize } from './models';
 import routes from './routes/index';
 
 const app = express();
@@ -14,9 +16,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 app.use(passport.initialize());
-
 
 app.use(
   session({
@@ -29,6 +29,9 @@ app.use(
 
 app.use(routes);
 
-const server = app.listen(process.env.PORT || 3000, () => {
-  logger(`Listening on port ${server.address().port}`);
+sequelize.sync().then(() => {
+  app.listen(env.PORT, () => {
+    logger(`Listening on port ${env.PORT}`);
+  });
 });
+export default app;
