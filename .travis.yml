@@ -5,5 +5,12 @@ services:
   - postgresql
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
+deploy:
+  provider: heroku
+  api_key:
+    secure: wVPfSUF1+ecOyWybHCBiGQimxsNoYJo4yhEhHAecgtdVELwlj2FXrOkho3IVc2eGqQIkDFMUAfh+vqRuUoE1OC4L0nvMo1F34+PO5CWiaO3PiUfjKARsr8gT1q0tCV27e7/DxIdWFAkc3XuqsfVl+S2umvQ8VKfNAwnyJtc2DKW6/uEiOglJZNNDh3P/gZqQtZfTtu9gaULSw+cy9f0oWZDXL2mrLYLLMSKtM/Qx8D8pls96xCwNk38wxjaw2/3gL2pfGoKTJQojeSpv8INrgQ3VFAkS/TuVreiG2z55l2JmA8pXC/8i1Owi3bWbF813nAOuMPyHu7JnHFUpo58f4x8B7UmRx/n+SGccykjTIERt++AIuqutSvNLhujBNluCgzmhZUIYe9Q0uOez8A6kFM3wg2bGekauvPzm20UWvfVP1EujkOr4Rcvv+aqahLfPVMweI3r86KEp0kaNNYPwJsUsRfMk9aP7nF8XPKIcB4fpDtos2+p91BE0Zy+wOOeCdHknIHW09TNQl41m7CzDbajVOcFXgc/MGexUd6teAqnW9qQQJf9X7LV53zZyqYt9RaKQ74tnah/a75alJjhk5b/XDNLS0xeNxFNwpzgvxqykeR1egkEK8YpoAh80MSbjVIqMgeN+dV9YdNbETNdc3oejiGQFmsJM1I4HWunm8/Q=
+  app:
+    develop: vale-ah-backend-staging
+    master: vale-ah-backend
 after_success:
   - npm run coverage
