@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel server -d dist --source-maps",
     "test": "nyc --reporter=text --reporter=html mocha --timeout=3000 --recursive --exit",
+    "coverage": "nyc report --reporter=lcov --reporter=text-lcov | coveralls",
     "devstart": "DEBUG=vale-ah* nodemon server/index.js --exec babel-node"
   },
   "author": "Andela Simulations Programme",
@@ -38,6 +39,7 @@
     "@babel/register": "^7.0.0",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
+    "coveralls": "^3.0.3",
     "eslint": "^5.15.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
