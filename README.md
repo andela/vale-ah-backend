@@ -1,5 +1,6 @@
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 [![Build Status](https://travis-ci.com/andela/vale-ah-backend.svg?branch=develop)](https://travis-ci.com/andela/vale-ah-backend)
+[![Coverage Status](https://coveralls.io/repos/github/andela/vale-ah-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/vale-ah-backend?branch=develop)
 
 Authors Haven - A Social platform for the creative at heart.
 =======
