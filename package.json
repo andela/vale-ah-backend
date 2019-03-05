@@ -4,10 +4,16 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
+    "start": "node dist/index.js",
+    "prestart": "npm run build",
+    "heroku-postbuild": "npm run build",
     "build": "babel server -d dist --source-maps",
     "test": "nyc --reporter=text --reporter=html mocha --timeout=3000 --recursive --exit",
     "coverage": "nyc report --reporter=lcov --reporter=text-lcov | coveralls",
     "devstart": "DEBUG=vale-ah* nodemon server/index.js --exec babel-node"
+  },
+  "engines": {
+    "node": "11.x"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
