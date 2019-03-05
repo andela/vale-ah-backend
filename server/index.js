@@ -27,7 +27,7 @@ app.use(
   })
 );
 
-app.use(routes);
+routes(app);
 
 sequelize.sync().then(() => {
   app.listen(env.PORT, () => {

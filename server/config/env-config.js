@@ -6,10 +6,12 @@ const {
   DATABASE_URL,
   NODE_ENV,
   PORT,
+  SECRET,
 } = env;
 
 export default {
   DATABASE_URL,
   NODE_ENV,
   PORT,
+  SECRET
 };

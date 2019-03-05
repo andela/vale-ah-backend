@@ -9,27 +9,21 @@ module.exports = {
       type: Sequelize.INTEGER
     },
     username: {
-      allowNull: false,
       type: Sequelize.STRING
     },
     email: {
-      allowNull: false,
-      type: Sequelize.STRING
-    },
-    bio: {
-      type: Sequelize.STRING
-    },
-    image: {
-      type: Sequelize.STRING
-    },
-    favorites: {
-      type: Sequelize.STRING
-    },
-    following: {
       type: Sequelize.STRING
     },
     hash: {
-      allowNull: false,
+      type: Sequelize.STRING
+    },
+    bio: {
+      type: Sequelize.TEXT
+    },
+    verified: {
+      type: Sequelize.BOOLEAN
+    },
+    image: {
       type: Sequelize.STRING
     },
     createdAt: {
