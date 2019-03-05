@@ -1,21 +1,18 @@
+import fs from 'fs';
+import path from 'path';
+import Sequelize from 'sequelize';
+import sequelizeConfig from '../config/db-config';
 import env from '../config/env-config';
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
 
 const basename = path.basename(__filename);
 
-const config = require('../config/db-config.json')[env.NODE_ENV];
+const config = sequelizeConfig[env.NODE_ENV];
 
 const db = {};
 
-let sequelize;
-if (config.env_variable) {
-  sequelize = new Sequelize(env[config.env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+const sequelize = new Sequelize(env[config.env_variable], config);
+
 
 fs
   .readdirSync(__dirname)
