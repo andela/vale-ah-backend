@@ -5,11 +5,15 @@ import morgan from 'morgan';
 import debug from 'debug';
 import passport from 'passport';
 import session from 'express-session';
+import multer from 'multer';
 import env from './config/env-config';
 import routes from './routes/index';
+import storage from './config/cloudinary';
 
 const app = express();
 const logger = debug('vale-ah::server: ');
+
+app.use(multer({ storage }).single('image'));
 
 app.use(cors());
 app.use(morgan('dev'));
