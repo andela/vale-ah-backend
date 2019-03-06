@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import Joi from 'joi';
 import env from '../config/env-config';
 
-const { SECRET } = env;
+const { SECRET, HEROKU_APP_NAME } = env;
 
 /**
  * Synchronously sign the given payload into a JSON Web Token string
@@ -92,3 +92,11 @@ export const comparePassword = (password, hash) =>
  */
 export const validate = (value, schema) =>
   Joi.validate(value, schema, { abortEarly: false, allowUnknown: true });
+
+/**
+ * Generate a user account verification link
+ * @param {string} token Verification token
+ * @returns {URL} Verification url
+ */
+export const generateVerificationLink = token =>
+  `https://${HEROKU_APP_NAME}.herokuapp.com/api/user/verify/${token}`;

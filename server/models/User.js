@@ -1,4 +1,9 @@
-import { hashPassword } from '../utils/helpers';
+import debug from 'debug';
+import { hashPassword, generateToken, generateVerificationLink } from '../utils/helpers';
+import mailer from '../utils/mailer';
+
+const mailLogger = debug('vale-ah::mailLogger');
+
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -50,5 +55,12 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = () => {
     // associations can be defined here
   };
+
+  User.afterCreate(({ id, email }) => {
+    const token = generateToken(id);
+    mailer.sendVerificationMail(email, generateVerificationLink(token)).then(() => {
+      mailLogger(`Email sent to ${email}`);
+    });
+  });
   return User;
 };
