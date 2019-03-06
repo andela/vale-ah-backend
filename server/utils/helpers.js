@@ -99,4 +99,32 @@ export const validate = (value, schema) =>
  * @returns {URL} Verification url
  */
 export const generateVerificationLink = token =>
-  `https://${HEROKU_APP_NAME}.herokuapp.com/api/user/verify/${token}`;
+  `https://${HEROKU_APP_NAME}.herokuapp.com/api/user/verify/?token=${token}`;
+
+/**
+ * Account verification Email
+ * @param {string} SITE_NAME Name of website
+ * @param {string} verificationLink Verification link
+ * @returns {string} verification Email markup
+ */
+export const verificationEmailMessage = (SITE_NAME, verificationLink) => `
+<div style="
+  padding: 10px;
+  background: #F3F3F3;
+  border: 5px double #522D16;
+  text-align: center;
+">
+  <h1 style="
+  ">${SITE_NAME}</h1>
+  <p>Activate your ${SITE_NAME} account by clicking the button below</p>
+  <a style="
+    text-decoration: none;
+    margin: 25px auto;
+    padding: 15px 20px;
+    background: #522D16;
+    text-align: center;
+    display: inline-block;
+    color: white;" 
+    href=${verificationLink} target="_blank">Verify Your Email</a>
+</div>
+`;

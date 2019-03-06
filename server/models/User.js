@@ -1,9 +1,12 @@
 import debug from 'debug';
-import { hashPassword, generateToken, generateVerificationLink } from '../utils/helpers';
+import {
+  hashPassword,
+  generateToken,
+  generateVerificationLink
+} from '../utils/helpers';
 import mailer from '../utils/mailer';
 
 const mailLogger = debug('vale-ah::mailLogger');
-
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -56,11 +59,16 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
   };
 
-  User.afterCreate(({ id, email }) => {
-    const token = generateToken(id);
-    mailer.sendVerificationMail(email, generateVerificationLink(token)).then(() => {
-      mailLogger(`Email sent to ${email}`);
-    });
+  User.afterCreate(user => {
+    const token = generateToken(user.id);
+    mailer
+      .sendVerificationMail(user.email, generateVerificationLink(token))
+      .then(() => {
+        mailLogger('Verification email sent successfully');
+      })
+      .catch(() => {
+        mailLogger('Failed to send verification email');
+      });
   });
   return User;
 };
