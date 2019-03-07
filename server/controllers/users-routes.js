@@ -22,21 +22,19 @@ class Users {
    * @returns {undefined} .
    */
   static signUp(req, res) {
-    const {
-      username, email, password
-    } = req.body;
+    const { username, email, password } = req.body;
 
-    return User
-      .create({
-        username,
-        email,
-        password
-      })
-      .then(data => res.status(201).send({
+    return User.create({
+      username,
+      email,
+      password
+    }).then(data =>
+      res.status(201).send({
         success: true,
         message: 'user created successfully',
         data
-      }));
+      })
+    );
   }
 
   /**
@@ -52,19 +50,17 @@ class Users {
     if (req.file) {
       imagePath = await Helper.uploadImages(req.file);
     }
-    const {
-      username, email, bio
-    } = req.body;
-    return User
-      .findByPk(req.params.id)
-      .then((user) => {
-        user.update({
-          username: username || user.username,
-          email: email || user.email,
-          bio: bio || user.bio,
-          image: imagePath || user.image
-        })
-          .then((data) => {
+    const { username, email, bio } = req.body;
+    return User.findByPk(req.params.id)
+      .then(user => {
+        user
+          .update({
+            username: username || user.username,
+            email: email || user.email,
+            bio: bio || user.bio,
+            image: imagePath || user.image
+          })
+          .then(data => {
             res.status(200).send({
               message: 'update successful',
               data
@@ -84,11 +80,8 @@ class Users {
    * @returns {undefined} .
    */
   static allAuthors(req, res) {
-    return User
-      .findAll()
-      .then(data => res.status(200).send(
-        data
-      ))
+    return User.findAll()
+      .then(data => res.status(200).send(data))
       .catch(err => console.log(err));
   }
 
@@ -101,11 +94,12 @@ class Users {
    * @returns {undefined} .
    */
   static getAuthor(req, res) {
-    return User
-      .findOne({ where: { id: req.params.id } })
-      .then(data => res.status(200).send({
-        data
-      }))
+    return User.findOne({ where: { id: req.params.id } })
+      .then(data =>
+        res.status(200).send({
+          data
+        })
+      )
       .catch(error => res.send(error));
   }
 }

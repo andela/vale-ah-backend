@@ -91,3 +91,22 @@ export const comparePassword = (password, hash) =>
  */
 export const validate = (value, schema) =>
   Joi.validate(value, schema, { abortEarly: false, allowUnknown: true });
+
+/**
+ *  Validates a value using the given schema
+ *  @param {*} value
+ *  @param {*}
+ *  @returns {Promise}
+ */
+
+export const uploadImages = async files => {
+  let imagePath = '';
+  const filePaths = files.secure_url;
+  imagePath = filePaths;
+  return new Promise(async (resolve, reject) => {
+    if (imagePath) {
+      return resolve(imagePath);
+    }
+    return reject(Error('Unable to upload media item'));
+  });
+};
