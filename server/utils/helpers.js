@@ -37,7 +37,8 @@ export const successResponse = (res, data, statusCode = 200) => res.status(statu
  * @param {number} statusCode status code
  * @returns {Response} error response
  */
-export const errorResponse = (res, errors = ['An error ocurred'], statusCode = 500) => res.status(statusCode).json({ errors: errors instanceof Array ? errors : [errors] });
+export const errorResponse = (res, errors = ['An error ocurred'], statusCode = 500) =>
+  res.status(statusCode).json({ errors: errors instanceof Array ? errors : [errors] });
 
 /**
  * Sends a validation error response to the user
@@ -75,9 +76,9 @@ export const comparePassword = (password, hash) => bcrypt.compareSync(password, 
 
 /**
  * Validates a value using the given Joi schema
- * @param {*} value
+ * @param {object} value
  * @param {Joi.SchemaLike} schema
  * @returns {Promise} Validation result
  */
-export const validate = (value, schema) => Joi.validate(value, schema,
-  { abortEarly: false, allowUnknown: true });
+export const validate = (value, schema) =>
+  Joi.validate(value, schema, { abortEarly: false, allowUnknown: true });

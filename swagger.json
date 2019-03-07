@@ -65,22 +65,19 @@
   "definitions": {
     "User": {
       "required": [
-        "user"
+        "password",
+        "email",
+        "username"
       ],
       "properties": {
-        "user": {
-          "type": "object",
-          "properties": {
-            "password": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "username": {
-              "type": "string"
-            }
-          }
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
         }
       }
     }
