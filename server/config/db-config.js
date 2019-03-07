@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   development: {
     env_variable: 'DATABASE_URL',
     dialect: 'postgres',

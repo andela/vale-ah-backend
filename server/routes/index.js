@@ -1,22 +1,14 @@
-import { Router } from 'express';
 import { serve, setup } from 'swagger-ui-express';
 import apiSpec from '../../swagger.json';
+import authRoutes from './auth-routes';
+import { errorResponse } from '../utils/helpers';
 
-const router = Router();
-
-
-router.use('/api-docs', serve, setup(apiSpec));
-
-router.get('/api', (req, res) => res.status(200).json({
-  status: 200,
-  message: 'Welcome to Author Haven'
-}));
-
-router.all('/*', (req, res) => {
-  res.status(404).json({
-    status: 404,
-    message: 'This is an invalid route. Please see proper documentation'
-  });
-});
+const router = app => {
+  app.use('/api-docs', serve, setup(apiSpec));
+  app.use('/api/users', authRoutes);
+  app.use('*', (req, res) =>
+    errorResponse(res, 'The requested resource was not found', 404)
+  );
+};
 
 export default router;
