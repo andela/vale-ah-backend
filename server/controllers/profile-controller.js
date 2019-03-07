@@ -1,5 +1,7 @@
 import { successResponse, errorResponse } from '../utils/helpers';
-import { User } from '../models';
+import db from '../models';
+
+const { User } = db;
 
 /**
  * The controllers for users route
@@ -8,7 +10,7 @@ import { User } from '../models';
  */
 class ProfileController {
   /**
-   * get a particular author
+   * get a particular user by username
    * @static
    * @param {Request} req request object
    * @param {Response} res response object
@@ -23,6 +25,7 @@ class ProfileController {
           if (!data) {
             errorResponse(res, 'username does not exist');
           }
+          delete data.dataValues.hash;
           successResponse(
             res,
             {
@@ -38,7 +41,7 @@ class ProfileController {
   }
 
   /**
-   * get all author
+   * get all users
    * @static
    * @param {Request} req request object
    * @param {Response} res response object
@@ -47,7 +50,9 @@ class ProfileController {
    */
   static async getAll(req, res) {
     try {
-      return User.findAll()
+      return User.findAll({
+        attributes: ['username', 'email', 'bio', 'image']
+      })
         .then(data => {
           if (!data) {
             errorResponse(res, 'No User(s)', 400);
