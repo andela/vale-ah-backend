@@ -1,9 +1,8 @@
 import { Router } from 'express';
-import UsersMiddleware from '../middlewares/users-middleware';
-import UsersController from '../controllers/users-controller';
+import controller from '../controllers/auth-controller';
 
 const router = new Router();
 
-router.post('/', UsersMiddleware.validateRegister, UsersController.register);
+router.post('/', controller.register);
 
 export default router;

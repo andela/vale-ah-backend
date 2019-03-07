@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   User.beforeValidate((user) => {
     user.hash = hashPassword(user.hash);
   });
-  User.associate = function (models) {
+  User.associate = () => {
     // associations can be defined here
   };
   return User;
