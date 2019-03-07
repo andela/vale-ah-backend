@@ -12,7 +12,8 @@ const { SECRET } = env;
  * time span. Eg: 60, "2 days", "10h", "7d"
  * @returns {string} JWT token
  */
-export const generateToken = (payload, expiresIn = '7d') => jwt.sign(payload, SECRET, { expiresIn });
+export const generateToken = (payload, expiresIn = '7d') =>
+  jwt.sign(payload, SECRET, { expiresIn });
 
 /**
  * Synchronously verify given JWT token
@@ -28,7 +29,8 @@ export const verifyToken = token => jwt.verify(token, SECRET);
  * @param {number} statusCode status code
  * @returns {Response} success response
  */
-export const successResponse = (res, data, statusCode = 200) => res.status(statusCode).json(data);
+export const successResponse = (res, data, statusCode = 200) =>
+  res.status(statusCode).json(data);
 
 /**
  * Sends an error response to the client
@@ -37,8 +39,14 @@ export const successResponse = (res, data, statusCode = 200) => res.status(statu
  * @param {number} statusCode status code
  * @returns {Response} error response
  */
-export const errorResponse = (res, errors = ['An error ocurred'], statusCode = 500) =>
-  res.status(statusCode).json({ errors: errors instanceof Array ? errors : [errors] });
+export const errorResponse = (
+  res,
+  errors = ['An error ocurred'],
+  statusCode = 500
+) =>
+  res
+    .status(statusCode)
+    .json({ errors: errors instanceof Array ? errors : [errors] });
 
 /**
  * Sends a validation error response to the user
@@ -72,7 +80,8 @@ export const hashPassword = password => bcrypt.hashSync(password, 10);
  * @param {string} hash
  * @returns {boolean} match?
  */
-export const comparePassword = (password, hash) => bcrypt.compareSync(password, hash);
+export const comparePassword = (password, hash) =>
+  bcrypt.compareSync(password, hash);
 
 /**
  * Validates a value using the given Joi schema

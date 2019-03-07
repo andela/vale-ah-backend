@@ -6,7 +6,6 @@ import debug from 'debug';
 import passport from 'passport';
 import session from 'express-session';
 import env from './config/env-config';
-import { sequelize } from './models';
 import routes from './routes/index';
 
 const app = express();
@@ -29,9 +28,8 @@ app.use(
 
 routes(app);
 
-sequelize.sync().then(() => {
-  app.listen(env.PORT, () => {
-    logger(`Listening on port ${env.PORT}`);
-  });
+app.listen(env.PORT, () => {
+  logger(`Listening on port ${env.PORT}`);
 });
+
 export default app;

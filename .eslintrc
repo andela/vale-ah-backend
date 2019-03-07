@@ -1,6 +1,9 @@
 {
   "root": true,
-  "extends": "airbnb-base",
+  "extends": [
+    "airbnb-base",
+    "plugin:prettier/recommended"
+  ],
   "env": {
     "node": true,
     "es6": true,
@@ -26,7 +29,6 @@
         "commonjs": true
       }
     ],
-    "implicit-arrow-linebreak": 0,
     "no-shadow": [
       "error",
       {
@@ -35,6 +37,12 @@
           "res",
           "err"
         ]
+      }
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true
       }
     ],
     "valid-jsdoc": [

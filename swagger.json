@@ -53,10 +53,10 @@
             "description": "Created new user"
           },
           "400": {
-            "description": "Bad input"
+            "description": "Validation error"
           },
           "409": {
-            "description": "Conflict"
+            "description": "Database conflict"
           }
         }
       }
