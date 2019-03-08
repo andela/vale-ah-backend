@@ -1,6 +1,5 @@
 import { successResponse, errorResponse, uploadImages } from '../utils/helpers';
 import { User, Sequelize } from '../models';
-
 /**
  * The controllers for users route
  *

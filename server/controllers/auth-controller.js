@@ -4,9 +4,7 @@ import {
   errorResponse,
   validate,
   validationErrorResponse,
-  uploadImages,
-  comparePassword,
-  verifyToken
+  comparePassword
 } from '../utils/helpers';
 import db from '../models';
 import registerSchema from '../utils/validators';
