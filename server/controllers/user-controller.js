@@ -54,7 +54,11 @@ class UsersController {
         bio,
         imagePath
       });
-      successResponse(res, { message: 'update successful', user: data }, 200);
+      successResponse(
+        res,
+        { status: 200, message: 'update successful', user: data },
+        200
+      );
     } catch (error) {
       errorResponse(res, error.message, 500);
     }
