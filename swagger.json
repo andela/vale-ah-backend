@@ -89,10 +89,7 @@
           "200" : {
             "description" : "Account verification success"
           }
-        },
-        "servers" : [ {
-          "url" : "https://vale-ah-backend-staging.herokuapp.com"
-        } ]
+        }
       },
       "servers" : [ {
         "url" : "https://vale-ah-backend-staging.herokuapp.com"

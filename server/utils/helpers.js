@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import Joi from 'joi';
 import env from '../config/env-config';
 
-const { SECRET, HEROKU_APP_NAME } = env;
+const { SECRET, HEROKU_APP_NAME, HOST_URL } = env;
 
 /**
  * Synchronously sign the given payload into a JSON Web Token string
@@ -15,6 +15,24 @@ const { SECRET, HEROKU_APP_NAME } = env;
  */
 export const generateToken = (payload, expiresIn = '7d') =>
   jwt.sign(payload, SECRET, { expiresIn });
+
+/**
+ * Generates account verification and auth tokens
+ *
+ * @param {object} options - token generation options.
+ * @param {string} options.payload - payload to sign
+ * @param {string} options.tokenExpiresIn - auth token expiry
+ * @param {string} options.verificationTokenExpiresIn - verification token expiry
+ * @returns {Promise.<[string,string]>} [authToken, verificationToken]
+ */
+export const authTokens = async ({
+  payload,
+  tokenExpiresIn,
+  verificationTokenExpiresIn
+}) => [
+  generateToken(payload, tokenExpiresIn || undefined),
+  generateToken(payload, verificationTokenExpiresIn || '1d')
+];
 
 /**
  * Synchronously verify given JWT token
@@ -99,7 +117,9 @@ export const validate = (value, schema) =>
  * @returns {URL} Verification url
  */
 export const generateVerificationLink = token =>
-  `https://${HEROKU_APP_NAME}.herokuapp.com/api/user/verify/?token=${token}`;
+  HEROKU_APP_NAME
+    ? `${HEROKU_APP_NAME}/herokuapp.com/api/user/verify/?token=${token}`
+    : `${HOST_URL}/api/user/verify/?token=${token}`;
 
 /**
  * Account verification Email

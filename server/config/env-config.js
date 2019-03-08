@@ -10,7 +10,8 @@ const {
   SENDGRID_KEY,
   ADMIN_EMAIL,
   SITE_NAME,
-  HEROKU_APP_NAME
+  HEROKU_APP_NAME,
+  HOST_URL
 } = env;
 
 export default {
@@ -21,5 +22,6 @@ export default {
   SENDGRID_KEY,
   ADMIN_EMAIL,
   SITE_NAME,
-  HEROKU_APP_NAME
+  HEROKU_APP_NAME,
+  HOST_URL
 };

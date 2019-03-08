@@ -2,9 +2,9 @@ import sendgrid from '@sendgrid/mail';
 import env from '../config/env-config';
 import { verificationEmailMessage } from './helpers';
 
-const { ADMIN_EMAIL, SITE_NAME } = env;
+const { ADMIN_EMAIL, SITE_NAME, SENDGRID_KEY } = env;
 
-sendgrid.setApiKey(env.SENDGRID_KEY);
+sendgrid.setApiKey(SENDGRID_KEY);
 
 /**
  * Sends a verification link to a newly signed up user

@@ -1,15 +1,27 @@
+import debug from 'debug';
+import db from '../models';
+import { registerSchema } from '../utils/validators';
+import env from '../config/env-config';
+import mailer from '../utils/mailer';
 import {
   successResponse,
-  generateToken,
   errorResponse,
   validate,
   validationErrorResponse,
-  comparePassword
+  comparePassword,
+  generateToken,
+  generateVerificationLink,
+  authTokens
 } from '../utils/helpers';
-import db from '../models';
-import { registerSchema } from '../utils/validators';
 
 const { User } = db;
+
+const {
+  AUTH_TOKEN_EXPIRY: tokenExpiresIn,
+  VERIFICATION_LINK_EXPIRY: verificationTokenExpiresIn
+} = env;
+
+const mailLogger = debug('vale-ah::mailLogger');
 
 /**
  * The controllers for users route
@@ -37,10 +49,28 @@ class UsersController {
             hash: body.password
           });
           const { id, username } = user;
-          const token = generateToken({ id, username });
+          const [token, verificationToken] = await authTokens({
+            payload: { id, username },
+            tokenExpiresIn,
+            verificationTokenExpiresIn
+          });
+
           user.token = token;
           delete user.hash;
-          successResponse(res, { user }, 201);
+
+          mailer
+            .sendVerificationMail(
+              user.email,
+              generateVerificationLink(verificationToken)
+            )
+            .then(() => {
+              mailLogger('Verification email sent successfully');
+              successResponse(res, { user, emailSent: true }, 201);
+            })
+            .catch(() => {
+              mailLogger('Failed to send verification email');
+              successResponse(res, { user, emailSent: false }, 201);
+            });
         } catch (err) {
           const errors = err.errors
             ? err.errors.map(e => {
