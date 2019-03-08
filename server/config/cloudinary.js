@@ -9,7 +9,19 @@ cloudinary.config({
 
 const storage = cloudinaryStorage({
   cloudinary,
-  allowedFormats: ['jpg', 'svg', 'png', 'jpeg', 'gif', 'avi', 'flv', 'mpeg', '3gp', 'mp4', 'webm'],
+  allowedFormats: [
+    'jpg',
+    'svg',
+    'png',
+    'jpeg',
+    'gif',
+    'avi',
+    'flv',
+    'mpeg',
+    '3gp',
+    'mp4',
+    'webm'
+  ],
   params: {
     resource_type: 'auto',
     folder: 'teamvale/media'

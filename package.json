@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "heroku-postbuild": "npm run initdb && npm run build",
     "build": "babel server -d dist --source-maps",
-    "test": "npm run initdb && cross-env NODE_ENV=test nyc --reporter=text --reporter=html mocha --timeout=3000 --recursive --exit",
+    "test": "npm run initdb && cross-env NODE_ENV=test nyc --reporter=text --reporter=html mocha --timeout=5000 --recursive --exit",
     "coverage": "nyc report --reporter=lcov --reporter=text-lcov | coveralls",
     "devstart": "npm run initdb && DEBUG=vale-ah* nodemon server/index.js --exec babel-node",
     "initdb": "babel-node server/utils/initdb.js"

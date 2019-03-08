@@ -5,6 +5,12 @@ import server from '../server';
 
 chai.use(chaiHttp);
 
+const user1 = {
+  username: faker.random.alphaNumeric(10),
+  email: faker.internet.email(),
+  password: 'esiaguleticia12'
+};
+
 describe('Authentication', () => {
   describe('POST /api/users', () => {
     const baseUrl = '/api/users';
@@ -12,11 +18,7 @@ describe('Authentication', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .send({
-          username: 'Uche',
-          email: 'uche@jake.jake',
-          password: 'jakejake'
-        })
+        .send(user1)
         .end((err, res) => {
           const { user } = res.body;
           expect(res).to.have.status(201);
@@ -31,11 +33,7 @@ describe('Authentication', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .send({
-          username: faker.internet.userName(),
-          email: 'uche@jake.jake',
-          password: 'jakejake'
-        })
+        .send(user1)
         .end((err, res) => {
           expect(res).to.have.status(409);
           expect(res.body.errors).to.be.an('Array');
@@ -49,11 +47,7 @@ describe('Authentication', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .send({
-          username: 'Uche',
-          email: faker.internet.email(),
-          password: 'jakejake'
-        })
+        .send(user1)
         .end((err, res) => {
           expect(res).to.have.status(409);
           expect(res.body.errors).to.be.an('Array');
@@ -113,6 +107,34 @@ describe('Authentication', () => {
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors).to.haveOwnProperty('password');
           expect(res.body);
+          done(err);
+        });
+    });
+  });
+
+  describe('POST /api/users/login', () => {
+    it('should reject a credential with wrong password', done => {
+      chai
+        .request(server)
+        .post('/api/users/login')
+        .send({
+          username: user1.username,
+          email: user1.email,
+          password: '1234'
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          done(err);
+        });
+    });
+
+    it('should return an error if no credentials', done => {
+      chai
+        .request(server)
+        .post('/api/users/login')
+        .send()
+        .end((err, res) => {
+          expect(res).to.have.status(400);
           done(err);
         });
     });
