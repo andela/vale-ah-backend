@@ -2,6 +2,9 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Joi from 'joi';
 import env from '../config/env-config';
+import db from '../models';
+
+const { User, Sequelize } = db;
 
 const { SECRET } = env;
 
@@ -93,20 +96,17 @@ export const validate = (value, schema) =>
   Joi.validate(value, schema, { abortEarly: false, allowUnknown: true });
 
 /**
- *  Validates a value using the given schema
- *  @param {*} value
- *  @param {*}
- *  @returns {Promise}
+ * @param {string} username
+ * @param {integer} id
+ * @returns {object} user
  */
-
-export const uploadImages = async files => {
-  let imagePath = '';
-  const filePaths = files.secure_url;
-  imagePath = filePaths;
-  return new Promise(async (resolve, reject) => {
-    if (imagePath) {
-      return resolve(imagePath);
+export const checkUniqueUserName = async (username, id) => {
+  const { Op } = Sequelize;
+  const user = await User.findOne({
+    where: {
+      username,
+      id: { [Op.ne]: id }
     }
-    return reject(Error('Unable to upload media item'));
   });
+  return user === null;
 };

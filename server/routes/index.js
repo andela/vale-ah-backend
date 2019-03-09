@@ -7,7 +7,7 @@ import { errorResponse } from '../utils/helpers';
 const router = app => {
   app.use('/api-docs', serve, setup(apiSpec));
   app.use('/api/users', authRoutes);
-  app.use('/api/profiles', userRoutes);
+  app.use('/api/user', userRoutes);
 
   app.use('*', (req, res) =>
     errorResponse(res, 'The requested resource was not found', 404)

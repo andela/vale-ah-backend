@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../models';
+import db from '../models';
+
+const { User } = db;
 /**
  *Users endpoint middlewares
  *
@@ -25,15 +27,18 @@ export default class UsersMiddleware {
     }
     try {
       const decoded = await jwt.verify(token, process.env.SECRET);
-      const rows = await User.findOne({
+      const data = await User.findOne({
         where: { id: decoded.id }
       });
-      if (!rows) {
+      if (!data) {
         return res.status(400).send({
           message: 'The token you provided is invalid'
         });
       }
-      req.authUser = rows.dataValues;
+      req.authUser = {
+        id: decoded.id,
+        username: decoded.username
+      };
       return next();
     } catch (error) {
       return res.status(401).send(error);

@@ -10,7 +10,6 @@ const user1 = {
   email: faker.internet.email(),
   password: 'esiaguleticia12'
 };
-
 describe('Authentication', () => {
   describe('POST /api/users', () => {
     const baseUrl = '/api/users';
@@ -113,6 +112,17 @@ describe('Authentication', () => {
   });
 
   describe('POST /api/users/login', () => {
+    it('should rLogin user with right', done => {
+      chai
+        .request(server)
+        .post('/api/users/login')
+        .send(user1)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          done(err);
+        });
+    });
+
     it('should reject a credential with wrong password', done => {
       chai
         .request(server)
@@ -138,5 +148,80 @@ describe('Authentication', () => {
           done(err);
         });
     });
+  });
+});
+
+describe('User', () => {
+  let loggedInUser;
+
+  before(() => {
+    const { email, password } = user1;
+    return chai
+      .request(server)
+      .post('/api/users/login')
+      .send({ email, password })
+      .then(res => {
+        loggedInUser = res.body.user;
+      });
+  });
+  it('should update profile', done => {
+    chai
+      .request(server)
+      .put('/api/user')
+      .send(user1)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user.id).to.be.a('number');
+        expect(user).to.have.property('verified');
+        expect(user).to.have.property('createdAt');
+        expect(user).to.have.property('updatedAt');
+        done(err);
+      });
+  });
+
+  it('should return an error if no username', done => {
+    chai
+      .request(server)
+      .put('/api/user')
+      .send({ bio: 'we are here' })
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done(err);
+      });
+  });
+
+  it('should return an error if no token', done => {
+    chai
+      .request(server)
+      .put('/api/user')
+      .send(user1)
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done(err);
+      });
+  });
+
+  it('should return a username', done => {
+    chai
+      .request(server)
+      .get('/api/user')
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done(err);
+      });
+  });
+
+  it('should return an error if no username', done => {
+    chai
+      .request(server)
+      .get('/api/user')
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done(err);
+      });
   });
 });

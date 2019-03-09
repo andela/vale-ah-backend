@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const registerSchema = Joi.object().keys({
+export const registerSchema = Joi.object().keys({
   email: Joi.string()
     .email()
     .required(),
@@ -14,4 +14,10 @@ const registerSchema = Joi.object().keys({
     .required()
 });
 
-export default registerSchema;
+export const profileSchema = Joi.object().keys({
+  bio: Joi.string(),
+  username: Joi.string()
+    .min(3)
+    .max(20)
+    .required()
+});

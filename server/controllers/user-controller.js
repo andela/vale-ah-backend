@@ -1,5 +1,15 @@
-import { successResponse, errorResponse, uploadImages } from '../utils/helpers';
-import { User, Sequelize } from '../models';
+import {
+  successResponse,
+  errorResponse,
+  validate,
+  validationErrorResponse,
+  checkUniqueUserName
+} from '../utils/helpers';
+import db from '../models';
+import { profileSchema } from '../utils/validators';
+
+const { User } = db;
+
 /**
  * The controllers for users route
  *
@@ -7,19 +17,42 @@ import { User, Sequelize } from '../models';
  */
 class UsersController {
   /**
-   * @param {string} username
-   * @param {integer} id
-   * @returns {object} user
+   * update user profile
+   * @static
+   * @param {Request} req request object
+   * @param {Response} res response object
+   * @memberof {Users}
+   * @returns {undefined}
    */
-  static async checkUniqueUserName(username, id) {
-    const { Op } = Sequelize;
-    const user = await User.findOne({
-      where: {
-        username,
-        id: { [Op.ne]: id }
-      }
-    });
-    return user === null;
+  static async updateUser(req, res) {
+    validate(req.body, profileSchema)
+      .then(async () => {
+        const { ...auth } = req.authUser;
+        try {
+          const { username, bio } = req.body;
+          const user = await User.findOne({
+            where: { id: auth.id }
+          });
+          const isUnique = await checkUniqueUserName(username, auth.id);
+          if (!isUnique) {
+            return errorResponse(res, 'username already exist', 409);
+          }
+          const data = await user.update(
+            { username, bio },
+            { returning: true, where: { id: auth.id } }
+          );
+          successResponse(
+            res,
+            { message: 'update successful', user: data },
+            200
+          );
+        } catch (error) {
+          errorResponse(res, error.message, 500);
+        }
+      })
+      .catch(({ details }) => {
+        validationErrorResponse(res, details, 400);
+      });
   }
 
   /**
@@ -30,37 +63,16 @@ class UsersController {
    * @memberof {Users}
    * @returns {undefined}
    */
-  static async updateUser(req, res) {
+  static async getProfile(req, res) {
     try {
-      const { authUser } = req;
-      const { username, bio } = req.body;
-      const user = await User.findOne({ where: { id: authUser.id } });
-      if (authUser.id !== user.dataValues.id) {
-        return errorResponse(res, 'you cannot edit this entry', 401);
+      const { id } = req.authUser;
+      const user = await User.findOne({ where: { id } });
+      if (user) {
+        delete user.hash;
+        successResponse(res, { data: user }, 200);
       }
-      const isUnique = await UsersController.checkUniqueUserName(
-        username,
-        authUser.id
-      );
-      if (!isUnique) {
-        return errorResponse(res, 'username already exist', 400);
-      }
-      let imagePath = '';
-      if (req.file) {
-        imagePath = await uploadImages(req.file);
-      }
-      const data = await user.update({
-        username,
-        bio,
-        imagePath
-      });
-      successResponse(
-        res,
-        { status: 200, message: 'update successful', user: data },
-        200
-      );
-    } catch (error) {
-      errorResponse(res, error.message, 500);
+    } catch (err) {
+      errorResponse(res, err.message, 500);
     }
   }
 }

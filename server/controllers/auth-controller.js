@@ -7,7 +7,7 @@ import {
   comparePassword
 } from '../utils/helpers';
 import db from '../models';
-import registerSchema from '../utils/validators';
+import { registerSchema } from '../utils/validators';
 
 const { User } = db;
 
