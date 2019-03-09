@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Joi from 'joi';
 import env from '../config/env-config';
+import db from '../models';
 
 const { SECRET, UI_CLIENT_HOST, HEROKU_APP_NAME } = env;
 
