@@ -75,8 +75,11 @@ class UsersController {
         return errorResponse(res, 'missing Email/Password', 400);
       }
       const rows = await User.findOne({ where: { email } });
+      if (!rows) {
+        return errorResponse(res, 'incorrect Email/Password', 400);
+      }
       const { id, username, hash } = rows.dataValues;
-      if (!(rows && comparePassword(hash, password))) {
+      if (!comparePassword(hash, password)) {
         return errorResponse(res, 'incorrect Email/Password', 400);
       }
       const token = generateToken({ id, username });

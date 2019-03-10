@@ -27,19 +27,22 @@ class UsersController {
   static async updateUser(req, res) {
     validate(req.body, profileSchema)
       .then(async () => {
-        const { ...auth } = req.authUser;
+        const { id } = req.user;
         try {
-          const { username, bio } = req.body;
+          const { username, bio, image } = req.body;
           const user = await User.findOne({
-            where: { id: auth.id }
+            where: { id }
           });
-          const isUnique = await checkUniqueUserName(username, auth.id);
+          if (id !== user.dataValues.id) {
+            errorResponse(res, 'You are not allowed to edit this Profile', 400);
+          }
+          const isUnique = await checkUniqueUserName(username, id);
           if (!isUnique) {
             return errorResponse(res, 'username already exist', 409);
           }
           const data = await user.update(
-            { username, bio },
-            { returning: true, where: { id: auth.id } }
+            { username, bio, image },
+            { returning: true, where: { id } }
           );
           successResponse(
             res,
@@ -65,10 +68,9 @@ class UsersController {
    */
   static async getProfile(req, res) {
     try {
-      const { id } = req.authUser;
+      const { id } = req.user;
       const user = await User.findOne({ where: { id } });
       if (user) {
-        delete user.hash;
         successResponse(res, { data: user }, 200);
       }
     } catch (err) {

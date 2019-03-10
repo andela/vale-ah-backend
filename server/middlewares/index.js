@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
 import db from '../models';
+import { errorResponse, verifyToken } from '../utils/helpers';
 
 const { User } = db;
 /**
@@ -21,27 +21,21 @@ export default class UsersMiddleware {
   static async verifyToken(req, res, next) {
     const token = req.headers.authorization;
     if (!token) {
-      return res.status(400).send({
-        message: 'Token is not provided'
-      });
+      return errorResponse(res, 'Token is not provided', 400);
     }
     try {
-      const decoded = await jwt.verify(token, process.env.SECRET);
+      const decoded = await verifyToken(token, process.env.SECRET);
       const data = await User.findOne({
         where: { id: decoded.id }
       });
       if (!data) {
-        return res.status(400).send({
-          message: 'The token you provided is invalid'
-        });
+        return errorResponse(res, 'Token Provided is Invalid', 400);
       }
-      req.authUser = {
-        id: decoded.id,
-        username: decoded.username
-      };
+      delete data.dataValues.hash;
+      req.user = data.dataValues;
       return next();
     } catch (error) {
-      return res.status(401).send(error);
+      return errorResponse(res, error, 401);
     }
   }
 }

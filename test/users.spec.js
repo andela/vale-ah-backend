@@ -112,7 +112,7 @@ describe('Authentication', () => {
   });
 
   describe('POST /api/users/login', () => {
-    it('should rLogin user with right', done => {
+    it('should Login user with right', done => {
       chai
         .request(server)
         .post('/api/users/login')
