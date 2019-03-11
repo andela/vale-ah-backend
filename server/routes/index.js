@@ -3,6 +3,7 @@ import apiSpec from '../../swagger.json';
 import authRoutes from './auth-routes';
 import userRoutes from './user-routes';
 import recipeRoutes from './recipe-routes';
+import profileRoutes from './profile-routes';
 import { errorResponse } from '../utils/helpers';
 
 const router = app => {

@@ -1,3 +1,4 @@
+import '@babel/polyfill';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Joi from 'joi';
@@ -85,7 +86,7 @@ export const hashPassword = password => bcrypt.hashSync(password, 10);
  * @returns {boolean} match?
  */
 export const comparePassword = (password, hash) =>
-  bcrypt.compareSync(hash, password);
+  bcrypt.compareSync(password, hash);
 
 /**
  * Validates a value using the given Joi schema

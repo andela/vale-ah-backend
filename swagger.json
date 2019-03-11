@@ -9,11 +9,16 @@
     },
     "version": "1.0.0"
   },
+<<<<<<< HEAD
   "servers": [
     {
       "url": "http://localhost:8000/api/"
     }
   ],
+=======
+  "host": "localhost:4000",
+  "basePath": "/api",
+>>>>>>> 407201d... Add babel/polyfill
   "tags": [
     {
       "name": "Naija Recipes",
@@ -91,6 +96,129 @@
           }
         }
       }
+    },
+    "/user" : {
+      "get" : {
+        "description" : "Get a Current user",
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "headers",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          
+          "200" : {
+            "description" : "User Found"
+          }
+        }
+      },
+      "servers" : [ {
+        "url" : "https://vale-ah-backend-staging.herokuapp.com"
+      } ]
+    },
+    "/profiles" : {
+      "get" : {
+        "description" : "Get all users profile",
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "400" : {
+            "description" : "Verification token error",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "Record Found"
+          }
+        }
+      },
+      "servers" : [ {
+        "url" : "https://vale-ah-backend-staging.herokuapp.com"
+      } ]
+    },
+    "/profiles/:username" : {
+      "get" : {
+        "description" : "Get a specific user profile",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "username",
+            "description": "username of uset",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "400" : {
+            "description" : "Verification token error",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "Record Found"
+          }
+        }
+      },
+      "servers" : [ {
+        "url" : "https://vale-ah-backend-staging.herokuapp.com"
+      } ]
+    },
+    "/user/password" : {
+      "put" : {
+        "description" : "Update user profile",
+        "parameters" : [ {
+          "in": "body",
+          "name": "password",
+          "description": "password to be updated",
+          "schema": {
+            "$ref": "#/definitions/User"
+          }
+        } ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "400" : {
+            "description" : "Verification token error",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "Password update successful"
+          }
+        }
+      },
+      "servers" : [ {
+        "url" : "https://vale-ah-backend-staging.herokuapp.com"
+      } ]
     },
     "/users/verify" : {
       "get" : {

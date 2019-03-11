@@ -200,7 +200,7 @@ describe('Authentication', () => {
   });
 
   describe('POST /api/users/login', () => {
-    it('should Login user with right credentials', done => {
+    it('should Login user with right', done => {
       chai
         .request(server)
         .post('/api/users/login')
@@ -266,6 +266,23 @@ describe('User', () => {
         image: 'https://mailer.com',
         password: 'weaksauce45rty'
       })
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user.id).to.be.a('number');
+        expect(user).to.have.property('verified');
+        expect(user).to.have.property('createdAt');
+        expect(user).to.have.property('updatedAt');
+        done(err);
+      });
+  });
+
+  it('should retain old profile if no changes', done => {
+    chai
+      .request(server)
+      .put('/api/user')
+      .send({ email: 'sometin@gmail.com' })
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         const { user } = res.body;
@@ -412,19 +429,6 @@ describe('User', () => {
       .send({ newPassword, oldPassword })
       .end((err, res) => {
         expect(res).to.have.status(404);
-        done(err);
-      });
-  });
-
-  it('should return an error if wrong token ', done => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywidXNlcm5hbWUiOiJiZXR0eSIsImlhdCI6MTU1MjE5NjQyNywiZXhwIjoxNTUyODAxMjI3fQ.JoNbTRM39TelJ0PvL09EHROEnDmN0a-jkCVS02y';
-    chai
-      .request(server)
-      .get('/api/profiles')
-      .set({ authorization: token })
-      .end((err, res) => {
-        expect(res).to.have.status(401);
         done(err);
       });
   });
