@@ -79,7 +79,7 @@ class UsersController {
         return errorResponse(res, 'incorrect Email/Password', 400);
       }
       const { id, username, hash } = rows.dataValues;
-      if (!comparePassword(hash, password)) {
+      if (!comparePassword(password, hash)) {
         return errorResponse(res, 'incorrect Email/Password', 400);
       }
       const token = generateToken({ id, username });

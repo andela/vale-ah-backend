@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import User from '../middlewares/index';
-import UsersController from '../controllers/user-controller';
+import controller from '../controllers/user-controller';
 
 const router = new Router();
 
-router.put('/', User.verifyToken, UsersController.updateUser);
-router.get('/', User.verifyToken, UsersController.getProfile);
+router.put('/', User.validUser, controller.updateUser);
+router.get('/', User.validUser, controller.getProfile);
 export default router;

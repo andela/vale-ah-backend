@@ -18,7 +18,7 @@ export default class UsersMiddleware {
    * @param {*} next
    * @memberof UsersMiddleware
    */
-  static async verifyToken(req, res, next) {
+  static async validUser(req, res, next) {
     const token = req.headers.authorization;
     if (!token) {
       return errorResponse(res, 'Token is not provided', 400);
