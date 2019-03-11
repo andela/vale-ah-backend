@@ -186,18 +186,6 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if no username', done => {
-    chai
-      .request(server)
-      .put('/api/user')
-      .send({ bio: 'we are here' })
-      .set({ authorization: loggedInUser.token })
-      .end((err, res) => {
-        expect(res).to.have.status(400);
-        done(err);
-      });
-  });
-
   it('should return an error if no token', done => {
     chai
       .request(server)
