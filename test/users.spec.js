@@ -200,7 +200,7 @@ describe('Authentication', () => {
   });
 
   describe('POST /api/users/login', () => {
-    it('should Login user with right', done => {
+    it('should Login user with right credentials', done => {
       chai
         .request(server)
         .post('/api/users/login')
@@ -412,6 +412,19 @@ describe('User', () => {
       .send({ newPassword, oldPassword })
       .end((err, res) => {
         expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should return an error if wrong token ', done => {
+    const token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywidXNlcm5hbWUiOiJiZXR0eSIsImlhdCI6MTU1MjE5NjQyNywiZXhwIjoxNTUyODAxMjI3fQ.JoNbTRM39TelJ0PvL09EHROEnDmN0a-jkCVS02y';
+    chai
+      .request(server)
+      .get('/api/profiles')
+      .set({ authorization: token })
+      .end((err, res) => {
+        expect(res).to.have.status(401);
         done(err);
       });
   });
