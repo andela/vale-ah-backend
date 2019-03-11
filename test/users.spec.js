@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 const user1 = {
   username: faker.random.alphaNumeric(10),
   email: faker.internet.email(),
-  password: 'esiaguleticia12'
+  password: faker.internet.password()
 };
 describe('Authentication', () => {
   describe('POST /api/users', () => {
@@ -204,7 +204,7 @@ describe('User', () => {
       });
   });
 
-  it('should return a username', done => {
+  it('should return a current user', done => {
     chai
       .request(server)
       .get('/api/user')
@@ -215,7 +215,7 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if no username', done => {
+  it('should return an error if no current user', done => {
     chai
       .request(server)
       .get('/api/user')

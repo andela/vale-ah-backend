@@ -17,7 +17,7 @@ const { User } = db;
  */
 class UsersController {
   /**
-   * update user profile
+   * Create user profile
    * @static
    * @param {Request} req request object
    * @param {Response} res response object
@@ -33,9 +33,6 @@ class UsersController {
           const user = await User.findOne({
             where: { id }
           });
-          if (id !== user.dataValues.id) {
-            errorResponse(res, 'You are not allowed to edit this Profile', 400);
-          }
           const isUnique = await checkUniqueUserName(username, id);
           if (!isUnique) {
             return errorResponse(res, 'username already exist', 409);
@@ -44,6 +41,7 @@ class UsersController {
             { username, bio, image },
             { returning: true, where: { id } }
           );
+          delete data.dataValues.hash;
           successResponse(
             res,
             { message: 'update successful', user: data },
@@ -71,6 +69,7 @@ class UsersController {
       const { id } = req.user;
       const user = await User.findOne({ where: { id } });
       if (user) {
+        delete user.dataValues.hash;
         successResponse(res, { data: user }, 200);
       }
     } catch (err) {
