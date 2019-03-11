@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 const user1 = {
   username: faker.random.alphaNumeric(10),
   email: faker.internet.email(),
-  password: faker.internet.password()
+  password: faker.random.alphaNumeric(10)
 };
 describe('Authentication', () => {
   describe('POST /api/users', () => {
