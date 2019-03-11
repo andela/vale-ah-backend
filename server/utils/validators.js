@@ -19,5 +19,4 @@ export const profileSchema = Joi.object().keys({
   username: Joi.string()
     .min(3)
     .max(20)
-    .required()
 });
