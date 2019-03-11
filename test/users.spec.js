@@ -118,7 +118,12 @@ describe('Authentication', () => {
         .post('/api/users/login')
         .send(user1)
         .end((err, res) => {
+          const { user } = res.body;
           expect(res).to.have.status(200);
+          expect(user.id).to.be.a('number');
+          expect(user).to.have.property('verified');
+          expect(user).to.have.property('createdAt');
+          expect(user).to.have.property('updatedAt');
           done(err);
         });
     });
@@ -210,7 +215,12 @@ describe('User', () => {
       .get('/api/user')
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
+        const { user } = res.body;
         expect(res).to.have.status(200);
+        expect(user.id).to.be.a('number');
+        expect(user).to.have.property('verified');
+        expect(user).to.have.property('createdAt');
+        expect(user).to.have.property('updatedAt');
         done(err);
       });
   });

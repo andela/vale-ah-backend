@@ -70,7 +70,7 @@ class UsersController {
       const user = await User.findOne({ where: { id } });
       if (user) {
         delete user.dataValues.hash;
-        successResponse(res, { data: user }, 200);
+        successResponse(res, { user }, 200);
       }
     } catch (err) {
       errorResponse(res, err.message, 500);
