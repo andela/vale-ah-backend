@@ -2,8 +2,7 @@ import {
   successResponse,
   errorResponse,
   validate,
-  validationErrorResponse,
-  checkUniqueUserName
+  validationErrorResponse
 } from '../utils/helpers';
 import db from '../models';
 import { profileSchema } from '../utils/validators';
@@ -29,16 +28,18 @@ class UsersController {
       .then(async () => {
         const { id } = req.user;
         try {
-          const { username, bio, image } = req.body;
+          const { email, username, password, bio, image } = req.body;
           const user = await User.findOne({
             where: { id }
           });
-          const isUnique = await checkUniqueUserName(username, id);
-          if (!isUnique) {
-            return errorResponse(res, 'username already exist', 409);
-          }
           const data = await user.update(
-            { username, bio, image },
+            {
+              email: email || user.email,
+              username: username || user.username,
+              password: password || user.password,
+              bio: bio || user.bio,
+              image: image || user.image
+            },
             { returning: true, where: { id } }
           );
           delete data.dataValues.hash;

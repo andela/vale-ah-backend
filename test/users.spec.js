@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import faker from 'faker';
 import server from '../server';
+import { generateToken } from '../server/utils/helpers';
 
 chai.use(chaiHttp);
 
@@ -173,7 +174,7 @@ describe('User', () => {
     chai
       .request(server)
       .put('/api/user')
-      .send(user1)
+      .send({ bio: `something interesting`, image: 'https://mailer.com' })
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         const { user } = res.body;
@@ -182,6 +183,18 @@ describe('User', () => {
         expect(user).to.have.property('verified');
         expect(user).to.have.property('createdAt');
         expect(user).to.have.property('updatedAt');
+        done(err);
+      });
+  });
+
+  it('should return an error when there is none existent user', done => {
+    chai
+      .request(server)
+      .put('/api/user')
+      .send({ bio: `something interesting`, image: 'https://mailer.com' })
+      .set({ authorization: generateToken({ id: 1000 }) })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
         done(err);
       });
   });

@@ -15,8 +15,5 @@ export const registerSchema = Joi.object().keys({
 });
 
 export const profileSchema = Joi.object().keys({
-  bio: Joi.string(),
-  username: Joi.string()
-    .min(3)
-    .max(20)
+  bio: Joi.string()
 });
