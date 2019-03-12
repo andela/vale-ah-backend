@@ -3,8 +3,7 @@ import {
   errorResponse,
   validate,
   validationErrorResponse,
-  comparePassword,
-  hashPassword
+  comparePassword
 } from '../utils/helpers';
 import db from '../models';
 import { profileSchema } from '../utils/validators';
@@ -96,12 +95,15 @@ class UsersController {
       if (!user) {
         errorResponse(res, 'user does not exist', 404);
       }
-      if (comparePassword(hashPassword(oldPassword), user.hash)) {
-        user.update({ ...user, hash: hashPassword(newPassword) });
-        delete user.hash;
+      if (comparePassword(oldPassword, user.hash)) {
+        const data = await user.update(
+          { ...user, hash: newPassword },
+          { returning: true }
+        );
+        delete data.dataValues.hash;
         successResponse(
           res,
-          { message: 'password update successful', user },
+          { message: 'password update successful', user: data },
           200
         );
       } else errorResponse(res, 'password mismatch', 400);

@@ -35,9 +35,18 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  User.beforeValidate(user => {
-    user.hash = hashPassword(user.hash);
+  User.beforeCreate(user => {
+    if (user.changed('hash')) {
+      user.hash = hashPassword(user.get('hash'));
+    }
   });
+
+  User.beforeUpdate(user => {
+    if (user.changed('hash')) {
+      user.hash = hashPassword(user.get('hash'));
+    }
+  });
+
   User.associate = () => {
     // associations can be defined here
   };

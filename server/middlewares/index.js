@@ -29,7 +29,7 @@ export default class UsersMiddleware {
         where: { id: decoded.id }
       });
       if (!data) {
-        return errorResponse(res, 'Token Provided is Invalid', 400);
+        return errorResponse(res, 'User does not exist', 404);
       }
       delete data.dataValues.hash;
       req.user = data.dataValues;

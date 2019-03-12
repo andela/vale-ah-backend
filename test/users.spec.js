@@ -191,6 +191,20 @@ describe('User', () => {
       });
   });
 
+  it('should return an error of validation fails', done => {
+    chai
+      .request(server)
+      .put('/api/user')
+      .send({
+        bio: 345678976543567
+      })
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done(err);
+      });
+  });
+
   it('should return an error when there is none existent user', done => {
     chai
       .request(server)
@@ -198,7 +212,7 @@ describe('User', () => {
       .send({ bio: `something interesting`, image: 'https://mailer.com' })
       .set({ authorization: generateToken({ id: 1000 }) })
       .end((err, res) => {
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(404);
         done(err);
       });
   });
@@ -236,6 +250,81 @@ describe('User', () => {
       .get('/api/user')
       .end((err, res) => {
         expect(res).to.have.status(400);
+        done(err);
+      });
+  });
+
+  it('should update password', done => {
+    const newPassword = '2345678989';
+    const oldPassword = user1.password;
+
+    chai
+      .request(server)
+      .put('/api/user/password')
+      .set({ authorization: loggedInUser.token })
+      .send({ newPassword, oldPassword })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done(err);
+      });
+  });
+
+  it('should return an error if password does not match', done => {
+    const newPassword = '2345678989';
+    const oldPassword = faker.random.alphaNumeric(10);
+
+    chai
+      .request(server)
+      .put('/api/user/password')
+      .set({ authorization: loggedInUser.token })
+      .send({ newPassword, oldPassword })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done(err);
+      });
+  });
+
+  it('should return an error if no token', done => {
+    const newPassword = '2345678989';
+    const oldPassword = faker.random.alphaNumeric(10);
+
+    chai
+      .request(server)
+      .put('/api/user/password')
+      .send({ newPassword, oldPassword })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done(err);
+      });
+  });
+
+  it('should return an error if token is not valid', done => {
+    const newPassword = '2345678989';
+    const oldPassword = faker.random.alphaNumeric(10);
+
+    chai
+      .request(server)
+      .put('/api/user/password')
+      .set({ authorization: 'what ever happens' })
+      .send({ newPassword, oldPassword })
+      .end((err, res) => {
+        expect(res).to.have.status(401);
+        done(err);
+      });
+  });
+
+  it('should return an error if user does not exist', done => {
+    const newPassword = '2345678989';
+    const oldPassword = faker.random.alphaNumeric(10);
+    chai
+      .request(server)
+      .put('/api/user/password')
+      .set({
+        authorization: generateToken({ id: 50 })
+      })
+      .send({ newPassword, oldPassword })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
         done(err);
       });
   });
