@@ -2,7 +2,9 @@ import {
   successResponse,
   errorResponse,
   validate,
-  validationErrorResponse
+  validationErrorResponse,
+  comparePassword,
+  hashPassword
 } from '../utils/helpers';
 import db from '../models';
 import { profileSchema } from '../utils/validators';
@@ -28,7 +30,7 @@ class UsersController {
       .then(async () => {
         const { id } = req.user;
         try {
-          const { email, username, password, bio, image } = req.body;
+          const { email, username, bio, image } = req.body;
           const user = await User.findOne({
             where: { id }
           });
@@ -36,7 +38,7 @@ class UsersController {
             {
               email: email || user.email,
               username: username || user.username,
-              hash: password || user.hash,
+              hash: user.hash,
               bio: bio || user.bio,
               image: image || user.image
             },
@@ -73,6 +75,36 @@ class UsersController {
         delete user.dataValues.hash;
         successResponse(res, { user }, 200);
       }
+    } catch (err) {
+      errorResponse(res, err.message, 500);
+    }
+  }
+
+  /**
+   * update user password
+   * @static
+   * @param {Request} req request object
+   * @param {Response} res response object
+   * @memberof {Users}
+   * @returns {undefined}
+   */
+  static async updatePassword(req, res) {
+    try {
+      const { id } = req.user;
+      const { oldPassword, newPassword } = req.body;
+      const user = await User.findOne({ where: { id } });
+      if (!user) {
+        errorResponse(res, 'user does not exist', 404);
+      }
+      if (comparePassword(hashPassword(oldPassword), user.hash)) {
+        user.update({ ...user, hash: hashPassword(newPassword) });
+        delete user.hash;
+        successResponse(
+          res,
+          { message: 'password update successful', user },
+          200
+        );
+      } else errorResponse(res, 'password mismatch', 400);
     } catch (err) {
       errorResponse(res, err.message, 500);
     }
