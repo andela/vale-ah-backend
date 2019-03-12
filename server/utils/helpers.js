@@ -103,15 +103,26 @@ export const validate = (value, schema) =>
  */
 export const generateVerificationLink = token =>
   UI_CLIENT_HOST
-    ? `${UI_CLIENT_HOST}/users/verify/?token=${token}`
-    : `${API_SERVER_HOST}/api/users/verify/?token=${token}`;
+    ? `${UI_CLIENT_HOST}/users/verify?token=${token}`
+    : `${API_SERVER_HOST}/api/users/verify?token=${token}`;
 
 /**
- * Returns a slugified variant of a given string
- *
- * @param {string} string
- * @returns {string} Slugified string
+ * Generate a user account password reset link
+ * @param {string} token password reset token
+ * @returns {URL} Verification url
  */
+export const generateResetLink = token =>
+  UI_CLIENT_HOST
+    ? `${UI_CLIENT_HOST}/users/reset-password?token=${token}`
+    : `${API_SERVER_HOST}/api/users/reset-password?token=${token}`;
+
+
+/**
+* Returns a slugified variant of a given string
+*
+* @param {string} string
+* @returns {string} Slugified string
+*/
 /* eslint-disable no-useless-escape */
 export const slugifyTitle = string =>
   string

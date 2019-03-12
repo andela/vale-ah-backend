@@ -6,11 +6,10 @@ import { generateToken } from '../server/utils/helpers';
 import { generateRandomUser } from './fixtures';
 
 chai.use(chaiHttp);
-const user1 = generateRandomUser();
 const { username, password, email } = generateRandomUser();
+const user1 = generateRandomUser();
 
 describe('Authentication', () => {
-  const tokenPayload = {};
   describe('POST /api/users', () => {
     const baseUrl = '/api/users';
     it('should register a user with valid details', done => {
@@ -103,6 +102,7 @@ describe('Authentication', () => {
           expect(res).to.have.status(400);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors).to.haveOwnProperty('password');
+          expect(res.body);
           done(err);
         });
     });
@@ -241,11 +241,13 @@ describe('User', () => {
   let loggedInUser;
 
   before(() => {
+    const { email, password } = user1;
     return chai
       .request(server)
       .post('/api/users/login')
       .send({ email: user1.email, password: user1.password })
       .then(res => {
+        console.log(res.body);
         loggedInUser = res.body.user;
       });
   });
@@ -484,6 +486,117 @@ describe('User', () => {
       .send({ newPassword, oldPassword })
       .end((err, res) => {
         expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+});
+
+describe('Password reset', () => {
+  const baseUrl = '/api/users';
+  const url = `${baseUrl}/reset-password`;
+  it('should send an email for an existing user', done => {
+    chai
+      .request(server)
+      .post(`${url}/email`)
+      .send({ email: user1.email })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.message).to.contain('sent');
+        done(err);
+      });
+  });
+
+  it('should not send an email for a user that does not exist', done => {
+    chai
+      .request(server)
+      .post(`${url}/email`)
+      .send({ email: 'not.exist@jake.jake' })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body.errors).to.be.an('Array');
+        done(err);
+      });
+  });
+
+  it('should not send an email for an invalid request email', done => {
+    chai
+      .request(server)
+      .post(`${url}/email`)
+      .send({ email: 'invalid email' })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body.errors).to.haveOwnProperty('email');
+        done(err);
+      });
+  });
+
+  it('should send a password reset token if link is valid', done => {
+    const token = generateToken(tokenPayload);
+    chai
+      .request(server)
+      .get(`${url}?token=${token}`)
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.token).to.equal(token);
+        done(err);
+      });
+  });
+
+  it('should not send a password reset token if link is invalid', done => {
+    chai
+      .request(server)
+      .get(`${url}?token=invalid`)
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body.errors).to.be.an('Array');
+        done(err);
+      });
+  });
+
+  it("should change the user's password", done => {
+    let passwordHash;
+    User.findOne({ where: { id: tokenPayload.id } })
+      .then(({ hash }) => {
+        passwordHash = hash;
+      })
+      .catch(err => done(err));
+    chai
+      .request(server)
+      .post(url)
+      .set({ Authorization: generateToken(tokenPayload) })
+      .send({ password: 'newpassword' })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.message).to.contain('changed');
+        User.findOne({ where: { id: tokenPayload.id } })
+          .then(({ hash }) => {
+            expect(hash).to.not.equal(passwordHash);
+          })
+          .catch(err => done(err));
+        done(err);
+      });
+  });
+
+  it("should not change the user's password if password is invalid", done => {
+    let passwordHash;
+    User.findOne({ id: tokenPayload.id })
+      .then(({ hash }) => {
+        passwordHash = hash;
+      })
+      .catch(err => done(err));
+    chai
+      .request(server)
+      .post(url)
+      .set({ Authorization: generateToken(tokenPayload) })
+      .send({ password: '#*@*' })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body.errors).to.haveOwnProperty('password');
+        User.findOne({ id: tokenPayload.id })
+          .then(({ hash }) => {
+            expect(hash).to.equal(passwordHash);
+          })
+          .catch(err => done(err));
         done(err);
       });
   });

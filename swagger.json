@@ -55,117 +55,122 @@
         }
       }
     },
-    "/users/verify" : {
-      "get" : {
-        "description" : "Verify if the user is verified",
+    "/users/verify": {
+      "get": {
+        "description": "Verify if the user is verified",
         "tags": [
           "Auth"
         ],
-        "parameters" : [ {
-          "name" : "token",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "example" : "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
-          },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
+          "400": {
+            "description": "Verification token error",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
-          "200" : {
-            "description" : "Account verification success"
+          "200": {
+            "description": "Account verification success"
           }
         }
       }
     },
-    "/user" : {
-      "get" : {
-        "description" : "Get a Current user",
+    "/user": {
+      "get": {
+        "description": "Get a Current user",
         "tags": [
           "Users"
         ],
-        "parameters" : [ {
-          "name" : "Authorization",
-          "in" : "headers",
-          "schema" : {
-            "type" : "string"
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "headers",
+            "schema": {
+              "type": "string"
+            }
           }
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        ],
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          
-          "200" : {
-            "description" : "User Found"
+          "200": {
+            "description": "User Found"
           }
         }
       }
     },
-    "/user/password" : {
-      "put" : {
-        "description" : "Update user profile",
+    "/user/password": {
+      "put": {
+        "description": "Update user profile",
         "tags": [
           "Users"
         ],
-        "parameters" : [ {
-          "in": "body",
-          "name": "password",
-          "description": "password to be updated",
-          "schema": {
-            "$ref": "#/definitions/User"
+        "parameters": [
+          {
+            "in": "body",
+            "name": "password",
+            "description": "password to be updated",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
           }
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        ],
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "200" : {
-            "description" : "Success"
+          "200": {
+            "description": "Success"
           }
         }
       }
     },
-    "/profiles" : {
-      "get" : {
-        "description" : "Get all users profile",
+    "/profiles": {
+      "get": {
+        "description": "Get all users profile",
         "tags": [
           "Profile"
         ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
+          "400": {
+            "description": "Verification token error",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
-          "200" : {
-            "description" : "Record Found"
+          "200": {
+            "description": "Record Found"
           }
         }
       }
     },
-    "/profiles/{username}" : {
-      "get" : {
-        "description" : "Get a specific user profile",
+    "/profiles/{username}": {
+      "get": {
+        "description": "Get a specific user profile",
         "tags": [
           "Profile"
         ],
@@ -175,33 +180,33 @@
             "name": "username",
             "description": "username of user",
             "schema": {
-              "type":"string"
+              "type": "string"
             }
           }
         ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "200" : {
-            "description" : "Success"
+          "200": {
+            "description": "Success"
           }
         }
       }
     },
     "/recipes": {
-      "get" : {
-        "description" : "Get all recipes",
+      "get": {
+        "description": "Get all recipes",
         "summary": "Fetch all recipes ",
         "tags": [
           "Recipes"
         ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "200" : {
-            "description" : "Success"
+          "200": {
+            "description": "Success"
           }
         }
       },
@@ -211,11 +216,13 @@
         ],
         "summary": "Create new recipe",
         "description": "This endpoint will create a new recipe",
-        "parameters": [{
-          "name": "accesstoken",
-          "in": "header",
-          "schema": {}
-        }],
+        "parameters": [
+          {
+            "name": "accesstoken",
+            "in": "header",
+            "schema": {}
+          }
+        ],
         "requestBody": {
           "description": "Recipe to be created",
           "content": {
@@ -240,8 +247,8 @@
       }
     },
     "/recipes/{slug}": {
-      "get" : {
-        "description" : "Get single recipe by slug",
+      "get": {
+        "description": "Get single recipe by slug",
         "summary": "Fetch one recipe by slug",
         "tags": [
           "Recipes"
@@ -251,19 +258,19 @@
             "name": "slug",
             "in": "path",
             "schema": {
-              "type":"string"
+              "type": "string"
             }
           }
         ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
           "404": {
-            "description":"recipe not found"
+            "description": "recipe not found"
           },
-          "200" : {
-            "description" : "Success"
+          "200": {
+            "description": "Success"
           }
         }
       },
@@ -273,11 +280,13 @@
         ],
         "summary": "update recipe",
         "description": "This endpoint will update a recipe",
-        "parameters": [{
-          "name": "accesstoken",
-          "in": "header",
-          "schema": {}
-        }],
+        "parameters": [
+          {
+            "name": "accesstoken",
+            "in": "header",
+            "schema": {}
+          }
+        ],
         "requestBody": {
           "description": "Recipe to be updated",
           "content": {
@@ -306,13 +315,15 @@
         ],
         "summary": "delete recipe",
         "description": "This endpoint will delete a recipe",
-        "parameters": [{
-          "name": "slug",
-          "in": "path",
-          "schema": {
-            "type": "string"
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "responses": {
           "201": {
             "description": "Successfully updated recipe",
@@ -321,6 +332,101 @@
           "400": {
             "description": "Validation Error",
             "content": {}
+          }
+        }
+      }
+    },
+    "/users/reset-password/email": {
+      "post": {
+        "tags": [
+          "Password reset "
+        ],
+        "description": "Sends a password reset link to the user's email",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "0": {
+                  "value": "{\n\t\"email\": \"segun.oluwadare@andela.com\"\n}"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "email",
+            "description": "The password reset link is sent to the inputed email",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SendResetPasswordEmail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset link sent successfully"
+          },
+          "404": {
+            "description": "User not found!"
+          },
+          "500": {
+            "description": "Cannot send password reset link"
+          }
+        }
+      }
+    },
+    "/users/reset-password": {
+      "post": {
+        "tags": [
+          "Password reset "
+        ],
+        "security": [
+          {
+            "tokenAuth": []
+          }
+        ],
+        "description": "reset user's password",
+        "parameters": [
+          {
+            "name": "password",
+            "in": "body",
+            "required": true,
+            "description": "password reset field",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/definitions/ResetPasswordField"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "headers",
+            "required": true,
+            "description": "token"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "0": {
+                  "value": "{\n    \"password\": \"hellomary\"\n}"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed  successfully"
+          },
+          "404": {
+            "description": "User not found!"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -372,6 +478,26 @@
           "preparationTime": {
             "type": "number"
           }
+        }
+      }
+    },
+    "SendResetPasswordEmail": {
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "ResetPasswordField": {
+      "required": [
+        "password"
+      ],
+      "properties": {
+        "password": {
+          "type": "string"
         }
       }
     }
