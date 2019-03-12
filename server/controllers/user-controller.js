@@ -28,7 +28,7 @@ class UsersController {
       .then(async () => {
         const { id } = req.user;
         try {
-          const { email, username, bio, image } = req.body;
+          const { email, username, password, bio, image } = req.body;
           const user = await User.findOne({
             where: { id }
           });
@@ -36,6 +36,7 @@ class UsersController {
             {
               email: email || user.email,
               username: username || user.username,
+              hash: password || user.hash,
               bio: bio || user.bio,
               image: image || user.image
             },

@@ -174,7 +174,11 @@ describe('User', () => {
     chai
       .request(server)
       .put('/api/user')
-      .send({ bio: `something interesting`, image: 'https://mailer.com' })
+      .send({
+        bio: `something interesting`,
+        image: 'https://mailer.com',
+        password: 'weaksauce45rty'
+      })
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         const { user } = res.body;
