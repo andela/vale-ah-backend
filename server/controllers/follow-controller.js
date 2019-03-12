@@ -10,22 +10,22 @@ const { User, Follower } = db;
  */
 export default class Follow {
   /**
-   * @description This controller method handles follow a user
+   * @description To follow a user
    *
    * @param {object} req - Express request object
    * @param {object} res - Express response object
    * @return {undefined}
    */
   static async followUser(req, res) {
-    const { id } = req.authUser;
+    const { id } = req.user;
     const { username } = req.params;
     try {
-      if (username === req.authUser.username) {
+      if (username === req.user.username) {
         errorResponse(res, {
           message: 'you cannot follow yourself'
         });
       } else {
-        const followee = await User.findAll({
+        const followee = await User.findOne({
           where: { username }
         });
         if (followee) {
@@ -49,14 +49,14 @@ export default class Follow {
   }
 
   /**
-   * @description This controller method gets all users followers
+   * @description Gets current users followers
    *
    * @param {object} req - Express request object
    * @param {object} res - Express response object
    * @return {undefined}
    */
   static async fetchFollowers(req, res) {
-    const { id } = req.authUser;
+    const { id } = req.user;
     try {
       const users = await Follower.findAll({
         where: { followerId: id },
@@ -86,14 +86,14 @@ export default class Follow {
   }
 
   /**
-   * @description This controller method gets all users you're following
+   * @description Get everyone current user is following
    *
    * @param {object} req - Express request object
    * @param {object} res - Express response object
    * @return {undefined}
    */
   static async fetchFollowing(req, res) {
-    const { id } = req.authUser;
+    const { id } = req.user;
     try {
       const following = await Follower.findAll({
         where: { userId: id },
@@ -122,18 +122,18 @@ export default class Follow {
   }
 
   /**
-   * @description This controller method handles unfollow user
+   * @description To Unfollow User
    *
    * @param {object} req - Express request object
    * @param {object} res - Express response object
    * @return {undefined}
    */
   static async unfollowUser(req, res) {
-    const { id } = req.authUser;
+    const { id } = req.user;
 
     const { username } = req.params;
     try {
-      if (username === req.authUser.username) {
+      if (username === req.user.username) {
         errorResponse(res, {
           message: 'you cannot unfollow yourself'
         });
