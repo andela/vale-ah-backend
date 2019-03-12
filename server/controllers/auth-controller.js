@@ -3,10 +3,11 @@ import {
   generateToken,
   errorResponse,
   validate,
-  validationErrorResponse
+  validationErrorResponse,
+  comparePassword
 } from '../utils/helpers';
 import db from '../models';
-import registerSchema from '../utils/validators';
+import { registerSchema } from '../utils/validators';
 
 const { User } = db;
 
@@ -55,6 +56,39 @@ class UsersController {
       .catch(({ details }) => {
         validationErrorResponse(res, details, 400);
       });
+  }
+
+  /**
+   * User Login
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {Function} next
+   * @memberof UsersController
+   * @returns {undefined}
+   */
+  static async login(req, res) {
+    const { email, password } = req.body;
+    try {
+      if (!(email && password)) {
+        return errorResponse(res, 'missing Email/Password', 400);
+      }
+      const rows = await User.findOne({ where: { email } });
+      if (!rows) {
+        return errorResponse(res, 'incorrect Email/Password', 400);
+      }
+      const { id, username, hash } = rows.dataValues;
+      if (!comparePassword(password, hash)) {
+        return errorResponse(res, 'incorrect Email/Password', 400);
+      }
+      const token = generateToken({ id, username });
+      rows.dataValues.token = token;
+      delete rows.dataValues.hash;
+      successResponse(res, { user: rows.dataValues }, 200);
+    } catch (error) {
+      return errorResponse(res, error.message);
+    }
   }
 }
 

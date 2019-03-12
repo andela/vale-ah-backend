@@ -7,6 +7,7 @@ import passport from 'passport';
 import session from 'express-session';
 import env from './config/env-config';
 import routes from './routes/index';
+// import storage from './config/cloudinary';
 
 const app = express();
 const logger = debug('vale-ah::server: ');
