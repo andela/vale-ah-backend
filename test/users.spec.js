@@ -411,7 +411,7 @@ describe('User', () => {
       })
       .send({ newPassword, oldPassword })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        expect(res).to.have.status(400);
         done(err);
       });
   });

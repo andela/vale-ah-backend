@@ -153,7 +153,6 @@
           "cookingTime",
           "ingredients",
           "preparationTime",
-          "slug",
           "steps",
           "title"
         ],
@@ -162,14 +161,11 @@
           "title": {
             "type": "string"
           },
-          "slug": {
-            "type": "string"
-          },
           "ingredients": {
             "type": "array"
           },
           "steps": {
-            "type": "array"
+            "type": "object"
           },
           "cookingTime": {
             "type": "number"

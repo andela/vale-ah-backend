@@ -25,9 +25,6 @@ module.exports = {
       preparationTime: {
         type: Sequelize.INTEGER
       },
-      tagList: {
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
       videoList: {
         type: Sequelize.STRING
       },

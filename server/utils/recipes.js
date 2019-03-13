@@ -4,8 +4,17 @@ const recipeSchema = Joi.object().keys({
   title: Joi.string()
     .required()
     .max(50),
-  ingredients: Joi.string().required(),
-  steps: Joi.string().required(),
+  ingredients: Joi.array()
+    .items(Joi.string().required(), Joi.string().required())
+    .required(),
+  steps: Joi.object()
+    .keys({
+      1: Joi.object().keys({
+        description: Joi.string().required(),
+        images: Joi.array().items(Joi.string())
+      })
+    })
+    .required(),
   cookingTime: Joi.number()
     .positive()
     .required(),
