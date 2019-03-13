@@ -11,7 +11,13 @@
     "DATABASE_URL": {
       "required": true
     },
-  "SECRET": {
+    "SECRET": {
+      "required":true
+    },
+    "HEROKU_APP_NAME": {
+      "required": true
+    },
+    "HEROKU_PARENT_APP_NAME": {
       "required": true
     }
   },

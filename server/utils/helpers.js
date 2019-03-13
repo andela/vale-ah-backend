@@ -1,10 +1,13 @@
-import '@babel/polyfill';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Joi from 'joi';
 import env from '../config/env-config';
 
-const { SECRET } = env;
+const { SECRET, UI_CLIENT_HOST, HEROKU_APP_NAME } = env;
+
+const API_SERVER_HOST = HEROKU_APP_NAME
+  ? `https://${HEROKU_APP_NAME}.herokuapp.com`
+  : env.API_SERVER_HOST;
 
 /**
  * Synchronously sign the given payload into a JSON Web Token string
@@ -92,3 +95,13 @@ export const comparePassword = (password, hash) =>
  */
 export const validate = (value, schema) =>
   Joi.validate(value, schema, { abortEarly: false, allowUnknown: true });
+
+/**
+ * Generate a user account verification link
+ * @param {string} token Verification token
+ * @returns {URL} Verification url
+ */
+export const generateVerificationLink = token =>
+  UI_CLIENT_HOST
+    ? `${UI_CLIENT_HOST}/users/verify/?token=${token}`
+    : `${API_SERVER_HOST}/api/users/verify/?token=${token}`;

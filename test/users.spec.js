@@ -12,6 +12,7 @@ const user1 = {
   password: faker.random.alphaNumeric(10)
 };
 describe('Authentication', () => {
+  const tokenPayload = {};
   describe('POST /api/users', () => {
     const baseUrl = '/api/users';
     it('should register a user with valid details', done => {
@@ -25,6 +26,8 @@ describe('Authentication', () => {
           expect(user.id).to.be.a('number');
           expect(user.verified).to.equal(false);
           expect(user.token).to.be.a('string');
+          tokenPayload.id = user.id;
+          tokenPayload.username = user.username;
           done(err);
         });
     });
@@ -107,6 +110,90 @@ describe('Authentication', () => {
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors).to.haveOwnProperty('password');
           expect(res.body);
+          done(err);
+        });
+    });
+  });
+
+  describe('GET /api/users?token', () => {
+    const baseUrl = '/api/users/verify';
+
+    it('should return error if verification token is not provided', done => {
+      chai
+        .request(server)
+        .get(`${baseUrl}`)
+        .end((err, res) => {
+          const {
+            body: { errors }
+          } = res;
+          const [errorMessage] = errors;
+
+          expect(res).to.have.status(400);
+          expect(errors).to.be.an.instanceOf(Array);
+          expect(typeof errorMessage).eqls('string');
+          expect(errorMessage).eqls('Invalid token, verification unsuccessful');
+          done(err);
+        });
+    });
+
+    it('should return error if verification token is invalid', done => {
+      chai
+        .request(server)
+        .get(`${baseUrl}?token=${generateToken(tokenPayload)}xxr`)
+        .end((err, res) => {
+          const {
+            body: { errors }
+          } = res;
+          const [errorMessage] = errors;
+
+          expect(res).to.have.status(400);
+          expect(errors).to.be.an.instanceOf(Array);
+          expect(typeof errorMessage).eqls('string');
+          expect(errorMessage).eqls('Invalid token, verification unsuccessful');
+        });
+
+      chai
+        .request(server)
+        .get(`${baseUrl}?token=io.fjf.tir`)
+        .end((err, res) => {
+          const {
+            body: { errors }
+          } = res;
+          const [errorMessage] = errors;
+
+          expect(res).to.have.status(400);
+          expect(errors).to.be.an.instanceOf(Array);
+          expect(typeof errorMessage).eqls('string');
+          expect(errorMessage).eqls('Invalid token, verification unsuccessful');
+          done(err);
+        });
+    });
+
+    it('should return error response when user to verify not found', done => {
+      chai
+        .request(server)
+        .get(`${baseUrl}?token=${generateToken({ id: 7 })}`)
+        .end((err, res) => {
+          const {
+            body: { errors }
+          } = res;
+          const [errorMessage] = errors;
+
+          expect(res).to.have.status(400);
+          expect(errors).to.be.an.instanceOf(Array);
+          expect(typeof errorMessage).eqls('string');
+          expect(errorMessage).eqls('no user found to verify');
+          done(err);
+        });
+    });
+
+    it('should return true if a user is verified', done => {
+      chai
+        .request(server)
+        .get(`${baseUrl}?token=${generateToken(tokenPayload)}`)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body.verified).to.equal(true);
           done(err);
         });
     });

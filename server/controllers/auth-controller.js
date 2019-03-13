@@ -1,15 +1,22 @@
+import '@babel/polyfill';
+import db from '../models';
+import { registerSchema } from '../utils/validators';
+import env from '../config/env-config';
+import mailer from '../utils/mailer';
 import {
   successResponse,
-  generateToken,
   errorResponse,
   validate,
   validationErrorResponse,
-  comparePassword
+  comparePassword,
+  generateToken,
+  generateVerificationLink,
+  verifyToken
 } from '../utils/helpers';
-import db from '../models';
-import { registerSchema } from '../utils/validators';
 
 const { User } = db;
+
+const { AUTH_TOKEN_EXPIRY, VERIFICATION_LINK_EXPIRY } = env;
 
 /**
  * The controllers for users route
@@ -37,10 +44,27 @@ class UsersController {
             hash: body.password
           });
           const { id, username } = user;
-          const token = generateToken({ id, username });
+
+          const token = generateToken({ id, username }, AUTH_TOKEN_EXPIRY);
+          const verificationToken = generateToken(
+            { id, username },
+            VERIFICATION_LINK_EXPIRY || '1d'
+          );
+
           user.token = token;
           delete user.hash;
-          successResponse(res, { user }, 201);
+
+          mailer
+            .sendVerificationMail(
+              user.email,
+              generateVerificationLink(verificationToken)
+            )
+            .then(() => {
+              successResponse(res, { user, emailSent: true }, 201);
+            })
+            .catch(() => {
+              successResponse(res, { user, emailSent: false }, 201);
+            });
         } catch (err) {
           const errors = err.errors
             ? err.errors.map(e => {
@@ -56,6 +80,49 @@ class UsersController {
       .catch(({ details }) => {
         validationErrorResponse(res, details, 400);
       });
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @memberof UsersController
+   * @returns {undefined}
+   */
+  static verifyEmail(req, res) {
+    const { token } = req.query;
+    try {
+      const { id } = verifyToken(token);
+      User.update({ verified: true }, { where: { id }, returning: true }).then(
+        ([rowsAffected]) => {
+          if (!rowsAffected) errorResponse(res, 'no user found to verify', 400);
+          else if (rowsAffected === 1) {
+            successResponse(res, { verified: true }, 200);
+          }
+        }
+      );
+    } catch (e) {
+      if (
+        [
+          'jwt must be provided',
+          'jwt expired',
+          'jwt malformed',
+          'jwt not active',
+          'invalid signature',
+          'invalid token'
+        ].includes(e.message)
+      ) {
+        errorResponse(res, 'Invalid token, verification unsuccessful', 400);
+      } else {
+        errorResponse(
+          res,
+          'Something went wrong, verification unsuccessful',
+          500
+        );
+      }
+    }
   }
 
   /**

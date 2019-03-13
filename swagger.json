@@ -60,6 +60,40 @@
           }
         }
       }
+    },
+    "/users/verify" : {
+      "get" : {
+        "description" : "Verify if the user is verified",
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
+        } ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "400" : {
+            "description" : "Verification token error",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "Account verification success"
+          }
+        }
+      },
+      "servers" : [ {
+        "url" : "https://vale-ah-backend-staging.herokuapp.com"
+      } ]
     }
   },
   "definitions": {

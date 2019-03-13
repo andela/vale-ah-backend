@@ -2,11 +2,32 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 const { env } = process;
-const { DATABASE_URL, NODE_ENV, PORT, SECRET } = env;
+const {
+  DATABASE_URL,
+  NODE_ENV,
+  PORT,
+  SECRET,
+  SENDGRID_KEY,
+  ADMIN_EMAIL,
+  SITE_NAME,
+  HEROKU_APP_NAME,
+  UI_CLIENT_HOST,
+  API_SERVER_HOST,
+  AUTH_TOKEN_EXPIRY,
+  VERIFICATION_LINK_EXPIRY
+} = env;
 
 export default {
   DATABASE_URL,
   NODE_ENV,
   PORT,
-  SECRET
+  SECRET,
+  SENDGRID_KEY,
+  ADMIN_EMAIL,
+  SITE_NAME,
+  HEROKU_APP_NAME,
+  UI_CLIENT_HOST,
+  API_SERVER_HOST,
+  AUTH_TOKEN_EXPIRY,
+  VERIFICATION_LINK_EXPIRY
 };
