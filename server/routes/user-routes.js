@@ -5,6 +5,7 @@ import followController from '../controllers/follow-controller';
 
 const router = new Router();
 
+router.put('/password', User.validUser, userController.updatePassword);
 router.put('/', User.validUser, userController.updateUser);
 router.get('/', User.validUser, userController.getProfile);
 router.get('/followers', User.validUser, followController.fetchFollowers);
