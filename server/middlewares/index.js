@@ -6,7 +6,7 @@ const { User } = db;
  *Users endpoint middlewares
  *
  * @export
- * @class UsersMiddleware
+ * @class UsersMiddlewares
  */
 export default class UsersMiddleware {
   /**
