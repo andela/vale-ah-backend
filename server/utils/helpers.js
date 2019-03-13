@@ -1,10 +1,13 @@
-import '@babel/polyfill';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import Joi from 'joi';
 import env from '../config/env-config';
 
-const { SECRET, HEROKU_APP_NAME, HOST_URL } = env;
+const { SECRET, UI_CLIENT_HOST, HEROKU_APP_NAME } = env;
+
+const API_SERVER_HOST = HEROKU_APP_NAME
+  ? `https://${HEROKU_APP_NAME}.herokuapp.com`
+  : env.API_SERVER_HOST;
 
 /**
  * Synchronously sign the given payload into a JSON Web Token string
@@ -15,24 +18,6 @@ const { SECRET, HEROKU_APP_NAME, HOST_URL } = env;
  */
 export const generateToken = (payload, expiresIn = '7d') =>
   jwt.sign(payload, SECRET, { expiresIn });
-
-/**
- * Generates account verification and auth tokens
- *
- * @param {object} options - token generation options.
- * @param {string} options.payload - payload to sign
- * @param {string} options.tokenExpiresIn - auth token expiry
- * @param {string} options.verificationTokenExpiresIn - verification token expiry
- * @returns {Promise.<[string,string]>} [authToken, verificationToken]
- */
-export const authTokens = async ({
-  payload,
-  tokenExpiresIn,
-  verificationTokenExpiresIn
-}) => [
-  generateToken(payload, tokenExpiresIn || undefined),
-  generateToken(payload, verificationTokenExpiresIn || '1d')
-];
 
 /**
  * Synchronously verify given JWT token
@@ -117,34 +102,6 @@ export const validate = (value, schema) =>
  * @returns {URL} Verification url
  */
 export const generateVerificationLink = token =>
-  HEROKU_APP_NAME
-    ? `${HEROKU_APP_NAME}/herokuapp.com/api/user/verify/?token=${token}`
-    : `${HOST_URL}/api/user/verify/?token=${token}`;
-
-/**
- * Account verification Email
- * @param {string} SITE_NAME Name of website
- * @param {string} verificationLink Verification link
- * @returns {string} verification Email markup
- */
-export const verificationEmailMessage = (SITE_NAME, verificationLink) => `
-<div style="
-  padding: 10px;
-  background: #F3F3F3;
-  border: 5px double #522D16;
-  text-align: center;
-">
-  <h1 style="
-  ">${SITE_NAME}</h1>
-  <p>Activate your ${SITE_NAME} account by clicking the button below</p>
-  <a style="
-    text-decoration: none;
-    margin: 25px auto;
-    padding: 15px 20px;
-    background: #522D16;
-    text-align: center;
-    display: inline-block;
-    color: white;" 
-    href=${verificationLink} target="_blank">Verify Your Email</a>
-</div>
-`;
+  UI_CLIENT_HOST
+    ? `${UI_CLIENT_HOST}/users/verify/?token=${token}`
+    : `${API_SERVER_HOST}/api/users/verify/?token=${token}`;

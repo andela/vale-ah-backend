@@ -1,4 +1,4 @@
-import debug from 'debug';
+import '@babel/polyfill';
 import db from '../models';
 import { registerSchema } from '../utils/validators';
 import env from '../config/env-config';
@@ -11,17 +11,12 @@ import {
   comparePassword,
   generateToken,
   generateVerificationLink,
-  authTokens
+  verifyToken
 } from '../utils/helpers';
 
 const { User } = db;
 
-const {
-  AUTH_TOKEN_EXPIRY: tokenExpiresIn,
-  VERIFICATION_LINK_EXPIRY: verificationTokenExpiresIn
-} = env;
-
-const mailLogger = debug('vale-ah::mailLogger');
+const { AUTH_TOKEN_EXPIRY, VERIFICATION_LINK_EXPIRY } = env;
 
 /**
  * The controllers for users route
@@ -49,11 +44,12 @@ class UsersController {
             hash: body.password
           });
           const { id, username } = user;
-          const [token, verificationToken] = await authTokens({
-            payload: { id, username },
-            tokenExpiresIn,
-            verificationTokenExpiresIn
-          });
+
+          const token = generateToken({ id, username }, AUTH_TOKEN_EXPIRY);
+          const verificationToken = generateToken(
+            { id, username },
+            VERIFICATION_LINK_EXPIRY || '1d'
+          );
 
           user.token = token;
           delete user.hash;
@@ -64,11 +60,9 @@ class UsersController {
               generateVerificationLink(verificationToken)
             )
             .then(() => {
-              mailLogger('Verification email sent successfully');
               successResponse(res, { user, emailSent: true }, 201);
             })
             .catch(() => {
-              mailLogger('Failed to send verification email');
               successResponse(res, { user, emailSent: false }, 201);
             });
         } catch (err) {
@@ -86,6 +80,49 @@ class UsersController {
       .catch(({ details }) => {
         validationErrorResponse(res, details, 400);
       });
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @memberof UsersController
+   * @returns {undefined}
+   */
+  static verifyEmail(req, res) {
+    const { token } = req.query;
+    try {
+      const { id } = verifyToken(token);
+      User.update({ verified: true }, { where: { id }, returning: true }).then(
+        ([rowsAffected]) => {
+          if (!rowsAffected) errorResponse(res, 'no user found to verify', 400);
+          else if (rowsAffected === 1) {
+            successResponse(res, { verified: true }, 200);
+          }
+        }
+      );
+    } catch (e) {
+      if (
+        [
+          'jwt must be provided',
+          'jwt expired',
+          'jwt malformed',
+          'jwt not active',
+          'invalid signature',
+          'invalid token'
+        ].includes(e.message)
+      ) {
+        errorResponse(res, 'Invalid token, verification unsuccessful', 400);
+      } else {
+        errorResponse(
+          res,
+          'Something went wrong, verification unsuccessful',
+          500
+        );
+      }
+    }
   }
 
   /**

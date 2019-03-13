@@ -1,25 +1,32 @@
 import sendgrid from '@sendgrid/mail';
 import env from '../config/env-config';
-import { verificationEmailMessage } from './helpers';
 
-const { ADMIN_EMAIL, SITE_NAME, SENDGRID_KEY } = env;
+const { ADMIN_EMAIL, SITE_NAME: siteName, SENDGRID_KEY } = env;
 
 sendgrid.setApiKey(SENDGRID_KEY);
 
 /**
  * Sends a verification link to a newly signed up user
- * @param {string} email Recipient email address
- * @param {string} verificationLink Account verification link
+ *
+ * @param {object} options mail options
+ * @param {string} options.email Recipient email address
+ * @param {string} options.username Recipient username
+ * @param {string} options.verificationLink Account verification link
  * @returns {Promise} Sendgrid response
  */
-
-const sendVerificationMail = (email, verificationLink) => {
+const sendVerificationMail = ({ email, username, verificationLink }) => {
   const mail = {
     to: email,
     from: ADMIN_EMAIL,
-    subject: `Welcome to ${SITE_NAME}`,
-    text: `Please follow this link to activate your ${SITE_NAME} account:   ${verificationLink}`,
-    html: verificationEmailMessage(SITE_NAME, verificationLink)
+    text: `Please follow this link to activate your ${siteName} account:   ${verificationLink}`,
+    html: ' ',
+    templateId: 'd-6e841534b95240fa929b2fcd78a8ff7f',
+    dynamic_template_data: {
+      subject: `Verify your account - ${siteName}`,
+      siteName,
+      username,
+      verificationLink
+    }
   };
 
   return sendgrid.send(mail);
