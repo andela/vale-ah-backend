@@ -11,6 +11,13 @@ const user1 = {
   email: faker.internet.email(),
   password: faker.random.alphaNumeric(10)
 };
+
+const user2 = {
+  username: faker.random.alphaNumeric(10),
+  email: faker.internet.email(),
+  password: faker.random.alphaNumeric(10)
+};
+
 describe('Authentication', () => {
   const tokenPayload = {};
   describe('POST /api/users', () => {
@@ -28,6 +35,21 @@ describe('Authentication', () => {
           expect(user.token).to.be.a('string');
           tokenPayload.id = user.id;
           tokenPayload.username = user.username;
+          done(err);
+        });
+    });
+
+    it('should register a user with valid details', done => {
+      chai
+        .request(server)
+        .post(baseUrl)
+        .send(user2)
+        .end((err, res) => {
+          const { user } = res.body;
+          expect(res).to.have.status(201);
+          expect(user.id).to.be.a('number');
+          expect(user.verified).to.equal(false);
+          expect(user.token).to.be.a('string');
           done(err);
         });
     });
@@ -278,23 +300,6 @@ describe('User', () => {
       });
   });
 
-  it('should retain old profile if no changes', done => {
-    chai
-      .request(server)
-      .put('/api/user')
-      .send({ email: 'sometin@gmail.com' })
-      .set({ authorization: loggedInUser.token })
-      .end((err, res) => {
-        const { user } = res.body;
-        expect(res).to.have.status(200);
-        expect(user.id).to.be.a('number');
-        expect(user).to.have.property('verified');
-        expect(user).to.have.property('createdAt');
-        expect(user).to.have.property('updatedAt');
-        done(err);
-      });
-  });
-
   it('should return an error of validation fails', done => {
     chai
       .request(server)
@@ -343,7 +348,34 @@ describe('User', () => {
         expect(user.id).to.be.a('number');
         expect(user).to.have.property('verified');
         expect(user).to.have.property('createdAt');
+        done(err);
+      });
+  });
+
+  it('should update based on previous data', done => {
+    chai
+      .request(server)
+      .put('/api/user')
+      .send({ email: faker.internet.email() })
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user.id).to.be.a('number');
+        expect(user).to.have.property('verified');
+        expect(user).to.have.property('createdAt');
         expect(user).to.have.property('updatedAt');
+        done(err);
+      });
+  });
+
+  it('should return an error if no token', done => {
+    chai
+      .request(server)
+      .get('/api/user')
+      .set({ authorization: generateToken({ id: 1000 }) })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
         done(err);
       });
   });
@@ -352,6 +384,72 @@ describe('User', () => {
     chai
       .request(server)
       .get('/api/user')
+      .set({ authorization: generateToken({ id: 1000 }) })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should get All profiles', done => {
+    chai
+      .request(server)
+      .get('/api/profiles')
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user).to.be.an('array');
+        expect(user[0].id).to.be.a('number');
+        done(err);
+      });
+  });
+
+  it('should return an error if no profile', done => {
+    chai
+      .request(server)
+      .get('/api/profiles')
+      .set({ authorization: generateToken({ id: 1000 }) })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should get profile of a specific user', done => {
+    const { username } = user2;
+    chai
+      .request(server)
+      .get(`/api/profiles/${username}`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user).to.be.an('object');
+        expect(user.id).to.be.a('number');
+        expect(user).to.have.property('verified');
+        expect(user).to.have.property('createdAt');
+        expect(user).to.have.property('updatedAt');
+        done(err);
+      });
+  });
+
+  it('should return an error if profile is not found', done => {
+    const username = faker.random.alphaNumeric(10);
+    chai
+      .request(server)
+      .get(`/api/profiles/${username}`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should return an error if no token', done => {
+    chai
+      .request(server)
+      .get('/api/profiles')
       .end((err, res) => {
         expect(res).to.have.status(400);
         done(err);

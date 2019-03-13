@@ -1,12 +1,13 @@
+import '@babel/polyfill';
 import { successResponse, errorResponse } from '../utils/helpers';
 import db from '../models';
 
 const { User } = db;
 
 /**
- * The controllers for users route
+ * The controllers for profile route
  *
- * @class UsersController
+ * @class profileController
  */
 class ProfileController {
   /**
@@ -23,7 +24,7 @@ class ProfileController {
       return User.findOne({ where: { username } })
         .then(data => {
           if (!data) {
-            errorResponse(res, 'username does not exist');
+            errorResponse(res, 'username does not exist', 404);
           }
           delete data.dataValues.hash;
           successResponse(
@@ -36,7 +37,7 @@ class ProfileController {
         })
         .catch(error => res.send(error.message));
     } catch (error) {
-      errorResponse(res, error.message);
+      return errorResponse(res, error.message);
     }
   }
 
@@ -51,13 +52,13 @@ class ProfileController {
   static async getAll(req, res) {
     try {
       return User.findAll({
-        attributes: ['username', 'email', 'bio', 'image']
+        attributes: ['id', 'username', 'email', 'bio', 'image']
       })
         .then(data => {
           if (!data) {
-            errorResponse(res, 'No User(s)', 400);
+            return errorResponse(res, 'No User(s)', 400);
           }
-          successResponse(
+          return successResponse(
             res,
             {
               user: data
@@ -67,7 +68,7 @@ class ProfileController {
         })
         .catch(error => errorResponse(res, error));
     } catch (error) {
-      errorResponse(res, error.message, 500);
+      return errorResponse(res, error.message, 500);
     }
   }
 }
