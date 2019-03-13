@@ -10,7 +10,7 @@ const { User } = db;
  */
 class ProfileController {
   /**
-   * get a particular user by username
+   * get a profile by username
    * @static
    * @param {Request} req request object
    * @param {Response} res response object
@@ -41,7 +41,7 @@ class ProfileController {
   }
 
   /**
-   * get all users
+   * get all profiles
    * @static
    * @param {Request} req request object
    * @param {Response} res response object

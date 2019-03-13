@@ -7,13 +7,12 @@ const { User, Follower, Sequelize } = db;
 const { Op } = Sequelize;
 
 /**
- * @description Controller to authenticate users
+ * @description Controller to Following users
  * @return {undefined}
  */
 export default class Follow {
   /**
-   * @description To follow a user
-   *
+   * @description Follow user contoller
    * @param {object} req - Express request object
    * @param {object} res - Express response object
    * @return {undefined}
@@ -43,7 +42,7 @@ export default class Follow {
             followerId: followee.id
           });
           successResponse(res, {
-            message: `you just followed ${username}`
+            message: `you started following ${username}`
           });
         } else {
           errorResponse(
@@ -56,7 +55,7 @@ export default class Follow {
         }
       }
     } catch (err) {
-      return errorResponse(res, { message: 'Could not follow user' });
+      return errorResponse(res, err.message);
     }
   }
 
@@ -76,7 +75,7 @@ export default class Follow {
           {
             model: User,
             as: 'follower',
-            attributes: ['username', 'email', 'bio', 'image']
+            attributes: ['username', 'email', 'bio']
           }
         ]
       });
@@ -88,12 +87,12 @@ export default class Follow {
       }
       const num = users.length;
       return successResponse(res, {
-        message: 'these are your followers',
+        message: ' Your followers',
         total: num,
-        followers: users.map(u => u.follower)
+        followers: users.map(list => list.follower)
       });
     } catch (err) {
-      return errorResponse(res, { message: 'Could not get followers' });
+      return errorResponse(res, err.message);
     }
   }
 
@@ -113,7 +112,7 @@ export default class Follow {
           {
             model: User,
             as: 'following',
-            attributes: ['email', 'username', 'image']
+            attributes: ['email', 'username']
           }
         ]
       });
@@ -125,11 +124,11 @@ export default class Follow {
       } else {
         successResponse(res, {
           message: 'people you are following',
-          following: following.map(u => u.following)
+          following: following.map(list => list.following)
         });
       }
     } catch (err) {
-      return errorResponse(res, { message: 'Could not get following' });
+      return errorResponse(res, err.message);
     }
   }
 
@@ -156,7 +155,7 @@ export default class Follow {
         message: `${username} has been unfollowed`
       });
     } catch (err) {
-      return errorResponse(res, { message: 'Could not unfollow user' });
+      return errorResponse(res, err.message);
     }
   }
 }

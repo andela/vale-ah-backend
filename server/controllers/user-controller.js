@@ -59,7 +59,7 @@ class UsersController {
   }
 
   /**
-   * Get user profile
+   * Get current user
    * @static
    * @param {Request} req request object
    * @param {Response} res response object
