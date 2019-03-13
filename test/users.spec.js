@@ -357,13 +357,19 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if no token', done => {
+  it('should update based on previous data', done => {
     chai
       .request(server)
-      .get('/api/user')
-      .set({ authorization: generateToken({ id: 1000 }) })
+      .put('/api/user')
+      .send({ email: faker.internet.email() })
+      .set({ authorization: loggedInUser.token })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user.id).to.be.a('number');
+        expect(user).to.have.property('verified');
+        expect(user).to.have.property('createdAt');
+        expect(user).to.have.property('updatedAt');
         done(err);
       });
   });
@@ -426,7 +432,7 @@ describe('User', () => {
       .request(server)
       .get('/api/profiles')
       .end((err, res) => {
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(404);
         done(err);
       });
   });
@@ -452,14 +458,11 @@ describe('User', () => {
         expect(res).to.have.status(200);
         expect(user).to.be.an('array');
         expect(user[0].id).to.be.a('number');
-        expect(user[0]).to.have.property('verified');
-        expect(user[0]).to.have.property('createdAt');
-        expect(user[0]).to.have.property('updatedAt');
         done(err);
       });
   });
 
-  it('should get All profiles', done => {
+  it('should return an error if no profile', done => {
     chai
       .request(server)
       .get('/api/profile')
@@ -488,7 +491,7 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if profile is not done', done => {
+  it('should return an error if profile is not found', done => {
     const username = faker.random.alphaNumeric(10);
     chai
       .request(server)

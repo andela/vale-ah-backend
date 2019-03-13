@@ -41,18 +41,17 @@ export default class Follow {
             userId: id,
             followerId: followee.id
           });
-          successResponse(res, {
+          return successResponse(res, {
             message: `you started following ${username}`
           });
-        } else {
-          errorResponse(
-            res,
-            {
-              message: `you are already following ${username}`
-            },
-            400
-          );
         }
+        errorResponse(
+          res,
+          {
+            message: `you are already following ${username}`
+          },
+          400
+        );
       }
     } catch (err) {
       return errorResponse(res, err.message);
@@ -117,16 +116,15 @@ export default class Follow {
         ]
       });
       if (following.length < 1) {
-        successResponse(res, {
+        return successResponse(res, {
           message: 'you are not following anyone',
           following
         });
-      } else {
-        successResponse(res, {
-          message: 'people you are following',
-          following: following.map(list => list.following)
-        });
       }
+      successResponse(res, {
+        message: 'people you are following',
+        following: following.map(list => list.following)
+      });
     } catch (err) {
       return errorResponse(res, err.message);
     }
@@ -145,13 +143,13 @@ export default class Follow {
     const { username } = req.params;
     try {
       if (username === req.user.username) {
-        errorResponse(res, {
+        return errorResponse(res, {
           message: 'you cannot unfollow yourself'
         });
       }
 
       await Follower.destroy({ where: { userId: id } });
-      successResponse(res, {
+      return successResponse(res, {
         message: `${username} has been unfollowed`
       });
     } catch (err) {

@@ -4,13 +4,13 @@ import db from '../models';
 const { User } = db;
 
 /**
- * The controllers for profile route
+ * The controllers for users route
  *
  * @class profileController
  */
 class ProfileController {
   /**
-   * get a profile by username
+   * get a particular user by username
    * @static
    * @param {Request} req request object
    * @param {Response} res response object
@@ -41,7 +41,7 @@ class ProfileController {
   }
 
   /**
-   * get all profiles
+   * get all users
    * @static
    * @param {Request} req request object
    * @param {Response} res response object
