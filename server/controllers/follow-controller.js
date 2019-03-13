@@ -2,7 +2,9 @@
 import db from '../models';
 import { successResponse, errorResponse } from '../utils/helpers';
 
-const { User, Follower } = db;
+const { User, Follower, Sequelize } = db;
+
+const { Op } = Sequelize;
 
 /**
  * @description Controller to authenticate users
@@ -21,26 +23,36 @@ export default class Follow {
     const { username } = req.params;
     try {
       if (username === req.user.username) {
-        errorResponse(res, {
-          message: 'you cannot follow yourself'
-        });
+        errorResponse(
+          res,
+          {
+            message: 'you cannot follow yourself'
+          },
+          400
+        );
       } else {
         const followee = await User.findOne({
           where: { username }
         });
-        if (followee) {
+        const checkFollower = await Follower.findAll({
+          where: { [Op.and]: [{ userId: id }, { followerId: followee.id }] }
+        });
+        if (followee && checkFollower.length < 1) {
           await Follower.create({
             userId: id,
             followerId: followee.id
-            // followee: username
           });
           successResponse(res, {
             message: `you just followed ${username}`
           });
         } else {
-          errorResponse(res, {
-            message: `you are already following ${username}`
-          });
+          errorResponse(
+            res,
+            {
+              message: `you are already following ${username}`
+            },
+            400
+          );
         }
       }
     } catch (err) {

@@ -33,6 +33,21 @@ describe('Authentication', () => {
         });
     });
 
+    it('should register a user with valid details', done => {
+      chai
+        .request(server)
+        .post(baseUrl)
+        .send(user2)
+        .end((err, res) => {
+          const { user } = res.body;
+          expect(res).to.have.status(201);
+          expect(user.id).to.be.a('number');
+          expect(user.verified).to.equal(false);
+          expect(user.token).to.be.a('string');
+          done(err);
+        });
+    });
+
     it('should not create a user with an existing user email', done => {
       chai
         .request(server)
@@ -407,6 +422,43 @@ describe('User', () => {
   });
 
   it('should return an error if token was not provided', done => {
+    chai
+      .request(server)
+      .get('/api/profiles')
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        done(err);
+      });
+  });
+
+  it('should return an error if no current user', done => {
+    chai
+      .request(server)
+      .get('/api/user')
+      .set({ authorization: generateToken({ id: 1000 }) })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should get All profiles', done => {
+    chai
+      .request(server)
+      .get('/api/profiles')
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user).to.be.an('array');
+        expect(user[0].id).to.be.a('number');
+        expect(user[0]).to.have.property('verified');
+        expect(user[0]).to.have.property('createdAt');
+        expect(user[0]).to.have.property('updatedAt');
+        done(err);
+      });
+  });
+  it('should return an error if no token', done => {
     chai
       .request(server)
       .get('/api/profiles')
