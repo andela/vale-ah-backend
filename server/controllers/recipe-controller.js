@@ -49,9 +49,7 @@ class RecipeController {
         .then(({ dataValues }) => {
           successResponse(res, { recipe: dataValues }, 201);
         })
-        .catch(err => {
-          return errorResponse(res, err, 400);
-        });
+        .catch(err => errorResponse(res, err, 400));
     } catch (error) {
       validationErrorResponse(res, error.details);
     }

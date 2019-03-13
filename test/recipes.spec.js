@@ -5,11 +5,6 @@ import { generateToken } from '../server/utils/helpers';
 
 chai.use(chaiHttp);
 
-const user = {
-  email: 'jake@jake.jake',
-  password: 'jakejake'
-};
-
 const recipe = {
   title: 'How to prepare your finest recipe',
   ingredients: ['A spoon of awesomeness', 'A cup of dedication'],
@@ -29,16 +24,20 @@ const recipe = {
 
 describe('Create New Recipe', () => {
   let token;
-  before(() => {
-    return chai
+  before(() =>
+    chai
       .request(server)
-      .post('/api/users/login')
-      .send(user)
+      .post('/api/users')
+      .send({
+        username: 'Jacob',
+        email: 'jake@jake.jake',
+        password: 'jakejake'
+      })
       .then(res => {
         const { token: userToken } = res.body.user;
         token = userToken;
-      });
-  });
+      })
+  );
   const baseUrl = '/api/recipes';
   it('should post new recipe when token is provided', done => {
     chai
@@ -51,9 +50,9 @@ describe('Create New Recipe', () => {
         expect(res).to.have.status(201);
         expect(body.recipe).to.be.an('object');
         expect(body.recipe.id).to.be.a('number');
-        expect(body.recipe.title).to.be.a('string');
-        expect(body.recipe.ingredients).to.be.an('array');
-        expect(body.recipe.cookingTime).to.be.a('number');
+        expect(body.recipe.title).to.equal(recipe.title);
+        expect(body.recipe.ingredients).to.include(recipe.ingredients[0]);
+        expect(body.recipe.cookingTime).to.equal(recipe.cookingTime);
         done(err);
       });
   });
