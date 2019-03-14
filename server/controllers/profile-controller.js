@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import { successResponse, errorResponse } from '../utils/helpers';
 import db from '../models';
 
@@ -24,18 +23,18 @@ class ProfileController {
       return User.findOne({ where: { username } })
         .then(data => {
           if (!data) {
-            errorResponse(res, 'username does not exist', 404);
+            return errorResponse(res, 'username does not exist', 404);
           }
           delete data.dataValues.hash;
-          successResponse(
+          return successResponse(
             res,
             {
-              user: data
+              user: data.dataValues
             },
             200
           );
         })
-        .catch(error => res.send(error.message));
+        .catch(() => errorResponse(res));
     } catch (error) {
       return errorResponse(res, error.message);
     }

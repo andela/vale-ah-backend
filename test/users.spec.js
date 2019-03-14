@@ -3,20 +3,12 @@ import chaiHttp from 'chai-http';
 import faker from 'faker';
 import server from '../server';
 import { generateToken } from '../server/utils/helpers';
+import generateRandomUser from './mockdata/mock';
 
 chai.use(chaiHttp);
-
-const user1 = {
-  username: faker.random.alphaNumeric(10),
-  email: faker.internet.email(),
-  password: faker.random.alphaNumeric(10)
-};
-
-const user2 = {
-  username: faker.random.alphaNumeric(10),
-  email: faker.internet.email(),
-  password: faker.random.alphaNumeric(10)
-};
+const user1 = generateRandomUser();
+const user2 = generateRandomUser();
+const { username, password, email } = generateRandomUser();
 
 describe('Authentication', () => {
   const tokenPayload = {};
@@ -63,7 +55,6 @@ describe('Authentication', () => {
           expect(res).to.have.status(409);
           expect(res.body.errors).to.be.an('Array');
           expect(res.body.errors[0]).to.contain('already exists');
-          expect(res.body);
           done(err);
         });
     });
@@ -77,7 +68,6 @@ describe('Authentication', () => {
           expect(res).to.have.status(409);
           expect(res.body.errors).to.be.an('Array');
           expect(res.body.errors[0]).to.contain('already exists');
-          expect(res.body);
           done(err);
         });
     });
@@ -87,15 +77,14 @@ describe('Authentication', () => {
         .request(server)
         .post(baseUrl)
         .send({
-          username: faker.internet.userName(),
+          username,
           email: 'invalid email',
-          password: 'jakejake'
+          password
         })
         .end((err, res) => {
           expect(res).to.have.status(400);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors).to.haveOwnProperty('email');
-          expect(res.body);
           done(err);
         });
     });
@@ -105,15 +94,14 @@ describe('Authentication', () => {
         .request(server)
         .post(baseUrl)
         .send({
-          username: faker.internet.userName(),
-          email: faker.internet.email(),
+          username,
+          email,
           password: 'short'
         })
         .end((err, res) => {
           expect(res).to.have.status(400);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors).to.haveOwnProperty('password');
-          expect(res.body);
           done(err);
         });
     });
@@ -123,15 +111,14 @@ describe('Authentication', () => {
         .request(server)
         .post(baseUrl)
         .send({
-          username: faker.internet.userName(),
-          email: faker.internet.email(),
+          username,
+          email,
           password: '!&@*@(@)!)!'
         })
         .end((err, res) => {
           expect(res).to.have.status(400);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors).to.haveOwnProperty('password');
-          expect(res.body);
           done(err);
         });
     });
@@ -270,11 +257,10 @@ describe('User', () => {
   let loggedInUser;
 
   before(() => {
-    const { email, password } = user1;
     return chai
       .request(server)
       .post('/api/users/login')
-      .send({ email, password })
+      .send({ email: user1.email, password: user1.password })
       .then(res => {
         loggedInUser = res.body.user;
       });
@@ -417,10 +403,9 @@ describe('User', () => {
   });
 
   it('should get profile of a specific user', done => {
-    const { username } = user2;
     chai
       .request(server)
-      .get(`/api/profiles/${username}`)
+      .get(`/api/profiles/${user2.username}`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         const { user } = res.body;
@@ -435,10 +420,9 @@ describe('User', () => {
   });
 
   it('should return an error if profile is not found', done => {
-    const username = faker.random.alphaNumeric(10);
     chai
       .request(server)
-      .get(`/api/profiles/${username}`)
+      .get(`/api/profiles/andela`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         expect(res).to.have.status(404);

@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import db from '../models';
 import { registerSchema } from '../utils/validators';
 import env from '../config/env-config';

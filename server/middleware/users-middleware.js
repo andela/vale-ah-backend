@@ -3,10 +3,10 @@ import { errorResponse, verifyToken } from '../utils/helpers';
 
 const { User } = db;
 /**
- *Users endpoint middlewares
+ *Users endpoint middleware
  *
  * @export
- * @class UsersMiddlewares
+ * @class UsersMiddleware
  */
 export default class UsersMiddleware {
   /**
