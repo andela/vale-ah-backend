@@ -14,12 +14,15 @@ module.exports = (sequelize, DataTypes) => {
       steps: DataTypes.JSONB,
       cookingTime: DataTypes.INTEGER,
       preparationTime: DataTypes.INTEGER,
-      videoList: DataTypes.STRING
+      videoList: DataTypes.ARRAY(DataTypes.STRING)
     },
     {}
   );
-  Recipe.associate = () => {
-    // associations can be defined here
+  Recipe.associate = models => {
+    Recipe.belongsTo(models.User, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
   };
   return Recipe;
 };

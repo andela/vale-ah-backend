@@ -5,7 +5,7 @@ import {
   validate,
   validationErrorResponse
 } from '../utils/helpers';
-import recipeSchema from '../utils/recipes';
+import { recipeSchema } from '../utils/validators';
 import slugifyTitle from '../utils/slugify';
 
 const { Recipe } = db;
