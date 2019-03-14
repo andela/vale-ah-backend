@@ -10,8 +10,8 @@ addons:
 # env:
 #  global:
 #  - PGPORT=5433
-# services:
-#  - postgresql
+services:
+  - postgresql
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 after_success:
