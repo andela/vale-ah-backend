@@ -2,16 +2,16 @@ language: node_js
 node_js:
 - stable
 addons:
-  postgresql: "10"
-  apt:
-    packages:
-    - postgresql-10
-    - postgresql-client-10
-env:
-  global:
-  - PGPORT=5433
-services:
-  - postgresql
+  postgresql: "9.7"
+#  apt:
+#    packages:
+#    - postgresql-10
+#    - postgresql-client-10
+# env:
+#  global:
+#  - PGPORT=5433
+# services:
+#  - postgresql
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 after_success:
