@@ -4,11 +4,15 @@ import faker from 'faker';
 import server from '../server';
 import { generateToken } from '../server/utils/helpers';
 import { generateRandomUser } from './fixtures';
+import db from '../server/models';
+
+const { User } = db;
 
 chai.use(chaiHttp);
-const { username, password, email } = generateRandomUser();
 const user1 = generateRandomUser();
+const { username, password, email } = generateRandomUser();
 
+const tokenPayload = {};
 describe('Authentication', () => {
   describe('POST /api/users', () => {
     const baseUrl = '/api/users';
@@ -102,7 +106,6 @@ describe('Authentication', () => {
           expect(res).to.have.status(400);
           expect(res.body.errors).to.be.an('object');
           expect(res.body.errors).to.haveOwnProperty('password');
-          expect(res.body);
           done(err);
         });
     });
@@ -241,13 +244,11 @@ describe('User', () => {
   let loggedInUser;
 
   before(() => {
-    const { email, password } = user1;
     return chai
       .request(server)
       .post('/api/users/login')
       .send({ email: user1.email, password: user1.password })
       .then(res => {
-        console.log(res.body);
         loggedInUser = res.body.user;
       });
   });
@@ -498,7 +499,7 @@ describe('Password reset', () => {
     chai
       .request(server)
       .post(`${url}/email`)
-      .send({ email: user1.email })
+      .send({ email: 'jake@jake.jake' })
       .end((err, res) => {
         expect(res).to.have.status(200);
         expect(res.body.message).to.contain('sent');
@@ -526,29 +527,6 @@ describe('Password reset', () => {
       .end((err, res) => {
         expect(res).to.have.status(400);
         expect(res.body.errors).to.haveOwnProperty('email');
-        done(err);
-      });
-  });
-
-  it('should send a password reset token if link is valid', done => {
-    const token = generateToken(tokenPayload);
-    chai
-      .request(server)
-      .get(`${url}?token=${token}`)
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body.token).to.equal(token);
-        done(err);
-      });
-  });
-
-  it('should not send a password reset token if link is invalid', done => {
-    chai
-      .request(server)
-      .get(`${url}?token=invalid`)
-      .end((err, res) => {
-        expect(res).to.have.status(400);
-        expect(res.body.errors).to.be.an('Array');
         done(err);
       });
   });

@@ -53,3 +53,16 @@ export const recipeUpdateSchema = Joi.object().keys({
   cookingTime: Joi.number().positive(),
   preparationTime: Joi.number().positive()
 });
+
+export const passwordResetSchema = Joi.object().keys({
+  email: Joi.string()
+    .email()
+    .required()
+});
+
+export const changePasswordSchema = Joi.object().keys({
+  password: Joi.string()
+    .alphanum()
+    .min(8)
+    .required()
+});

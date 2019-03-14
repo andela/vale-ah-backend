@@ -16,4 +16,5 @@ const router = app => {
     errorResponse(res, 'The requested resource was not found', 404)
   );
 };
+
 export default router;

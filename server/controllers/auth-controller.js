@@ -1,5 +1,9 @@
 import db from '../models';
-import { registerSchema } from '../utils/validators';
+import {
+  registerSchema,
+  passwordResetSchema,
+  changePasswordSchema
+} from '../utils/validators';
 import env from '../config/env-config';
 import mailer from '../utils/mailer';
 import {
@@ -10,7 +14,9 @@ import {
   comparePassword,
   generateToken,
   generateVerificationLink,
-  verifyToken
+  verifyToken,
+  generateResetLink,
+  hashPassword
 } from '../utils/helpers';
 
 const { User } = db;
@@ -155,6 +161,104 @@ class UsersController {
       successResponse(res, { user: rows.dataValues }, 200);
     } catch (error) {
       return errorResponse(res, error.message);
+    }
+  }
+
+  /**
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @memberof UsersController
+   * @returns {undefined}
+   */
+  static sendResetEmail(req, res) {
+    const { email } = req.body;
+
+    validate(req.body, passwordResetSchema)
+      .then(() => {
+        User.findOne({ where: { email } }).then(user => {
+          if (!user) {
+            return errorResponse(res, 'User not found!', 404);
+          }
+          const { username, id } = user;
+          const token = generateToken({ username, id });
+          mailer
+            .sendResetMail({
+              email,
+              username,
+              resetPasswordLink: generateResetLink(token)
+            })
+            .then(() => {
+              successResponse(
+                res,
+                {
+                  message: 'Password reset link sent successfully'
+                },
+                200
+              );
+            })
+            .catch(() => {
+              errorResponse(
+                res,
+                { message: 'Cannot send password reset link' },
+                500
+              );
+            });
+        });
+      })
+      .catch(({ details }) => {
+        validationErrorResponse(res, details, 400);
+      });
+  }
+
+  /**
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @memberof UsersController
+   * @returns {undefined}
+   */
+  static changePassword(req, res) {
+    const token = req.headers.authorization || req.body.token;
+    const { password } = req.body;
+
+    try {
+      const { username } = verifyToken(token);
+      validate(req.body, changePasswordSchema)
+        .then(() => {
+          User.update(
+            {
+              hash: hashPassword(password)
+            },
+            { where: { username }, returning: true }
+          )
+            .then(([rowsAffected]) => {
+              if (rowsAffected === 1) {
+                return successResponse(
+                  res,
+                  { message: 'Password has been changed' },
+                  200
+                );
+              }
+              errorResponse(
+                res,
+                { message: 'An error occured! Kindly try again' },
+                400
+              );
+            })
+            .catch(() => {
+              errorResponse(
+                res,
+                { message: 'An error occurred! kindly try again' },
+                400
+              );
+            });
+        })
+        .catch(({ details }) => {
+          validationErrorResponse(res, details, 400);
+        });
+    } catch (err) {
+      errorResponse(res, err, 400);
     }
   }
 }

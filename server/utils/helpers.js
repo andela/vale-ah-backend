@@ -116,13 +116,12 @@ export const generateResetLink = token =>
     ? `${UI_CLIENT_HOST}/users/reset-password?token=${token}`
     : `${API_SERVER_HOST}/api/users/reset-password?token=${token}`;
 
-
 /**
-* Returns a slugified variant of a given string
-*
-* @param {string} string
-* @returns {string} Slugified string
-*/
+ * Returns a slugified variant of a given string
+ *
+ * @param {string} string
+ * @returns {string} Slugified string
+ */
 /* eslint-disable no-useless-escape */
 export const slugifyTitle = string =>
   string
