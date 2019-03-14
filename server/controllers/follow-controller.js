@@ -25,7 +25,7 @@ export default class Follow {
         errorResponse(
           res,
           {
-            message: 'you cannot follow yourself'
+            message: 'you are not allowed to yourself'
           },
           400
         );
@@ -80,8 +80,7 @@ export default class Follow {
       });
       if (users.length < 1) {
         return successResponse(res, {
-          message: 'nobody is currently following you',
-          followers: users
+          message: 'nobody following you currently'
         });
       }
       const num = users.length;
@@ -117,7 +116,7 @@ export default class Follow {
       });
       if (following.length < 1) {
         return successResponse(res, {
-          message: 'you are not following anyone',
+          message: 'you are currently not following anyone',
           following
         });
       }
@@ -144,13 +143,13 @@ export default class Follow {
     try {
       if (username === req.user.username) {
         return errorResponse(res, {
-          message: 'you cannot unfollow yourself'
+          message: 'you are not allowed to unfollow yourself'
         });
       }
 
       await Follower.destroy({ where: { userId: id } });
       return successResponse(res, {
-        message: `${username} has been unfollowed`
+        message: `you just unfollowed ${username}`
       });
     } catch (err) {
       return errorResponse(res, err.message);

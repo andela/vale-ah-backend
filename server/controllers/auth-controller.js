@@ -105,7 +105,7 @@ class UsersController {
         ([rowsAffected]) => {
           if (!rowsAffected) errorResponse(res, 'no user found to verify', 400);
           else if (rowsAffected === 1) {
-            successResponse(res, { verified: true }, 200);
+            return successResponse(res, { verified: true }, 200);
           }
         }
       );

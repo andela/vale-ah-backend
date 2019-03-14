@@ -474,10 +474,9 @@ describe('User', () => {
   });
 
   it('should get profile of a specific user', done => {
-    const { username } = user2;
     chai
       .request(server)
-      .get(`/api/profiles/${username}`)
+      .get(`/api/profiles/${user2.username}`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         const { user } = res.body;
@@ -492,10 +491,9 @@ describe('User', () => {
   });
 
   it('should return an error if profile is not found', done => {
-    const username = faker.random.alphaNumeric(10);
     chai
       .request(server)
-      .get(`/api/profiles/${username}`)
+      .get(`/api/profiles/andela`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         expect(res).to.have.status(404);
@@ -589,10 +587,9 @@ describe('User', () => {
   });
 
   it('should follow a user', done => {
-    const { username } = user2;
     chai
       .request(server)
-      .post(`/api/profiles/${username}/follow`)
+      .post(`/api/profiles/${user2.username}/follow`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -601,10 +598,9 @@ describe('User', () => {
   });
 
   it('should return an error is user has already followed a particular user', done => {
-    const { username } = user2;
     chai
       .request(server)
-      .post(`/api/profiles/${username}/follow`)
+      .post(`/api/profiles/${user2.username}/follow`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         expect(res).to.have.status(400);
@@ -613,10 +609,9 @@ describe('User', () => {
   });
 
   it('should return an error is username is current user', done => {
-    const { username } = user1;
     chai
       .request(server)
-      .post(`/api/profiles/${username}/follow`)
+      .post(`/api/profiles/${user1.username}/follow`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         expect(res).to.have.status(400);
@@ -636,10 +631,9 @@ describe('User', () => {
   });
 
   it('should unfollow a user', done => {
-    const { username } = user2;
     chai
       .request(server)
-      .delete(`/api/profiles/${username}/follow`)
+      .delete(`/api/profiles/${user2.username}/follow`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -648,10 +642,9 @@ describe('User', () => {
   });
 
   it('should return an error if user try to unfollow themself', done => {
-    const { username } = user1;
     chai
       .request(server)
-      .delete(`/api/profiles/${username}/follow`)
+      .delete(`/api/profiles/${user1.username}/follow`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         expect(res).to.have.status(500);
