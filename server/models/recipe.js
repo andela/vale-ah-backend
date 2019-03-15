@@ -18,6 +18,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
+  Recipe.afterCreate(async recipe => {
+    const updatedRecipe = await recipe.update(
+      { slug: `${recipe.slug}-${recipe.id}` },
+      { returning: true }
+    );
+    Object.assign(recipe, updatedRecipe);
+  });
+
   Recipe.associate = models => {
     Recipe.belongsTo(models.User, {
       foreignKey: 'userId',

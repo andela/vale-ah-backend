@@ -214,8 +214,8 @@ describe('Authentication', () => {
         .request(server)
         .post('/api/users/login')
         .send({
-          username: user1.username,
-          email: user1.email,
+          username,
+          email,
           password: '1234'
         })
         .end((err, res) => {
