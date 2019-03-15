@@ -52,7 +52,7 @@ describe('Recipes', () => {
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(404);
-          expect(body.errors).to.contain('User does not exist');
+          expect(body.errors).to.contain('Invalid Token');
           done(err);
         });
     });

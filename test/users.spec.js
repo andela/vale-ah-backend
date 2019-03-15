@@ -33,21 +33,6 @@ describe('Authentication', () => {
         });
     });
 
-    it('should register a user with valid details', done => {
-      chai
-        .request(server)
-        .post(baseUrl)
-        .send(user2)
-        .end((err, res) => {
-          const { user } = res.body;
-          expect(res).to.have.status(201);
-          expect(user.id).to.be.a('number');
-          expect(user.verified).to.equal(false);
-          expect(user.token).to.be.a('string');
-          done(err);
-        });
-    });
-
     it('should not create a user with an existing user email', done => {
       chai
         .request(server)
@@ -476,7 +461,7 @@ describe('User', () => {
   it('should get profile of a specific user', done => {
     chai
       .request(server)
-      .get(`/api/profiles/${user2.username}`)
+      .get(`/api/profiles/${user1.username}`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         const { user } = res.body;
