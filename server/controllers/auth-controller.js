@@ -10,7 +10,8 @@ import {
   comparePassword,
   generateToken,
   generateVerificationLink,
-  verifyToken
+  verifyToken,
+  dbErrorResponse
 } from '../utils/helpers';
 
 const { User } = db;
@@ -65,15 +66,7 @@ class UsersController {
               successResponse(res, { user, emailSent: false }, 201);
             });
         } catch (err) {
-          const errors = err.errors
-            ? err.errors.map(e => {
-                if (e.validatorKey === 'not_unique') {
-                  return `${e.path} already exists`;
-                }
-                return e.message;
-              })
-            : [err.message];
-          return errorResponse(res, errors, 409);
+          dbErrorResponse(res, err);
         }
       })
       .catch(({ details }) => {

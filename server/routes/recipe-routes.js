@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import RecipeController from '../controllers/recipe-controller';
-import User from '../middleware/users-middleware';
+import controller from '../controllers/recipe-controller';
+import UsersMiddleware from '../middlewares';
 
 const router = Router();
 
-router.post('/', User.validUser, RecipeController.create);
+router.post('/', UsersMiddleware.validUser, controller.create);
+router.post('/:slug/tags', UsersMiddleware.validUser, controller.tagRecipe);
 
 export default router;

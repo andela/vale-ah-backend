@@ -72,6 +72,27 @@ export const validationErrorResponse = (res, errorDetails = []) => {
 };
 
 /**
+ * Sends a database error response to the user
+ * @param {Response} res Response object
+ * @param {Error} err database error object
+ * @returns {Response} error response
+ */
+export const dbErrorResponse = (res, err) => {
+  const errors = err.errors
+    ? err.errors.map(e => {
+        if (e.validatorKey === 'not_unique') {
+          return `${e.path} already exists`;
+        }
+        return e.message;
+      })
+    : [err.message];
+  if (errors.some(e => e.includes('already exists'))) {
+    return errorResponse(res, errors, 409);
+  }
+  return errorResponse(res);
+};
+
+/**
  * Hashes a password
  * @param {string} password password to encrypt
  * @returns {string} encrypted password
@@ -91,7 +112,7 @@ export const comparePassword = (password, hash) =>
  * Validates a value using the given Joi schema
  * @param {object} value
  * @param {Joi.SchemaLike} schema
- * @returns {Promise} Validation result
+ * @returns {object | Promise} Validation result
  */
 export const validate = (value, schema) =>
   Joi.validate(value, schema, { abortEarly: false, allowUnknown: true });
@@ -105,3 +126,11 @@ export const generateVerificationLink = token =>
   UI_CLIENT_HOST
     ? `${UI_CLIENT_HOST}/users/verify/?token=${token}`
     : `${API_SERVER_HOST}/api/users/verify/?token=${token}`;
+
+/**
+ * Gets the Authorization token from the request headers
+ * @param {Request} req request object
+ * @returns {string} authorization token
+ */
+export const getAuthHeaderToken = req =>
+  req.headers.authorization.split(' ')[1];
