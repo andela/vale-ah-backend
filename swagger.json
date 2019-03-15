@@ -1,31 +1,24 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.1",
   "info": {
-    "version": "1.0.0",
     "title": "Naija Recipes API",
     "description": "Naija Recipes API",
     "license": {
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
-    }
+    },
+    "version": "1.0.0"
   },
-  "host": "https://vale-ah-backend-staging.herokuapp.com",
-  "basePath": "/api",
+  "servers": [
+    {
+      "url": "http://localhost:8000/api/"
+    }
+  ],
   "tags": [
     {
       "name": "Naija Recipes",
       "description": "API for the best Nigerian recipes"
     }
-  ],
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
   ],
   "paths": {
     "/users": {
@@ -35,28 +28,66 @@
         ],
         "summary": "Create user",
         "description": "Creates a new user in system",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "user",
-            "description": "User to be created",
-            "schema": {
-              "$ref": "#/definitions/User"
+        "requestBody": {
+          "description": "User to be created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
             }
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
+          },
+          "required": false
+        },
         "responses": {
           "201": {
-            "description": "Created new user"
+            "description": "Created new user",
+            "content": {}
           },
           "400": {
-            "description": "Validation error"
+            "description": "Validation error",
+            "content": {}
           },
           "409": {
-            "description": "Database conflict"
+            "description": "Database conflict",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/recipes": {
+      "post": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Create new recipe",
+        "description": "This endpoint will create a new recipe",
+        "parameters": [
+          {
+            "name": "accesstoken",
+            "in": "header",
+            "schema": {}
+          }
+        ],
+        "requestBody": {
+          "description": "Recipe to be created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Recipe"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created new recipe",
+            "content": {}
+          },
+          "400": {
+            "description": "Validation Error",
+            "content": {}
           }
         }
       }
@@ -96,22 +127,52 @@
       } ]
     }
   },
-  "definitions": {
-    "User": {
-      "required": [
-        "password",
-        "email",
-        "username"
-      ],
-      "properties": {
-        "password": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
+  "components": {
+    "schemas": {
+      "User": {
+        "required": [
+          "email",
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "Recipe": {
+        "required": [
+          "cookingTime",
+          "ingredients",
+          "preparationTime",
+          "steps",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "ingredients": {
+            "type": "array"
+          },
+          "steps": {
+            "type": "object"
+          },
+          "cookingTime": {
+            "type": "number"
+          },
+          "preparationTime": {
+            "type": "number"
+          }
         }
       }
     }

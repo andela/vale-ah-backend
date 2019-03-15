@@ -83,7 +83,7 @@ class UsersController {
   }
 
   /**
-   *
+   * Verify email
    *
    * @static
    * @param {*} req
