@@ -1,11 +1,13 @@
 import { Router } from 'express';
-import RecipeController from '../controllers/recipe-controller';
+import controller from '../controllers/recipe-controller';
 import User from '../middlewares/users-middleware';
 
 const router = Router();
 
-router.post('/', User.validUser, RecipeController.create);
-router.put('/:slug', User.validUser, RecipeController.updateRecipe);
-router.delete('/:slug', User.validUser, RecipeController.deleteRecipe);
+router.post('/', User.validUser, controller.create);
+router.get('/', controller.getRecipes);
+router.get('/:', controller.getRecipeBySlug);
+router.put('/:slug', User.validUser, controller.updateRecipe);
+router.delete('/:slug', User.validUser, controller.deleteRecipe);
 
 export default router;

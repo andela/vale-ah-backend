@@ -54,10 +54,11 @@ class UsersController {
           delete user.hash;
 
           mailer
-            .sendVerificationMail(
-              user.email,
-              generateVerificationLink(verificationToken)
-            )
+            .sendVerificationMail({
+              email: user.email,
+              username: user.username,
+              verificationLink: generateVerificationLink(verificationToken)
+            })
             .then(() => {
               return successResponse(res, { user, emailSent: true }, 201);
             })

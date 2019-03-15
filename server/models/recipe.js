@@ -1,4 +1,4 @@
-import slugifyTitle from '../utils/slugify';
+import { slugifyTitle } from '../utils/helpers';
 
 module.exports = (sequelize, DataTypes) => {
   const Recipe = sequelize.define(

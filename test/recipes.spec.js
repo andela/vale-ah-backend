@@ -2,38 +2,50 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import server from '../server';
 import { generateToken } from '../server/utils/helpers';
+import { recipe, recipeTestUser } from './fixtures';
 
 chai.use(chaiHttp);
 
-const recipe = {
-  title: 'How to prepare your finest recipe',
-  ingredients: ['A spoon of awesomeness', 'A cup of dedication'],
-  steps: {
-    '1': {
-      description: 'Add a spoon of awesomeness to the mixer',
-      images: ['https://i.stack.imgur.com/xHWG8.jpg']
-    },
-    '2': {
-      description: 'Add a spoon of awesomeness to the mixer',
-      images: ['https://i.stack.imgur.com/xHWG8.jpg']
-    }
-  },
-  cookingTime: 1000,
-  preparationTime: 3000
-};
+const runtimeFixture = {};
+
 describe('Recipes', () => {
+  describe('Fetching before create', () => {
+    it('Get all should return empty array and message when no recipes exist', done => {
+      chai
+        .request(server)
+        .get('/api/recipes')
+        .end((err, res) => {
+          const {
+            body,
+            body: { recipes }
+          } = res;
+          expect(body).to.be.an('object');
+          expect(recipes)
+            .to.be.an('array')
+            .that.has.lengthOf(0);
+          done(err);
+        });
+    });
+
+    it('getting non-existent record by slug should return error', done => {
+      chai
+        .request(server)
+        .get('/api/recipes/random-nonexistent-slug')
+        .end((err, res) => {
+          expect(res).to.have.status(404);
+          done(err);
+        });
+    });
+  });
+
+  let token;
   describe('Create New Recipe', () => {
-    let token;
     let slug;
     before(() =>
       chai
         .request(server)
         .post('/api/users')
-        .send({
-          username: 'Jacob',
-          email: 'jake@jake.jake',
-          password: 'jakejake'
-        })
+        .send(recipeTestUser)
         .then(res => {
           const { token: userToken } = res.body.user;
           token = userToken;
@@ -56,6 +68,10 @@ describe('Recipes', () => {
           expect(body.recipe.title).to.equal(recipe.title);
           expect(body.recipe.ingredients).to.include(recipe.ingredients[0]);
           expect(body.recipe.cookingTime).to.equal(recipe.cookingTime);
+          expect(body.recipe.slug).to.equal(
+            `how-to-prepare-your-finest-recipe-${body.recipe.id}`
+          );
+          runtimeFixture.slug = body.recipe.slug;
           done(err);
         });
     });
@@ -223,6 +239,51 @@ describe('Recipes', () => {
         .set({ authorization: generateToken({ id: 1000 }) })
         .end((err, res) => {
           expect(res).to.have.status(404);
+          done(err);
+        });
+    });
+  });
+
+  describe('Fetching Existing Recipes', () => {
+    before(() => {
+      chai
+        .request(server)
+        .post('/api/recipes')
+        .set({ authorization: token })
+        .send(recipe)
+        .end();
+    });
+    it('"Get all" should return array of recipes', done => {
+      chai
+        .request(server)
+        .get('/api/recipes')
+        .end((err, res) => {
+          const {
+            body,
+            body: { recipes }
+          } = res;
+          expect(body).to.be.an('object');
+          expect(recipes)
+            .to.be.an('array')
+            .that.has.length.greaterThan(0);
+          done(err);
+        });
+    });
+
+    it('Should get recipe by slug', done => {
+      chai
+        .request(server)
+        .get('/api/recipes')
+        .end((err, res) => {
+          const {
+            body,
+            body: { recipes }
+          } = res;
+          expect(body).to.be.an('object');
+          expect(recipes)
+            .to.be.an('array')
+            .that.has.length.greaterThan(0);
+          expect(recipes[0]).to.be.an('object');
           done(err);
         });
     });

@@ -3,7 +3,7 @@ import chaiHttp from 'chai-http';
 import faker from 'faker';
 import server from '../server';
 import { generateToken } from '../server/utils/helpers';
-import generateRandomUser from './mockdata/mock';
+import { generateRandomUser } from './fixtures';
 
 chai.use(chaiHttp);
 const user1 = generateRandomUser();
