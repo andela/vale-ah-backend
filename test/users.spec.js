@@ -7,7 +7,6 @@ import generateRandomUser from './mockdata/mock';
 
 chai.use(chaiHttp);
 const user1 = generateRandomUser();
-const user2 = generateRandomUser();
 const { username, password, email } = generateRandomUser();
 
 describe('Authentication', () => {
@@ -27,21 +26,6 @@ describe('Authentication', () => {
           expect(user.token).to.be.a('string');
           tokenPayload.id = user.id;
           tokenPayload.username = user.username;
-          done(err);
-        });
-    });
-
-    it('should register a user with valid details', done => {
-      chai
-        .request(server)
-        .post(baseUrl)
-        .send(user2)
-        .end((err, res) => {
-          const { user } = res.body;
-          expect(res).to.have.status(201);
-          expect(user.id).to.be.a('number');
-          expect(user.verified).to.equal(false);
-          expect(user.token).to.be.a('string');
           done(err);
         });
     });
@@ -286,7 +270,7 @@ describe('User', () => {
       });
   });
 
-  it('should return an error of validation fails', done => {
+  it('should return an error if validation fails', done => {
     chai
       .request(server)
       .put('/api/user')
@@ -300,7 +284,7 @@ describe('User', () => {
       });
   });
 
-  it('should return an error when there is none existent user', done => {
+  it('should return an error when user does not exist', done => {
     chai
       .request(server)
       .put('/api/user')
@@ -338,7 +322,7 @@ describe('User', () => {
       });
   });
 
-  it('should update based on previous data', done => {
+  it('should update with previous data if no change was made', done => {
     chai
       .request(server)
       .put('/api/user')
@@ -366,17 +350,6 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if no current user', done => {
-    chai
-      .request(server)
-      .get('/api/user')
-      .set({ authorization: generateToken({ id: 1000 }) })
-      .end((err, res) => {
-        expect(res).to.have.status(404);
-        done(err);
-      });
-  });
-
   it('should get All profiles', done => {
     chai
       .request(server)
@@ -391,7 +364,7 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if no profile', done => {
+  it('should return an error if token is invalid', done => {
     chai
       .request(server)
       .get('/api/profiles')
@@ -405,7 +378,7 @@ describe('User', () => {
   it('should get profile of a specific user', done => {
     chai
       .request(server)
-      .get(`/api/profiles/${user2.username}`)
+      .get(`/api/profiles/${user1.username}`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         const { user } = res.body;
@@ -430,7 +403,7 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if no token', done => {
+  it('should return an error if token was not provided', done => {
     chai
       .request(server)
       .get('/api/profiles')

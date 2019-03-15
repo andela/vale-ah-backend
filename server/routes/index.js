@@ -11,7 +11,7 @@ const router = app => {
   app.use('/api/users', authRoutes);
   app.use('/api/user', userRoutes);
   app.use('/api/recipes', recipeRoutes);
-  app.use('/api/profiles', userRoutes);
+  app.use('/api/profiles', profileRoutes);
   app.use('*', (req, res) =>
     errorResponse(res, 'The requested resource was not found', 404)
   );

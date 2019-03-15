@@ -9,16 +9,8 @@
     },
     "version": "1.0.0"
   },
-<<<<<<< HEAD
-  "servers": [
-    {
-      "url": "http://localhost:8000/api/"
-    }
-  ],
-=======
   "host": "localhost:4000",
   "basePath": "/api",
->>>>>>> 407201d... Add babel/polyfill
   "tags": [
     {
       "name": "Naija Recipes",
