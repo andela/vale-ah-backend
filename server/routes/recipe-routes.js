@@ -1,10 +1,17 @@
 import { Router } from 'express';
 import controller from '../controllers/recipe-controller';
 import UsersMiddleware from '../middlewares';
+import { loadRecipe, isRecipeOwner } from '../middlewares/recipe-middleware';
 
 const router = Router();
 
 router.post('/', UsersMiddleware.validUser, controller.create);
-router.post('/:slug/tags', UsersMiddleware.validUser, controller.tagRecipe);
+router.put(
+  '/:slug/tags',
+  UsersMiddleware.validUser,
+  loadRecipe,
+  isRecipeOwner,
+  controller.tag
+);
 
 export default router;

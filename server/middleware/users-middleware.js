@@ -1,9 +1,9 @@
 import db from '../models';
-import { errorResponse, verifyToken } from '../utils/helpers';
+import { errorResponse, verifyToken, getBearerToken } from '../utils/helpers';
 
 const { User } = db;
 /**
- *Users middleware
+ *Users endpoint middleware
  *
  * @export
  * @class UsersMiddleware
@@ -19,23 +19,16 @@ export default class UsersMiddleware {
    * @memberof UsersMiddleware
    */
   static async validUser(req, res, next) {
-    const token = req.headers.authorization;
-    if (!token) {
-      return errorResponse(res, 'Token is not provided', 400);
-    }
     try {
-      const decoded = await verifyToken(token, process.env.SECRET);
-      const data = await User.findOne({
+      const decoded = await verifyToken(getBearerToken(req));
+      const { dataValues: user } = await User.findOne({
         where: { id: decoded.id }
       });
-      if (!data) {
-        return errorResponse(res, 'User does not exist', 404);
-      }
-      delete data.dataValues.hash;
-      req.user = data.dataValues;
+      delete user.hash;
+      req.user = user;
       return next();
     } catch (error) {
-      return errorResponse(res, error, 401);
+      return errorResponse(res, 'Authentication failed', 401);
     }
   }
 }

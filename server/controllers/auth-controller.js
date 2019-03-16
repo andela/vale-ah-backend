@@ -1,5 +1,5 @@
 import db from '../models';
-import { registerSchema } from '../utils/validators';
+import { registerSchema, loginSchema } from '../utils/validators';
 import env from '../config/env-config';
 import mailer from '../utils/mailer';
 import {
@@ -133,23 +133,21 @@ class UsersController {
   static async login(req, res) {
     const { email, password } = req.body;
     try {
-      if (!(email && password)) {
-        return errorResponse(res, 'missing Email/Password', 400);
-      }
-      const rows = await User.findOne({ where: { email } });
-      if (!rows) {
-        return errorResponse(res, 'incorrect Email/Password', 400);
-      }
-      const { id, username, hash } = rows.dataValues;
-      if (!comparePassword(password, hash)) {
-        return errorResponse(res, 'incorrect Email/Password', 400);
-      }
-      const token = generateToken({ id, username });
-      rows.dataValues.token = token;
-      delete rows.dataValues.hash;
-      successResponse(res, { user: rows.dataValues }, 200);
-    } catch (error) {
-      return errorResponse(res, error.message);
+      await validate(req.body, loginSchema);
+      User.findOne({ where: { email } })
+        .then(({ dataValues: user }) => {
+          if (comparePassword(password, user.hash)) {
+            user.token = generateToken({
+              id: user.id,
+              username: user.username
+            });
+            delete user.hash;
+            successResponse(res, { user });
+          } else errorResponse(res, 'Incorrect password');
+        })
+        .catch(err => dbErrorResponse(res, err));
+    } catch (err) {
+      validationErrorResponse(res, err.details);
     }
   }
 }

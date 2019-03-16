@@ -132,5 +132,13 @@ export const generateVerificationLink = token =>
  * @param {Request} req request object
  * @returns {string} authorization token
  */
-export const getAuthHeaderToken = req =>
-  req.headers.authorization.split(' ')[1];
+export const getBearerToken = req =>
+  req.headers.authorization.split('Bearer ')[1];
+
+/**
+ * Converts all strings in an array to lowercase
+ * @param {Array} array array to convert
+ * @returns {Array} converted array
+ */
+export const stringArrayToLowerCase = array =>
+  array.map(item => (typeof item === 'string' ? item.toLowerCase() : item));

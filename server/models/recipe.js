@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       slug: DataTypes.STRING,
       ingredients: DataTypes.ARRAY(DataTypes.STRING),
       steps: DataTypes.JSONB,
+      tags: DataTypes.ARRAY(DataTypes.STRING),
       cookingTime: DataTypes.INTEGER,
       preparationTime: DataTypes.INTEGER,
       videoList: DataTypes.ARRAY(DataTypes.STRING)
