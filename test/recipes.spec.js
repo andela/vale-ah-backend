@@ -17,12 +17,16 @@ describe('Recipes', () => {
         .end((err, res) => {
           const {
             body,
-            body: { recipes }
+            body: { recipes, message }
           } = res;
+          expect(res).to.have.status(200);
           expect(body).to.be.an('object');
           expect(recipes)
             .to.be.an('array')
             .that.has.lengthOf(0);
+          expect(message)
+            .to.be.a('string')
+            .that.eqls('no recipes have been created');
           done(err);
         });
     });
@@ -38,17 +42,15 @@ describe('Recipes', () => {
     });
   });
 
-  let token;
   describe('Create New Recipe', () => {
-    let slug;
     before(() =>
       chai
         .request(server)
         .post('/api/users')
         .send(recipeTestUser)
         .then(res => {
-          const { token: userToken } = res.body.user;
-          token = userToken;
+          const { token } = res.body.user;
+          runtimeFixture.token = token;
         })
     );
     const baseUrl = '/api/recipes';
@@ -56,12 +58,10 @@ describe('Recipes', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .send(recipe)
         .end((err, res) => {
           const { body } = res;
-          const { slug: recipeSlug } = body.recipe;
-          slug = recipeSlug;
           expect(res).to.have.status(201);
           expect(body.recipe).to.be.an('object');
           expect(body.recipe.id).to.be.a('number');
@@ -94,7 +94,7 @@ describe('Recipes', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .send(Object.assign(recipe, { title: undefined }))
         .end((err, res) => {
           const { body } = res;
@@ -108,7 +108,7 @@ describe('Recipes', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .send(Object.assign(recipe, { ingredients: undefined }))
         .end((err, res) => {
           const { body } = res;
@@ -122,7 +122,7 @@ describe('Recipes', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .send(Object.assign(recipe, { steps: undefined }))
         .end((err, res) => {
           const { body } = res;
@@ -136,7 +136,7 @@ describe('Recipes', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .send(Object.assign(recipe, { cookingTime: undefined }))
         .end((err, res) => {
           const { body } = res;
@@ -150,7 +150,7 @@ describe('Recipes', () => {
       chai
         .request(server)
         .post(baseUrl)
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .send(Object.assign(recipe, { preparationTime: undefined }))
         .end((err, res) => {
           const { body } = res;
@@ -163,8 +163,8 @@ describe('Recipes', () => {
     it('should update recipe', done => {
       chai
         .request(server)
-        .put(`${baseUrl}/${slug}`)
-        .set({ authorization: token })
+        .put(`${baseUrl}/${runtimeFixture.slug}`)
+        .set({ authorization: runtimeFixture.token })
         .send({ preparationTime: 5000 })
         .end((err, res) => {
           const { body } = res;
@@ -180,7 +180,7 @@ describe('Recipes', () => {
       chai
         .request(server)
         .put(`${baseUrl}/sometext`)
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .end((err, res) => {
           expect(res).to.have.status(404);
           done(err);
@@ -190,7 +190,7 @@ describe('Recipes', () => {
     it('should return an error if user does not exist', done => {
       chai
         .request(server)
-        .put(`${baseUrl}/${slug}`)
+        .put(`${baseUrl}/${runtimeFixture.slug}`)
         .set({ authorization: generateToken({ id: 1000 }) })
         .send({ preparationTime: 5000 })
         .end((err, res) => {
@@ -202,8 +202,8 @@ describe('Recipes', () => {
     it('should return an error if wrong input string', done => {
       chai
         .request(server)
-        .put(`${baseUrl}/${slug}`)
-        .set({ authorization: token })
+        .put(`${baseUrl}/${runtimeFixture.slug}`)
+        .set({ authorization: runtimeFixture.token })
         .send({ preparationTime: 'time' })
         .end((err, res) => {
           expect(res).to.have.status(500);
@@ -214,8 +214,8 @@ describe('Recipes', () => {
     it('should delete recipe', done => {
       chai
         .request(server)
-        .delete(`${baseUrl}/${slug}`)
-        .set({ authorization: token })
+        .delete(`${baseUrl}/${runtimeFixture.slug}`)
+        .set({ authorization: runtimeFixture.token })
         .end((err, res) => {
           expect(res).to.have.status(200);
           done(err);
@@ -225,7 +225,7 @@ describe('Recipes', () => {
       chai
         .request(server)
         .delete(`${baseUrl}/sometext`)
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .end((err, res) => {
           expect(res).to.have.status(404);
           done(err);
@@ -235,7 +235,7 @@ describe('Recipes', () => {
     it('should return an error if user does not exist', done => {
       chai
         .request(server)
-        .delete(`${baseUrl}/${slug}`)
+        .delete(`${baseUrl}/${runtimeFixture.slug}`)
         .set({ authorization: generateToken({ id: 1000 }) })
         .end((err, res) => {
           expect(res).to.have.status(404);
@@ -249,7 +249,7 @@ describe('Recipes', () => {
       chai
         .request(server)
         .post('/api/recipes')
-        .set({ authorization: token })
+        .set({ authorization: runtimeFixture.token })
         .send(recipe)
         .end();
     });
@@ -262,6 +262,7 @@ describe('Recipes', () => {
             body,
             body: { recipes }
           } = res;
+          expect(res).to.have.status(200);
           expect(body).to.be.an('object');
           expect(recipes)
             .to.be.an('array')
@@ -273,17 +274,12 @@ describe('Recipes', () => {
     it('Should get recipe by slug', done => {
       chai
         .request(server)
-        .get('/api/recipes')
+        .get(`/api/recipes/${runtimeFixture.slug}`)
         .end((err, res) => {
-          const {
-            body,
-            body: { recipes }
-          } = res;
+          const { body } = res;
+          expect(res).to.have.status(200);
           expect(body).to.be.an('object');
-          expect(recipes)
-            .to.be.an('array')
-            .that.has.length.greaterThan(0);
-          expect(recipes[0]).to.be.an('object');
+          expect(body.recipe).to.be.an('object');
           done(err);
         });
     });

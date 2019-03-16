@@ -33,16 +33,14 @@
     "jsonwebtoken": "8.5.0",
     "morgan": "1.9.1",
     "passport": "0.4.0",
-    "passport-local": "1.0.0",
     "pg": "7.8.1",
     "pg-hstore": "2.3.2",
-    "request": "2.87.0",
     "sequelize": "4.43.0",
     "sequelize-cli": "5.4.0",
     "slug": "1.0.0",
     "swagger-ui-express": "4.0.2",
     "underscore": "1.9.1",
-    "webpack-merge": "^4.2.1"
+    "webpack-merge": "4.2.1"
   },
   "devDependencies": {
     "@babel/cli": "7.2.3",
