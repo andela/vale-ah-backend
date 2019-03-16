@@ -5,7 +5,7 @@ import {
   validate,
   validationErrorResponse
 } from '../utils/helpers';
-import { recipeSchema } from '../utils/validators';
+import { recipeSchema, recipeUpdateSchema } from '../utils/validators';
 import slugifyTitle from '../utils/slugify';
 
 const { Recipe } = db;
@@ -47,11 +47,11 @@ class RecipeController {
         preparationTime
       })
         .then(({ dataValues }) => {
-          successResponse(res, { recipe: dataValues }, 201);
+          return successResponse(res, { recipe: dataValues }, 201);
         })
         .catch(err => errorResponse(res, err, 400));
     } catch (error) {
-      validationErrorResponse(res, error.details);
+      return validationErrorResponse(res, error.details);
     }
   }
 
@@ -71,25 +71,22 @@ class RecipeController {
     const { body } = req;
     const { title, ingrident, steps, cookingTime, preparationTime } = req.body;
     try {
-      await validate(body, recipeSchema);
-      const recipe = await Recipe.findOne({ where: { slug } });
+      await validate(body, recipeUpdateSchema);
+      const recipe = await Recipe.findOne({ where: { slug, userId: id } });
       if (!recipe) {
-        errorResponse(res, 'recipe not found');
+        return errorResponse(res, 'recipe not found');
       }
-      const newSlug = `${slugifyTitle(title)}-${recipe.id}`;
-
       const data = await recipe.update(
         {
-          title,
-          ingrident,
-          cookingTime,
-          preparationTime,
-          slug: newSlug,
-          steps
+          title: title || recipe.title,
+          ingrident: ingrident || recipe.ingredient,
+          cookingTime: cookingTime || recipe.cookingTime,
+          preparationTime: preparationTime || recipe.preparationTime,
+          steps: steps || recipe.steps
         },
-        { returning: true, where: { id } }
+        { returning: true }
       );
-      successResponse(res, { message: 'update successful', data }, 200);
+      successResponse(res, { message: 'update successful', recipe: data }, 200);
     } catch (error) {
       errorResponse(res, error.message);
     }

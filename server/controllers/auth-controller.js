@@ -18,7 +18,7 @@ const { User } = db;
 const { AUTH_TOKEN_EXPIRY, VERIFICATION_LINK_EXPIRY } = env;
 
 /**
- * The controllers for users route
+ * The controllers for user route
  *
  * @class UsersController
  */
@@ -113,6 +113,8 @@ class UsersController {
           'invalid token'
         ].includes(e.message)
       ) {
+        errorResponse(res, 'Invalid token, verification unsuccessful', 400);
+      } else {
         return errorResponse(
           res,
           'Invalid token, verification unsuccessful',
