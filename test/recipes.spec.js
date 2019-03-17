@@ -148,9 +148,7 @@ describe('Recipes', () => {
             expect(recipes)
               .to.be.an('array')
               .that.has.lengthOf(0);
-            expect(message)
-              .to.be.a('string')
-              .that.eqls('no recipes have been created');
+            expect(message).to.be.a('string');
             done(err);
           });
       });
@@ -365,7 +363,7 @@ describe('Recipes', () => {
         });
     });
 
-    it('should get at least 30 recipes when limit is set to 30', done => {
+    it('should get the first 30 recipes when limit is 30 but page is not set', done => {
       chai
         .request(server)
         .get(`${url}?limit=30`)
@@ -380,7 +378,7 @@ describe('Recipes', () => {
         });
     });
 
-    it('should get all but skip the first 10 when page is 2 and no limit is set', done => {
+    it('should get the second set of 10 recipes when page is 2 and no limit is set', done => {
       chai
         .request(server)
         .get(`${url}?page=2`)
@@ -388,13 +386,13 @@ describe('Recipes', () => {
           const { recipes } = res.body;
           expect(res).to.have.status(200);
           expect(recipes).to.be.an('Array');
-          expect(recipes.length).to.equal(items.length - 10);
+          expect(recipes.length).to.equal(10);
           expect(recipes[0].id).to.not.equal(items[0].id);
           done(err);
         });
     });
 
-    it('should get 25 but skip the first 25 when page is 2 and limit is set to 25', done => {
+    it('should get the second set of 25 recipes when page is 2 and limit is 25', done => {
       chai
         .request(server)
         .get(`${url}?page=2&limit=25`)

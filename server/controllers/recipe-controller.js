@@ -153,12 +153,14 @@ class RecipeController {
    * @returns {undefined}
    */
   static async getRecipes(req, res) {
-    const { page, limit } = req.query;
+    const { page } = req.query;
+    let { limit } = req.query;
     try {
       await validate(req.query, paginationSchema);
     } catch (error) {
       return validationErrorResponse(res, error.details);
     }
+    limit = page && !limit ? 10 : limit;
     const offset = (limit || 10) * ((page || 1) - 1);
 
     Recipe.findAll({ ...defaultRecipeDbFilter, offset, limit })
