@@ -1,32 +1,20 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Recipes', {
+    return queryInterface.createTable('RecipeReaction', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
-        type: Sequelize.STRING
-      },
-      slug: {
-        type: Sequelize.STRING
-      },
-      ingredients: {
-        type: Sequelize.ARRAY(Sequelize.STRING)
-      },
-      steps: {
-        type: Sequelize.JSONB
-      },
-      cookingTime: {
+      userId: {
         type: Sequelize.INTEGER
       },
-      preparationTime: {
+      recipeId: {
         type: Sequelize.INTEGER
       },
-      videoList: {
-        type: Sequelize.ARRAY(Sequelize.STRING)
+      isLike: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -39,6 +27,6 @@ module.exports = {
     });
   },
   down: queryInterface => {
-    return queryInterface.dropTable('Recipes');
+    return queryInterface.dropTable('RecipeLikes');
   }
 };
