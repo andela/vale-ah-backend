@@ -333,4 +333,115 @@ describe('Recipes', () => {
         });
     });
   });
+
+  describe('Pagination', () => {
+    const url = '/api/recipes';
+    let items;
+    before(async () => {
+      const array = Array(50)
+        .fill()
+        .map(() => {
+          return chai
+            .request(server)
+            .post('/api/recipes')
+            .set({ authorization: runtimeFixture.token })
+            .send(recipe);
+        });
+      await Promise.all(array);
+    });
+
+    it('should get all recipes when no page or limit is set', done => {
+      chai
+        .request(server)
+        .get(url)
+        .end((err, res) => {
+          const { recipes } = res.body;
+          items = recipes;
+          expect(res).to.have.status(200);
+          expect(recipes)
+            .to.be.an('Array')
+            .and.to.have.lengthOf.at.least(50);
+          done(err);
+        });
+    });
+
+    it('should get at least 30 recipes when limit is set to 30', done => {
+      chai
+        .request(server)
+        .get(`${url}?limit=30`)
+        .end((err, res) => {
+          const { recipes } = res.body;
+          expect(res).to.have.status(200);
+          expect(recipes)
+            .to.be.an('Array')
+            .and.has.lengthOf(30);
+          expect(recipes[0].id).to.equal(items[0].id);
+          done(err);
+        });
+    });
+
+    it('should get all but skip the first 10 when page is 2 and no limit is set', done => {
+      chai
+        .request(server)
+        .get(`${url}?page=2`)
+        .end((err, res) => {
+          const { recipes } = res.body;
+          expect(res).to.have.status(200);
+          expect(recipes).to.be.an('Array');
+          expect(recipes.length).to.equal(items.length - 10);
+          expect(recipes[0].id).to.not.equal(items[0].id);
+          done(err);
+        });
+    });
+
+    it('should get 25 but skip the first 25 when page is 2 and limit is set to 25', done => {
+      chai
+        .request(server)
+        .get(`${url}?page=2&limit=25`)
+        .end((err, res) => {
+          const { recipes } = res.body;
+          expect(res).to.have.status(200);
+          expect(recipes).to.be.an('Array');
+          expect(recipes.length).to.equal(25);
+          expect(recipes[0].id).to.not.equal(items[0].id);
+          done(err);
+        });
+    });
+
+    it('should not get recipes if page or limit is a negative number', done => {
+      chai
+        .request(server)
+        .get(`${url}?page=-1&limit=-1`)
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body.errors).to.haveOwnProperty('page');
+          expect(res.body.errors).to.haveOwnProperty('limit');
+          done(err);
+        });
+    });
+
+    it('should not get recipes if page or limit is zero', done => {
+      chai
+        .request(server)
+        .get(`${url}?page=0&limit=0`)
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body.errors).to.haveOwnProperty('page');
+          expect(res.body.errors).to.haveOwnProperty('limit');
+          done(err);
+        });
+    });
+
+    it('should not get recipes if page or limit is not an integer', done => {
+      chai
+        .request(server)
+        .get(`${url}?page=text&limit=text`)
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body.errors).to.haveOwnProperty('page');
+          expect(res.body.errors).to.haveOwnProperty('limit');
+          done(err);
+        });
+    });
+  });
 });

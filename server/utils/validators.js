@@ -66,3 +66,12 @@ export const changePasswordSchema = Joi.object().keys({
     .min(8)
     .required()
 });
+
+export const paginationSchema = Joi.object().keys({
+  page: Joi.number()
+    .integer()
+    .positive(),
+  limit: Joi.number()
+    .integer()
+    .positive()
+});
