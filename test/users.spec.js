@@ -162,7 +162,7 @@ describe('Authentication', () => {
         });
     });
 
-    it('should return error response when user to verify not found', done => {
+    it('should return error response when user to be verify not found', done => {
       chai
         .request(server)
         .get(`${baseUrl}?token=${generateToken({ id: 7 })}`)
@@ -193,7 +193,7 @@ describe('Authentication', () => {
   });
 
   describe('POST /api/users/login', () => {
-    it('should Login user with right', done => {
+    it('should Login user with right credentials', done => {
       chai
         .request(server)
         .post('/api/users/login')

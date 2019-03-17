@@ -18,7 +18,7 @@ const { User } = db;
 const { AUTH_TOKEN_EXPIRY, VERIFICATION_LINK_EXPIRY } = env;
 
 /**
- * The controllers for authentication route
+ * The controllers for users route
  *
  * @class UsersController
  */
