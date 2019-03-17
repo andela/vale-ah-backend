@@ -655,6 +655,39 @@
           }
         }
       }
+    },
+    "/recipes/${slug}/rating": {
+      "post": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "rate a recipe",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "params",
+            "schema": {
+              "type": "string"
+            },
+            "example": "how-to-prepare-your-finest-recipe"
+          }
+        ],
+        "description": "This endpoint will dislike a recipe",
+        "responses": {
+          "201": {
+            "description": "rate a new recipe"
+          },
+          "200": {
+            "description": "rate a recipe again"
+          },
+          "404": {
+            "description": "recipe not found"
+          },
+          "500": {
+            "description": "server connection error"
+          }
+        }
+      }
     }
   },
   "components": {

@@ -80,3 +80,10 @@ export const paginationSchema = Joi.object().keys({
     .integer()
     .positive()
 });
+
+export const ratingSchema = Joi.object().keys({
+  score: Joi.number()
+    .positive()
+    .min(1)
+    .max(5)
+});
