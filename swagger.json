@@ -24,7 +24,7 @@
     "/users": {
       "post": {
         "tags": [
-          "Users"
+          "Auth"
         ],
         "summary": "Create user",
         "description": "Creates a new user in system",
@@ -59,7 +59,7 @@
       "get" : {
         "description" : "Verify if the user is verified",
         "tags": [
-          "Users"
+          "Auth"
         ],
         "parameters" : [ {
           "name" : "token",
@@ -89,7 +89,122 @@
         }
       }
     },
+    "/user" : {
+      "get" : {
+        "description" : "Get a Current user",
+        "tags": [
+          "Users"
+        ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "headers",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          
+          "200" : {
+            "description" : "User Found"
+          }
+        }
+      }
+    },
+    "/user/password" : {
+      "put" : {
+        "description" : "Update user profile",
+        "tags": [
+          "Users"
+        ],
+        "parameters" : [ {
+          "in": "body",
+          "name": "password",
+          "description": "password to be updated",
+          "schema": {
+            "$ref": "#/definitions/User"
+          }
+        } ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "200" : {
+            "description" : "Success"
+          }
+        }
+      }
+    },
+    "/profiles" : {
+      "get" : {
+        "description" : "Get all users profile",
+        "tags": [
+          "Profile"
+        ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "400" : {
+            "description" : "Verification token error",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "Record Found"
+          }
+        }
+      }
+    },
+    "/profiles/{username}" : {
+      "get" : {
+        "description" : "Get a specific user profile",
+        "tags": [
+          "Profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "description": "username of user",
+            "schema": {
+              "type":"string"
+            }
+          }
+        ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "200" : {
+            "description" : "Success"
+          }
+        }
+      }
+    },
     "/recipes": {
+      "get" : {
+        "description" : "Get all recipes",
+        "summary": "Fetch all recipes ",
+        "tags": [
+          "Recipes"
+        ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "200" : {
+            "description" : "Success"
+          }
+        }
+      },
       "post": {
         "tags": [
           "Recipes"
@@ -125,10 +240,9 @@
       }
     },
     "/recipes/{slug}": {
-
       "get" : {
-        "description" : "Get all recipes",
-        "summary": "Fetch all recipes ",
+        "description" : "Get single recipe by slug",
+        "summary": "Fetch one recipe by slug",
         "tags": [
           "Recipes"
         ],
@@ -144,6 +258,9 @@
         "responses" : {
           "500" : {
             "description" : "Database connection error"
+          },
+          "404": {
+            "description":"recipe not found"
           },
           "200" : {
             "description" : "Success"

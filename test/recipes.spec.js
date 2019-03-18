@@ -95,7 +95,7 @@ describe('Recipes', () => {
         .request(server)
         .post(baseUrl)
         .set({ authorization: runtimeFixture.token })
-        .send(Object.assign(recipe, { title: undefined }))
+        .send({ ...recipe, title: undefined })
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(400);
@@ -109,7 +109,7 @@ describe('Recipes', () => {
         .request(server)
         .post(baseUrl)
         .set({ authorization: runtimeFixture.token })
-        .send(Object.assign(recipe, { ingredients: undefined }))
+        .send({ ...recipe, ingredients: undefined })
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(400);
@@ -123,7 +123,7 @@ describe('Recipes', () => {
         .request(server)
         .post(baseUrl)
         .set({ authorization: runtimeFixture.token })
-        .send(Object.assign(recipe, { steps: undefined }))
+        .send({ ...recipe, steps: undefined })
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(400);
@@ -137,7 +137,7 @@ describe('Recipes', () => {
         .request(server)
         .post(baseUrl)
         .set({ authorization: runtimeFixture.token })
-        .send(Object.assign(recipe, { cookingTime: undefined }))
+        .send({ ...recipe, cookingTime: undefined })
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(400);
