@@ -50,16 +50,16 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.associate = model => {
-    User.belongsToMany(User, {
+    User.belongsToMany(model.User, {
       through: model.Follower,
       foreignKey: 'userId',
-      as: 'following'
+      as: 'followers'
     });
 
     User.belongsToMany(User, {
       through: model.Follower,
       foreignKey: 'followerId',
-      as: 'follower'
+      as: 'following'
     });
   };
 

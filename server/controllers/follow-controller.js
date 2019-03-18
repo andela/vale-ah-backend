@@ -30,10 +30,11 @@ export default class Follow {
         const followee = await User.findOne({
           where: { username }
         });
-        const checkFollower = await Follower.findAll({
+        const existingFollower = await Follower.findOne({
           where: { userId: followee.id, followerId: id }
         });
-        if (followee && checkFollower.length < 1) {
+
+        if (!existingFollower) {
           await Follower.create({
             followerId: id,
             userId: followee.id
@@ -65,26 +66,19 @@ export default class Follow {
   static async fetchFollowers(req, res) {
     const { id } = req.user;
     try {
-      const users = await Follower.findAll({
-        where: { userId: id },
-        include: [
-          {
-            model: User,
-            as: 'follower',
-            attributes: ['username', 'email', 'bio']
-          }
-        ]
+      const user = await User.findOne({
+        where: { id }
       });
-      if (users.length < 1) {
-        return successResponse(res, {
-          message: 'nobody following you currently'
-        });
+      const followers = await user.getFollowers();
+      if (followers.length === 0) {
+        return errorResponse(res, 'you have no followers yet');
       }
-      const num = users.length;
+      const followerArr = followers.map(current => {
+        return current.Follower;
+      });
       return successResponse(res, {
         message: ' Your followers',
-        total: num,
-        followers: users.map(list => list.follower)
+        followerArr
       });
     } catch (err) {
       return errorResponse(res, err.message);
@@ -101,25 +95,19 @@ export default class Follow {
   static async fetchFollowing(req, res) {
     const { id } = req.user;
     try {
-      const following = await Follower.findAll({
-        where: { followerId: id },
-        include: [
-          {
-            model: User,
-            as: 'following',
-            attributes: ['email', 'username']
-          }
-        ]
+      const user = await User.findOne({
+        where: { id }
       });
-      if (following.length < 1) {
-        return successResponse(res, {
-          message: 'you are currently not following anyone',
-          following
-        });
+      const following = await user.getFollowing();
+      if (following.length === 0) {
+        return errorResponse(res, 'you are not following anyone');
       }
+      const followerArr = following.map(current => {
+        return current.Follower;
+      });
       return successResponse(res, {
-        message: 'people you are following',
-        following: following.map(list => list.following)
+        message: ' Your are currently following',
+        followerArr
       });
     } catch (err) {
       return errorResponse(res, err.message);

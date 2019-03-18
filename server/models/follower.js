@@ -4,29 +4,16 @@ export default (sequelize, DataTypes) => {
     {
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
       },
       followerId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
       }
     },
     {}
   );
-  Follower.associate = models => {
-    const { User } = models;
-
-    Follower.belongsTo(User, {
-      foreignKey: 'userId',
-      as: 'following',
-      onDelete: 'CASCADE'
-    });
-
-    Follower.belongsTo(User, {
-      foreignKey: 'followerId',
-      as: 'follower',
-      onDelete: 'CASCADE'
-    });
-  };
   return Follower;
 };
