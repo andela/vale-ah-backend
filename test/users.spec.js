@@ -412,16 +412,6 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if token was not provided', done => {
-    chai
-      .request(server)
-      .get('/api/profiles')
-      .end((err, res) => {
-        expect(res).to.have.status(404);
-        done(err);
-      });
-  });
-
   it('should return an error if no current user', done => {
     chai
       .request(server)
