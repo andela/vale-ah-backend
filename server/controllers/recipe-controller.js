@@ -22,7 +22,7 @@ class RecipeController {
    * @static
    * @param {*} req
    * @param {*} res
-   * @param {Funtion} next
+   * @param {Function} next
    * @memberof RecipeController
    * @returns {undefined}
    */
@@ -61,34 +61,52 @@ class RecipeController {
    * @static
    * @param {*} req
    * @param {*} res
-   * @param {Funtion} next
+   * @param {Function} next
    * @memberof RecipeController
    * @returns {undefined}
    */
   static async updateRecipe(req, res) {
     const { id } = req.user;
     const { slug } = req.params;
-    const { body } = req;
-    const { title, ingrident, steps, cookingTime, preparationTime } = req.body;
+    const {
+      title,
+      ingredients,
+      steps,
+      cookingTime,
+      preparationTime
+    } = req.body;
     try {
-      await validate(body, recipeUpdateSchema);
-      const recipe = await Recipe.findOne({ where: { slug, userId: id } });
+      await validate(req.body, recipeUpdateSchema);
+      const recipe = await Recipe.findOne({ where: { slug } });
+
       if (!recipe) {
-        return errorResponse(res, 'recipe not found');
+        return errorResponse(res, 'recipe not found', 404);
+      }
+
+      if (recipe.userId !== id) {
+        return errorResponse(
+          res,
+          'You are not allowed to update this recipe',
+          403
+        );
       }
       const data = await recipe.update(
         {
           title: title || recipe.title,
-          ingrident: ingrident || recipe.ingredient,
+          ingredients: ingredients || recipe.ingredients,
           cookingTime: cookingTime || recipe.cookingTime,
           preparationTime: preparationTime || recipe.preparationTime,
           steps: steps || recipe.steps
         },
         { returning: true }
       );
-      successResponse(res, { message: 'update successful', recipe: data }, 200);
+      return successResponse(
+        res,
+        { message: 'update successful', recipe: data },
+        200
+      );
     } catch (error) {
-      errorResponse(res, error.message);
+      return errorResponse(res, error.message);
     }
   }
 
@@ -98,22 +116,25 @@ class RecipeController {
    * @static
    * @param {*} req
    * @param {*} res
-   * @param {Funtion} next
+   * @param {Function} next
    * @memberof RecipeController
    * @returns {undefined}
    */
   static async deleteRecipe(req, res) {
+    const { id } = req.user;
     const { slug } = req.params;
     try {
-      const data = await Recipe.findOne({ where: { slug } });
-      if (!data) {
-        return errorResponse(res, 'data not found ', 400);
+      const recipe = await Recipe.findOne({ where: { slug } });
+      if (!recipe) {
+        return errorResponse(res, 'recipe not found ', 404);
       }
-      const deleted = await data.destroy();
-      if (!deleted) {
-        return errorResponse(res, 'could not delete data');
+      if (recipe.userId !== id) {
+        return errorResponse(res, 'you cannot delete this recipe', 403);
       }
-      return successResponse(res, 'data has been deleted');
+      const deleted = await recipe.destroy();
+      return deleted
+        ? successResponse(res, 'recipe has been deleted')
+        : errorResponse(res, 'could not delete recipe');
     } catch (error) {
       return errorResponse(res, error.message);
     }

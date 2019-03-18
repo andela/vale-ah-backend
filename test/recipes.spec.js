@@ -155,7 +155,7 @@ describe('Recipes', () => {
           expect(res).to.have.status(200);
           expect(body.recipe).to.be.an('object');
           expect(body.recipe.id).to.be.a('number');
-          expect(body.recipe).to.haveOwnProperty('title');
+          expect(body.recipe.preparationTime).to.equal(5000);
           done(err);
         });
     });
@@ -194,6 +194,17 @@ describe('Recipes', () => {
           done(err);
         });
     });
+    it('should return an error if recipe does not exist', done => {
+      chai
+        .request(server)
+        .delete(`${baseUrl}/sometext`)
+        .set({ authorization: token })
+        .end((err, res) => {
+          expect(res).to.have.status(404);
+          done(err);
+        });
+    });
+
     it('should return an error if user does not exist', done => {
       chai
         .request(server)
