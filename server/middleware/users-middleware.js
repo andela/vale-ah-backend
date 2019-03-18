@@ -3,7 +3,7 @@ import { errorResponse, verifyToken } from '../utils/helpers';
 
 const { User } = db;
 /**
- *Users endpoint middlewares
+ *Users middleware
  *
  * @export
  * @class UsersMiddleware

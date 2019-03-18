@@ -1,3 +1,4 @@
+import '@babel/polyfill';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -7,7 +8,6 @@ import passport from 'passport';
 import session from 'express-session';
 import env from './config/env-config';
 import routes from './routes/index';
-// import storage from './config/cloudinary';
 
 const app = express();
 const logger = debug('vale-ah::server: ');

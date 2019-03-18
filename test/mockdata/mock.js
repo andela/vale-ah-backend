@@ -1,13 +1,13 @@
 import faker from 'faker';
 
-export const user1 = {
-  username: faker.internet.userName(),
-  email: faker.internet.email(),
-  password: 'esiaguleticia1234'
-
-};
-export const user2 = {
-  username: faker.internet.userName(),
-  email: faker.internet.email(),
-  bio: 'i am not going',
-};
+/**
+ * @function MockData
+ * @return {object} user
+ */
+export default function mockData() {
+  return {
+    username: faker.random.alphaNumeric(10),
+    email: faker.internet.email(),
+    password: faker.random.alphaNumeric(10)
+  };
+}

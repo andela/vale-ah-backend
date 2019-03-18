@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import db from '../models';
 import { registerSchema } from '../utils/validators';
 import env from '../config/env-config';
@@ -60,7 +59,7 @@ class UsersController {
               generateVerificationLink(verificationToken)
             )
             .then(() => {
-              successResponse(res, { user, emailSent: true }, 201);
+              return successResponse(res, { user, emailSent: true }, 201);
             })
             .catch(() => {
               successResponse(res, { user, emailSent: false }, 201);
@@ -74,7 +73,7 @@ class UsersController {
                 return e.message;
               })
             : [err.message];
-          errorResponse(res, errors, 409);
+          return errorResponse(res, errors, 409);
         }
       })
       .catch(({ details }) => {
@@ -114,14 +113,17 @@ class UsersController {
           'invalid token'
         ].includes(e.message)
       ) {
-        errorResponse(res, 'Invalid token, verification unsuccessful', 400);
-      } else {
-        errorResponse(
+        return errorResponse(
           res,
-          'Something went wrong, verification unsuccessful',
-          500
+          'Invalid token, verification unsuccessful',
+          400
         );
       }
+      return errorResponse(
+        res,
+        'Something went wrong, verification unsuccessful',
+        500
+      );
     }
   }
 

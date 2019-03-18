@@ -44,13 +44,13 @@ class UsersController {
             { returning: true, where: { id } }
           );
           delete data.dataValues.hash;
-          successResponse(
+          return successResponse(
             res,
             { message: 'update successful', user: data },
             200
           );
         } catch (error) {
-          errorResponse(res, error.message, 500);
+          return errorResponse(res, error.message, 500);
         }
       })
       .catch(({ details }) => {
@@ -72,10 +72,10 @@ class UsersController {
       const user = await User.findOne({ where: { id } });
       if (user) {
         delete user.dataValues.hash;
-        successResponse(res, { user }, 200);
+        return successResponse(res, { user }, 200);
       }
     } catch (err) {
-      errorResponse(res, err.message, 500);
+      return errorResponse(res, err.message, 500);
     }
   }
 
@@ -93,7 +93,7 @@ class UsersController {
       const { oldPassword, newPassword } = req.body;
       const user = await User.findOne({ where: { id } });
       if (!user) {
-        errorResponse(res, 'user does not exist', 404);
+        return errorResponse(res, 'user does not exist', 404);
       }
       if (comparePassword(oldPassword, user.hash)) {
         const data = await user.update(
@@ -101,14 +101,15 @@ class UsersController {
           { returning: true }
         );
         delete data.dataValues.hash;
-        successResponse(
+        return successResponse(
           res,
           { message: 'password update successful', user: data },
           200
         );
-      } else errorResponse(res, 'password mismatch', 400);
+      }
+      errorResponse(res, 'password mismatch', 400);
     } catch (err) {
-      errorResponse(res, err.message, 500);
+      return errorResponse(res, err.message, 500);
     }
   }
 }

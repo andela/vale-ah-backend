@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import RecipeController from '../controllers/recipe-controller';
-import User from '../middlewares/index';
+import User from '../middleware/users-middleware';
 
 const router = Router();
 
