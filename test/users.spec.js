@@ -258,7 +258,7 @@ describe('User', () => {
         image: 'https://mailer.com',
         password: 'weaksauce45rty'
       })
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         const { user } = res.body;
         expect(res).to.have.status(200);
@@ -277,7 +277,7 @@ describe('User', () => {
       .send({
         bio: 345678976543567
       })
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         expect(res).to.have.status(400);
         done(err);
@@ -289,9 +289,9 @@ describe('User', () => {
       .request(server)
       .put('/api/user')
       .send({ bio: `something interesting`, image: 'https://mailer.com' })
-      .set({ authorization: generateToken({ id: 1000 }) })
+      .set({ authorization: `Bearer ${generateToken({ id: 1000 })}` })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        expect(res).to.have.status(401);
         done(err);
       });
   });
@@ -302,7 +302,7 @@ describe('User', () => {
       .put('/api/user')
       .send(user1)
       .end((err, res) => {
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(401);
         done(err);
       });
   });
@@ -311,7 +311,7 @@ describe('User', () => {
     chai
       .request(server)
       .get('/api/user')
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         const { user } = res.body;
         expect(res).to.have.status(200);
@@ -327,7 +327,7 @@ describe('User', () => {
       .request(server)
       .put('/api/user')
       .send({ email: faker.internet.email() })
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         const { user } = res.body;
         expect(res).to.have.status(200);
@@ -343,9 +343,9 @@ describe('User', () => {
     chai
       .request(server)
       .get('/api/user')
-      .set({ authorization: generateToken({ id: 1000 }) })
+      .set({ authorization: `Bearer ${generateToken({ id: 1000 })}` })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        expect(res).to.have.status(401);
         done(err);
       });
   });
@@ -354,7 +354,7 @@ describe('User', () => {
     chai
       .request(server)
       .get('/api/profiles')
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         const { user } = res.body;
         expect(res).to.have.status(200);
@@ -368,9 +368,9 @@ describe('User', () => {
     chai
       .request(server)
       .get('/api/profiles')
-      .set({ authorization: generateToken({ id: 1000 }) })
+      .set({ authorization: `Bearer ${generateToken({ id: 1000 })}` })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        expect(res).to.have.status(401);
         done(err);
       });
   });
@@ -379,7 +379,7 @@ describe('User', () => {
     chai
       .request(server)
       .get(`/api/profiles/${user1.username}`)
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         const { user } = res.body;
         expect(res).to.have.status(200);
@@ -396,7 +396,7 @@ describe('User', () => {
     chai
       .request(server)
       .get(`/api/profiles/andela`)
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         expect(res).to.have.status(404);
         done(err);
@@ -408,7 +408,7 @@ describe('User', () => {
       .request(server)
       .get('/api/profiles')
       .end((err, res) => {
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(401);
         done(err);
       });
   });
@@ -420,7 +420,7 @@ describe('User', () => {
     chai
       .request(server)
       .put('/api/user/password')
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .send({ newPassword, oldPassword })
       .end((err, res) => {
         expect(res).to.have.status(200);
@@ -435,10 +435,11 @@ describe('User', () => {
     chai
       .request(server)
       .put('/api/user/password')
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .send({ newPassword, oldPassword })
       .end((err, res) => {
         expect(res).to.have.status(400);
+        expect(res.body).to.haveOwnProperty('errors');
         done(err);
       });
   });
@@ -452,7 +453,8 @@ describe('User', () => {
       .put('/api/user/password')
       .send({ newPassword, oldPassword })
       .end((err, res) => {
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(401);
+        expect(res.body).to.haveOwnProperty('errors');
         done(err);
       });
   });
@@ -464,10 +466,11 @@ describe('User', () => {
     chai
       .request(server)
       .put('/api/user/password')
-      .set({ authorization: 'what ever happens' })
+      .set({ authorization: 'Bearer what ever happens' })
       .send({ newPassword, oldPassword })
       .end((err, res) => {
         expect(res).to.have.status(401);
+        expect(res.body).to.haveOwnProperty('errors');
         done(err);
       });
   });
@@ -478,12 +481,11 @@ describe('User', () => {
     chai
       .request(server)
       .put('/api/user/password')
-      .set({
-        authorization: generateToken({ id: 50 })
-      })
+      .set({ authorization: `Bearer ${generateToken({ id: 50 })}` })
       .send({ newPassword, oldPassword })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        expect(res).to.have.status(401);
+        expect(res.body).to.haveOwnProperty('errors');
         done(err);
       });
   });

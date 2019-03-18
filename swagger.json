@@ -1,16 +1,28 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Naija Recipes API",
-    "description": "Naija Recipes API",
+    "title": "Naija Chop Chop API",
+    "description": "Naija Chop Chop API",
     "license": {
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
     "version": "1.0.0"
   },
-  "host": "localhost:4000",
-  "basePath": "/api",
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/",
+      "description": "Development server"
+    },
+    {
+      "url": "https://vale-ah-backend-staging.herokuapp.com",
+      "description": "Staging server"
+    },
+    {
+      "url": "https://vale-ah-backend.herokuapp.com",
+      "description": "Production server"
+    }
+  ],
   "tags": [
     {
       "name": "Naija Recipes",
@@ -59,11 +71,9 @@
         ],
         "summary": "Create new recipe",
         "description": "This endpoint will create a new recipe",
-        "parameters": [
+        "security": [
           {
-            "name": "accesstoken",
-            "in": "header",
-            "schema": {}
+            "BearerAuth": []
           }
         ],
         "requestBody": {
@@ -72,6 +82,32 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Recipe"
+              },
+              "example": {
+                "title": "How to prepare your finest recipe",
+                "ingredients": [
+                  "A spoon of awesomeness",
+                  "A cup of dedication"
+                ],
+                "steps": {
+                  "1": {
+                    "description": "Add a spoon of awesomeness to the mixer",
+                    "images": [
+                      "https://i.stack.imgur.com/xHWG8.jpg"
+                    ]
+                  },
+                  "2": {
+                    "description": "Add a spoon of awesomeness to the mixer",
+                    "images": [
+                      "https://i.stack.imgur.com/xHWG8.jpg"
+                    ]
+                  }
+                },
+                "tags": [
+                  "cruel"
+                ],
+                "cookingTime": 1000,
+                "preparationTime": 3000
               }
             }
           },
@@ -89,59 +125,64 @@
         }
       }
     },
-    "/user" : {
-      "get" : {
-        "description" : "Get a Current user",
-        "parameters" : [ {
-          "name" : "Authorization",
-          "in" : "headers",
-          "schema" : {
-            "type" : "string"
+    "/user": {
+      "get": {
+        "description": "Get a Current user",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "headers",
+            "schema": {
+              "type": "string"
+            }
           }
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        ],
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          
-          "200" : {
-            "description" : "User Found"
+          "200": {
+            "description": "User Found"
           }
         }
       },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
+      "servers": [
+        {
+          "url": "https://vale-ah-backend-staging.herokuapp.com"
+        }
+      ]
     },
-    "/profiles" : {
-      "get" : {
-        "description" : "Get all users profile",
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+    "/profiles": {
+      "get": {
+        "description": "Get all users profile",
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
+          "400": {
+            "description": "Verification token error",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
-          "200" : {
-            "description" : "Record Found"
+          "200": {
+            "description": "Record Found"
           }
         }
       },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
+      "servers": [
+        {
+          "url": "https://vale-ah-backend-staging.herokuapp.com"
+        }
+      ]
     },
-    "/profiles/:username" : {
-      "get" : {
-        "description" : "Get a specific user profile",
+    "/profiles/:username": {
+      "get": {
+        "description": "Get a specific user profile",
         "parameters": [
           {
             "in": "body",
@@ -155,96 +196,175 @@
         "produces": [
           "application/json"
         ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
+          "400": {
+            "description": "Verification token error",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
-          "200" : {
-            "description" : "Record Found"
+          "200": {
+            "description": "Record Found"
           }
         }
       },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
+      "servers": [
+        {
+          "url": "https://vale-ah-backend-staging.herokuapp.com"
+        }
+      ]
     },
-    "/user/password" : {
-      "put" : {
-        "description" : "Update user profile",
-        "parameters" : [ {
-          "in": "body",
-          "name": "password",
-          "description": "password to be updated",
-          "schema": {
-            "$ref": "#/definitions/User"
+    "/user/password": {
+      "put": {
+        "description": "Update user profile",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "password",
+            "description": "password to be updated",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
           }
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        ],
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
+          "400": {
+            "description": "Verification token error",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
-          "200" : {
-            "description" : "Password update successful"
+          "200": {
+            "description": "Password update successful"
           }
         }
       },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
+      "servers": [
+        {
+          "url": "https://vale-ah-backend-staging.herokuapp.com"
+        }
+      ]
     },
-    "/users/verify" : {
-      "get" : {
-        "description" : "Verify if the user is verified",
-        "parameters" : [ {
-          "name" : "token",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
+    "/users/verify": {
+      "get": {
+        "description": "Verify if the user is verified",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "example" : "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
-          },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
+          "400": {
+            "description": "Verification token error",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
-          "200" : {
-            "description" : "Account verification success"
+          "200": {
+            "description": "Account verification success"
           }
         }
       },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
+      "servers": [
+        {
+          "url": "https://vale-ah-backend-staging.herokuapp.com"
+        }
+      ]
+    },
+    "/recipes/{slug}/tags": {
+      "put": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Tag recipes",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Tag a recipe",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "Array of tags",
+          "content": {
+            "application/json": {
+              "schema": {
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "tags": [
+                  "soup",
+                  "eguisi",
+                  "east"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad input",
+            "content": {}
+          },
+          "401": {
+            "description": "Authentication error",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission error",
+            "content": {}
+          },
+          "500": {
+            "description": "Server error",
+            "content": {}
+          }
+        }
+      }
     }
   },
   "components": {
@@ -272,6 +392,7 @@
         "required": [
           "cookingTime",
           "ingredients",
+          "tags",
           "preparationTime",
           "steps",
           "title"
@@ -284,6 +405,12 @@
           "ingredients": {
             "type": "array"
           },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "steps": {
             "type": "object"
           },
@@ -294,6 +421,13 @@
             "type": "number"
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "BearerFormat": "TOKEN"
       }
     }
   }
