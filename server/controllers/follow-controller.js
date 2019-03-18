@@ -78,7 +78,7 @@ export default class Follow {
       });
       return successResponse(res, {
         message: ' Your followers',
-        followerArr
+        Followers: followerArr
       });
     } catch (err) {
       return errorResponse(res, err.message);
@@ -107,7 +107,7 @@ export default class Follow {
       });
       return successResponse(res, {
         message: ' Your are currently following',
-        followerArr
+        following: followerArr
       });
     } catch (err) {
       return errorResponse(res, err.message);
@@ -131,8 +131,12 @@ export default class Follow {
           message: 'you are not allowed to unfollow yourself'
         });
       }
+      const { id: following } = await User.findOne({ where: { username } });
 
-      await Follower.destroy({ where: { userId: id } });
+      await Follower.destroy({
+        where: { followerId: id, userId: following },
+        retuning: true
+      });
       return successResponse(res, {
         message: `you just unfollowed ${username}`
       });

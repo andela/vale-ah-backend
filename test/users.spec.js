@@ -571,28 +571,6 @@ describe('User', () => {
       });
   });
 
-  // it('should follow a user', done => {
-  //   chai
-  //     .request(server)
-  //     .post(`/api/profiles/${user2.username}/follow`)
-  //     .set({ authorization: loggedInUser.token })
-  //     .end((err, res) => {
-  //       expect(res).to.have.status(200);
-  //       done(err);
-  //     });
-  // });
-
-  // it('should return an error is user has already followed a particular user', done => {
-  //   chai
-  //     .request(server)
-  //     .post(`/api/profiles/${user2.username}/follow`)
-  //     .set({ authorization: loggedInUser.token })
-  //     .end((err, res) => {
-  //       expect(res).to.have.status(400);
-  //       done(err);
-  //     });
-  // });
-
   it('should return an error is username is current user', done => {
     chai
       .request(server)
@@ -600,28 +578,6 @@ describe('User', () => {
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
         expect(res).to.have.status(400);
-        done(err);
-      });
-  });
-
-  it('should return everyone the current user is following', done => {
-    chai
-      .request(server)
-      .get('/api/user/following')
-      .set({ authorization: loggedInUser.token })
-      .end((err, res) => {
-        expect(res).to.have.status(200);
-        done(err);
-      });
-  });
-
-  it('should unfollow a user', done => {
-    chai
-      .request(server)
-      .delete(`/api/profiles/${user2.username}/follow`)
-      .set({ authorization: loggedInUser.token })
-      .end((err, res) => {
-        expect(res).to.have.status(200);
         done(err);
       });
   });
