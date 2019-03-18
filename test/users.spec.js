@@ -327,7 +327,7 @@ describe('User', () => {
       .request(server)
       .put('/api/user')
       .send({ email: faker.internet.email() })
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         const { user } = res.body;
         expect(res).to.have.status(200);
@@ -343,9 +343,9 @@ describe('User', () => {
     chai
       .request(server)
       .get('/api/user')
-      .set({ authorization: generateToken({ id: 1000 }) })
+      .set({ authorization: `Bearer ${generateToken({ id: 1000 })}` })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        expect(res).to.have.status(401);
         done(err);
       });
   });
@@ -354,7 +354,7 @@ describe('User', () => {
     chai
       .request(server)
       .get('/api/profiles')
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         const { user } = res.body;
         expect(res).to.have.status(200);
@@ -368,9 +368,9 @@ describe('User', () => {
     chai
       .request(server)
       .get('/api/profiles')
-      .set({ authorization: generateToken({ id: 1000 }) })
+      .set({ authorization: `Bearer ${generateToken({ id: 1000 })}` })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        expect(res).to.have.status(401);
         done(err);
       });
   });
@@ -379,7 +379,7 @@ describe('User', () => {
     chai
       .request(server)
       .get(`/api/profiles/${user1.username}`)
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         const { user } = res.body;
         expect(res).to.have.status(200);
@@ -396,7 +396,7 @@ describe('User', () => {
     chai
       .request(server)
       .get(`/api/profiles/andela`)
-      .set({ authorization: loggedInUser.token })
+      .set({ authorization: `Bearer ${loggedInUser.token}` })
       .end((err, res) => {
         expect(res).to.have.status(404);
         done(err);
