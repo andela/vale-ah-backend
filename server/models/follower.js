@@ -18,13 +18,13 @@ export default (sequelize, DataTypes) => {
 
     Follower.belongsTo(User, {
       foreignKey: 'userId',
-      as: 'follower',
+      as: 'following',
       onDelete: 'CASCADE'
     });
 
     Follower.belongsTo(User, {
       foreignKey: 'followerId',
-      as: 'following',
+      as: 'follower',
       onDelete: 'CASCADE'
     });
   };

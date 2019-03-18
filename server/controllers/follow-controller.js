@@ -2,10 +2,7 @@
 import db from '../models';
 import { successResponse, errorResponse } from '../utils/helpers';
 
-const { User, Follower, Sequelize } = db;
-
-const { Op } = Sequelize;
-
+const { User, Follower } = db;
 /**
  * @description Controller to Following users
  * @return {undefined}
@@ -25,7 +22,7 @@ export default class Follow {
         errorResponse(
           res,
           {
-            message: 'you are not allowed to yourself'
+            message: 'you are not allowed to follow yourself'
           },
           400
         );
@@ -34,18 +31,18 @@ export default class Follow {
           where: { username }
         });
         const checkFollower = await Follower.findAll({
-          where: { [Op.and]: [{ userId: id }, { followerId: followee.id }] }
+          where: { userId: followee.id, followerId: id }
         });
         if (followee && checkFollower.length < 1) {
           await Follower.create({
-            userId: id,
-            followerId: followee.id
+            followerId: id,
+            userId: followee.id
           });
           return successResponse(res, {
             message: `you started following ${username}`
           });
         }
-        errorResponse(
+        return errorResponse(
           res,
           {
             message: `you are already following ${username}`
@@ -69,7 +66,7 @@ export default class Follow {
     const { id } = req.user;
     try {
       const users = await Follower.findAll({
-        where: { followerId: id },
+        where: { userId: id },
         include: [
           {
             model: User,
@@ -105,7 +102,7 @@ export default class Follow {
     const { id } = req.user;
     try {
       const following = await Follower.findAll({
-        where: { userId: id },
+        where: { followerId: id },
         include: [
           {
             model: User,
@@ -120,7 +117,7 @@ export default class Follow {
           following
         });
       }
-      successResponse(res, {
+      return successResponse(res, {
         message: 'people you are following',
         following: following.map(list => list.following)
       });
