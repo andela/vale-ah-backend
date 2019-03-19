@@ -6,7 +6,7 @@ const router = Router();
 
 router.post('/', User.validUser, controller.create);
 router.get('/', controller.getRecipes);
-router.get('/:slug:', controller.getRecipeBySlug);
+router.get('/:slug', controller.getRecipeBySlug);
 router.put('/:slug', User.validUser, controller.updateRecipe);
 router.delete('/:slug', User.validUser, controller.deleteRecipe);
 

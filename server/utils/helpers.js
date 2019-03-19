@@ -137,3 +137,10 @@ export const rowArrayToObjectList = sequelizeRowArray =>
     (dataValueArray, { dataValues }) => [...dataValueArray, dataValues],
     []
   );
+
+/**
+ * Generate a random hexadecimal string
+ * @returns {string} random alphanumeric string
+ */
+export const randomHex = () =>
+  Math.floor(Math.random() * Date.now()).toString(16);

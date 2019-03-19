@@ -116,17 +116,12 @@ class UsersController {
       ) {
         errorResponse(res, 'Invalid token, verification unsuccessful', 400);
       } else {
-        return errorResponse(
+        errorResponse(
           res,
-          'Invalid token, verification unsuccessful',
-          400
+          'Something went wrong, verification unsuccessful',
+          500
         );
       }
-      return errorResponse(
-        res,
-        'Something went wrong, verification unsuccessful',
-        500
-      );
     }
   }
 

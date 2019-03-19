@@ -1,11 +1,9 @@
-import merge from 'webpack-merge';
 import db from '../models';
 import {
   successResponse,
   errorResponse,
   validate,
   validationErrorResponse,
-  slugifyTitle,
   rowArrayToObjectList
 } from '../utils/helpers';
 import { recipeSchema, recipeUpdateSchema } from '../utils/validators';
@@ -50,11 +48,9 @@ class RecipeController {
     } = req.body;
     try {
       await validate(req.body, recipeSchema);
-      const slug = slugifyTitle(title);
       Recipe.create({
         userId: req.user.id,
         title,
-        slug,
         ingredients,
         steps,
         cookingTime,
@@ -181,7 +177,7 @@ class RecipeController {
     },
     res
   ) {
-    Recipe.findOne(merge(defaultRecipeDbFilter, { where: { slug } }))
+    Recipe.findOne({ ...defaultRecipeDbFilter, where: { slug } })
       .then(recipe =>
         recipe
           ? successResponse(res, { recipe })

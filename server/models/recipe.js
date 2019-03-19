@@ -1,4 +1,4 @@
-import { slugifyTitle } from '../utils/helpers';
+import { randomHex, slugifyTitle } from '../utils/helpers';
 
 module.exports = (sequelize, DataTypes) => {
   const Recipe = sequelize.define(
@@ -20,24 +20,23 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  Recipe.afterCreate(async recipe => {
-    const updatedRecipe = await recipe.update(
-      { slug: `${recipe.slug}-${recipe.id}` },
-      { returning: true }
-    );
-    Object.assign(recipe, updatedRecipe);
+
+  Recipe.beforeCreate(recipe => {
+    recipe.slug = `${slugifyTitle(recipe.title)}-${randomHex().substr(0, 8)}`;
   });
 
-  Recipe.beforeUpdate(async recipe => {
+  Recipe.beforeUpdate(recipe => {
     if (recipe.changed('title')) {
-      recipe.slug = await `${slugifyTitle(recipe.title)}-${recipe.id}`;
+      recipe.slug = `${slugifyTitle(recipe.title)}-${randomHex().substr(0, 8)}`;
     }
   });
+
   Recipe.associate = models => {
     Recipe.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
   };
+
   return Recipe;
 };
