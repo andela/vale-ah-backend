@@ -59,13 +59,11 @@
         ],
         "summary": "Create new recipe",
         "description": "This endpoint will create a new recipe",
-        "parameters": [
-          {
-            "name": "accesstoken",
-            "in": "header",
-            "schema": {}
-          }
-        ],
+        "parameters": [{
+          "name": "accesstoken",
+          "in": "header",
+          "schema": {}
+        }],
         "requestBody": {
           "description": "Recipe to be created",
           "content": {
@@ -89,162 +87,100 @@
         }
       }
     },
-    "/user" : {
-      "get" : {
-        "description" : "Get a Current user",
-        "parameters" : [ {
-          "name" : "Authorization",
-          "in" : "headers",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
-          },
-          
-          "200" : {
-            "description" : "User Found"
-          }
-        }
-      },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
-    },
-    "/profiles" : {
-      "get" : {
-        "description" : "Get all users profile",
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
-          },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
-                }
+    "/recipes/{slug}": {
+      "put": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "update recipe",
+        "description": "This endpoint will update a recipe",
+        "parameters": [{
+          "name": "accesstoken",
+          "in": "header",
+          "schema": {}
+        }],
+        "requestBody": {
+          "description": "Recipe to be updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Recipe"
               }
             }
           },
-          "200" : {
-            "description" : "Record Found"
+          "required": false
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully updated recipe",
+            "content": {}
+          },
+          "400": {
+            "description": "Validation Error",
+            "content": {}
           }
         }
-      },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
+      }
     },
-    "/profiles/:username" : {
-      "get" : {
-        "description" : "Get a specific user profile",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "username",
-            "description": "username of uset",
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          }
+    "/recipes/{slug}": {
+      "delete": {
+        "tags": [
+          "Recipes"
         ],
-        "produces": [
-          "application/json"
-        ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
-          },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "200" : {
-            "description" : "Record Found"
-          }
-        }
-      },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
-    },
-    "/user/password" : {
-      "put" : {
-        "description" : "Update user profile",
-        "parameters" : [ {
-          "in": "body",
-          "name": "password",
-          "description": "password to be updated",
+        "summary": "delete recipe",
+        "description": "This endpoint will delete a recipe",
+        "parameters": [{
+          "name": "slug",
+          "in": "path",
           "schema": {
-            "$ref": "#/definitions/User"
+            "type": "string"
           }
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+        }],
+        "responses": {
+          "201": {
+            "description": "Successfully updated recipe",
+            "content": {}
           },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          },
-          "200" : {
-            "description" : "Password update successful"
+          "400": {
+            "description": "Validation Error",
+            "content": {}
           }
         }
-      },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
+      }
     },
-    "/users/verify" : {
-      "get" : {
-        "description" : "Verify if the user is verified",
-        "parameters" : [ {
-          "name" : "token",
-          "in" : "query",
-          "schema" : {
-            "type" : "string"
+    "/users/verify": {
+      "get": {
+        "description": "Verify if the user is verified",
+        "parameters": [{
+          "name": "token",
+          "in": "query",
+          "schema": {
+            "type": "string"
           },
-          "example" : "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
-        } ],
-        "responses" : {
-          "500" : {
-            "description" : "Database connection error"
+          "example": "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
+        }],
+        "responses": {
+          "500": {
+            "description": "Database connection error"
           },
-          "400" : {
-            "description" : "Verification token error",
-            "content" : {
-              "application/json; charset=utf-8" : {
-                "schema" : {
-                  "type" : "string"
+          "400": {
+            "description": "Verification token error",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
           },
-          "200" : {
-            "description" : "Account verification success"
+          "200": {
+            "description": "Account verification success"
           }
         }
       },
-      "servers" : [ {
-        "url" : "https://vale-ah-backend-staging.herokuapp.com"
-      } ]
+      "servers": [{
+        "url": "https://vale-ah-backend-staging.herokuapp.com"
+      }]
     }
   },
   "components": {

@@ -24,6 +24,7 @@ const recipe = {
 describe('Recipes', () => {
   describe('Create New Recipe', () => {
     let token;
+    let slug;
     before(() =>
       chai
         .request(server)
@@ -47,6 +48,8 @@ describe('Recipes', () => {
         .send(recipe)
         .end((err, res) => {
           const { body } = res;
+          const { slug: recipeSlug } = body.recipe;
+          slug = recipeSlug;
           expect(res).to.have.status(201);
           expect(body.recipe).to.be.an('object');
           expect(body.recipe.id).to.be.a('number');
@@ -137,6 +140,89 @@ describe('Recipes', () => {
           const { body } = res;
           expect(res).to.have.status(400);
           expect(body.errors).to.haveOwnProperty('preparationTime');
+          done(err);
+        });
+    });
+
+    it('should update recipe', done => {
+      chai
+        .request(server)
+        .put(`${baseUrl}/${slug}`)
+        .set({ authorization: token })
+        .send({ preparationTime: 5000 })
+        .end((err, res) => {
+          const { body } = res;
+          expect(res).to.have.status(200);
+          expect(body.recipe).to.be.an('object');
+          expect(body.recipe.id).to.be.a('number');
+          expect(body.recipe.preparationTime).to.equal(5000);
+          done(err);
+        });
+    });
+
+    it('should return an error if recipe does not exist', done => {
+      chai
+        .request(server)
+        .put(`${baseUrl}/sometext`)
+        .set({ authorization: token })
+        .end((err, res) => {
+          expect(res).to.have.status(404);
+          done(err);
+        });
+    });
+
+    it('should return an error if user does not exist', done => {
+      chai
+        .request(server)
+        .put(`${baseUrl}/${slug}`)
+        .set({ authorization: generateToken({ id: 1000 }) })
+        .send({ preparationTime: 5000 })
+        .end((err, res) => {
+          expect(res).to.have.status(404);
+          done(err);
+        });
+    });
+
+    it('should return an error if wrong input string', done => {
+      chai
+        .request(server)
+        .put(`${baseUrl}/${slug}`)
+        .set({ authorization: token })
+        .send({ preparationTime: 'time' })
+        .end((err, res) => {
+          expect(res).to.have.status(500);
+          done(err);
+        });
+    });
+
+    it('should delete recipe', done => {
+      chai
+        .request(server)
+        .delete(`${baseUrl}/${slug}`)
+        .set({ authorization: token })
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          done(err);
+        });
+    });
+    it('should return an error if recipe does not exist', done => {
+      chai
+        .request(server)
+        .delete(`${baseUrl}/sometext`)
+        .set({ authorization: token })
+        .end((err, res) => {
+          expect(res).to.have.status(404);
+          done(err);
+        });
+    });
+
+    it('should return an error if user does not exist', done => {
+      chai
+        .request(server)
+        .delete(`${baseUrl}/${slug}`)
+        .set({ authorization: generateToken({ id: 1000 }) })
+        .end((err, res) => {
+          expect(res).to.have.status(404);
           done(err);
         });
     });

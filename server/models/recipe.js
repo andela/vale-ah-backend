@@ -1,3 +1,5 @@
+import slugifyTitle from '../utils/slugify';
+
 module.exports = (sequelize, DataTypes) => {
   const Recipe = sequelize.define(
     'Recipe',
@@ -18,6 +20,19 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
+  Recipe.afterCreate(async recipe => {
+    const updatedRecipe = await recipe.update(
+      { slug: `${recipe.slug}-${recipe.id}` },
+      { returning: true }
+    );
+    Object.assign(recipe, updatedRecipe);
+  });
+
+  Recipe.beforeUpdate(async recipe => {
+    if (recipe.changed('title')) {
+      recipe.slug = await `${slugifyTitle(recipe.title)}-${recipe.id}`;
+    }
+  });
   Recipe.associate = models => {
     Recipe.belongsTo(models.User, {
       foreignKey: 'userId',

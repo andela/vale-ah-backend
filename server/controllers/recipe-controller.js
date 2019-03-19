@@ -5,7 +5,7 @@ import {
   validate,
   validationErrorResponse
 } from '../utils/helpers';
-import { recipeSchema } from '../utils/validators';
+import { recipeSchema, recipeUpdateSchema } from '../utils/validators';
 import slugifyTitle from '../utils/slugify';
 
 const { Recipe } = db;
@@ -22,7 +22,7 @@ class RecipeController {
    * @static
    * @param {*} req
    * @param {*} res
-   * @param {Funtion} next
+   * @param {Function} next
    * @memberof RecipeController
    * @returns {undefined}
    */
@@ -47,11 +47,88 @@ class RecipeController {
         preparationTime
       })
         .then(({ dataValues }) => {
-          successResponse(res, { recipe: dataValues }, 201);
+          return successResponse(res, { recipe: dataValues }, 201);
         })
         .catch(err => errorResponse(res, err, 400));
     } catch (error) {
-      validationErrorResponse(res, error.details);
+      return validationErrorResponse(res, error.details);
+    }
+  }
+
+  /**
+   * Update Recipe
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {Function} next
+   * @memberof RecipeController
+   * @returns {undefined}
+   */
+  static async updateRecipe(req, res) {
+    const { id } = req.user;
+    const { slug } = req.params;
+    const { ...newRecipe } = req.body;
+    try {
+      await validate(newRecipe, recipeUpdateSchema);
+      const recipe = await Recipe.findOne({ where: { slug } });
+      if (!recipe) {
+        return errorResponse(res, 'recipe not found', 404);
+      }
+      if (recipe.userId !== id) {
+        return errorResponse(
+          res,
+          'You are not allowed to update this recipe',
+          403
+        );
+      }
+      const data = await recipe.update(
+        {
+          title: newRecipe.title || recipe.title,
+          ingredients: newRecipe.ingredients || recipe.ingredients,
+          cookingTime: newRecipe.cookingTime || recipe.cookingTime,
+          preparationTime: newRecipe.preparationTime || recipe.preparationTime,
+          steps: newRecipe.steps || recipe.steps
+        },
+        { returning: true }
+      );
+      return successResponse(
+        res,
+        { message: 'update successful', recipe: data },
+        200
+      );
+    } catch (error) {
+      return errorResponse(res, error.message);
+    }
+  }
+
+  /**
+   * Delete Recipe
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @param {Function} next
+   * @memberof RecipeController
+   * @returns {undefined}
+   */
+  static async deleteRecipe(req, res) {
+    const { id } = req.user;
+    const { slug } = req.params;
+    try {
+      const recipe = await Recipe.findOne({ where: { slug } });
+      if (!recipe) {
+        return errorResponse(res, 'recipe not found ', 404);
+      }
+      if (recipe.userId !== id) {
+        return errorResponse(res, 'you cannot delete this recipe', 403);
+      }
+      const deleted = await recipe.destroy();
+      return deleted
+        ? successResponse(res, 'recipe has been deleted')
+        : errorResponse(res, 'could not delete recipe');
+    } catch (error) {
+      return errorResponse(res, error.message);
     }
   }
 }

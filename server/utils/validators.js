@@ -40,3 +40,16 @@ export const recipeSchema = Joi.object().keys({
     .positive()
     .required()
 });
+
+export const recipeUpdateSchema = Joi.object().keys({
+  title: Joi.string().max(50),
+  ingredients: Joi.array().items(Joi.string(), Joi.string().required()),
+  steps: Joi.object().keys({
+    id: Joi.object().keys({
+      description: Joi.string().required(),
+      images: Joi.array().items(Joi.string())
+    })
+  }),
+  cookingTime: Joi.number().positive(),
+  preparationTime: Joi.number().positive()
+});
