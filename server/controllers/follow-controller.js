@@ -2,14 +2,14 @@
 import db from '../models';
 import { successResponse, errorResponse } from '../utils/helpers';
 
-const { User, Follower } = db;
+const { User } = db;
 /**
  * @description Controller to Following users
  * @return {undefined}
  */
 export default class Follow {
   /**
-   * @description Follow user contoller
+   * @description Follow user controller
    * @param {object} req - Express request object
    * @param {object} res - Express response object
    * @return {undefined}
@@ -18,39 +18,40 @@ export default class Follow {
     const { id } = req.user;
     const { username } = req.params;
     try {
-      if (username === req.user.username) {
-        errorResponse(
-          res,
-          {
-            message: 'you are not allowed to follow yourself'
-          },
-          400
-        );
-      } else {
-        const followee = await User.findOne({
-          where: { username }
-        });
-        const existingFollower = await Follower.findOne({
-          where: { userId: followee.id, followerId: id }
-        });
-
-        if (!existingFollower) {
-          await Follower.create({
-            followerId: id,
-            userId: followee.id
-          });
-          return successResponse(res, {
-            message: `you started following ${username}`
-          });
+      const followee = await User.findOne({
+        where: {
+          username
         }
-        return errorResponse(
-          res,
-          {
-            message: `you are already following ${username}`
-          },
-          400
-        );
+      });
+      const follower = await User.findOne({
+        where: {
+          id
+        }
+      });
+      if (!followee) {
+        return errorResponse(res, 'user not found', 404);
       }
+      if (followee.dataValues.id === id) {
+        return errorResponse(res, 'you cannot follow yourself', 403);
+      }
+      // req.user.hasFollower
+      // req.user.getFollowers
+      // req.user.setFollowers
+      // req.user.addFollower
+      // req.user.addFollowers
+
+      const existingFollower = await followee.getFollowers();
+      let isFollower = false;
+      existingFollower.forEach(element => {
+        if (element.id === Number(follower.dataValues.id)) {
+          isFollower = true;
+        }
+      });
+      if (isFollower) {
+        return errorResponse(res, 'you cannot follow user twice', 403);
+      }
+      await followee.addFollower(follower);
+      return successResponse(res, 'follow successful', 200);
     } catch (err) {
       return errorResponse(res, err.message);
     }
@@ -67,14 +68,19 @@ export default class Follow {
     const { id } = req.user;
     try {
       const user = await User.findOne({
-        where: { id }
+        where: {
+          id
+        }
       });
       const followers = await user.getFollowers();
       if (followers.length === 0) {
-        return errorResponse(res, 'you have no followers yet');
+        return successResponse(res, 'you have no followers yet');
       }
       const followerArr = followers.map(current => {
-        return current.Follower;
+        return {
+          email: current.email,
+          username: current.username
+        };
       });
       return successResponse(res, {
         message: ' Your followers',
@@ -96,14 +102,19 @@ export default class Follow {
     const { id } = req.user;
     try {
       const user = await User.findOne({
-        where: { id }
+        where: {
+          id
+        }
       });
       const following = await user.getFollowing();
       if (following.length === 0) {
-        return errorResponse(res, 'you are not following anyone');
+        return successResponse(res, 'you are not following anyone yet');
       }
       const followerArr = following.map(current => {
-        return current.Follower;
+        return {
+          email: current.email,
+          username: current.username
+        };
       });
       return successResponse(res, {
         message: ' Your are currently following',
@@ -123,23 +134,37 @@ export default class Follow {
    */
   static async unfollowUser(req, res) {
     const { id } = req.user;
-
     const { username } = req.params;
     try {
-      if (username === req.user.username) {
-        return errorResponse(res, {
-          message: 'you are not allowed to unfollow yourself'
-        });
+      const following = await User.findOne({
+        where: {
+          username
+        }
+      });
+      if (!following) {
+        return errorResponse(res, 'user not found', 404);
       }
-      const { id: following } = await User.findOne({ where: { username } });
+      if (following.id === id) {
+        return errorResponse(res, 'you cannot unfollow yourself', 403);
+      }
+      const follower = await User.findOne({
+        where: {
+          id
+        }
+      });
 
-      await Follower.destroy({
-        where: { followerId: id, userId: following },
-        retuning: true
-      });
-      return successResponse(res, {
-        message: `you just unfollowed ${username}`
-      });
+      // const existingFollower = await following.getFollowers();
+      // let isFollower = false;
+      // existingFollower.forEach(element => {
+      //   if (element.id === follower.dataValues.id) isFollower = true;
+      // });
+
+      const isFollower = await following.hasFollower(follower);
+      if (isFollower) {
+        await following.removeFollower(follower);
+        return successResponse(res, 'unfollow successful', 200);
+      }
+      errorResponse(res, 'you are not a follower');
     } catch (err) {
       return errorResponse(res, err.message);
     }

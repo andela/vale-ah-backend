@@ -9,7 +9,12 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id',
+          as: 'followers'
+        }
       },
       followerId: {
         type: Sequelize.INTEGER,
@@ -17,12 +22,8 @@ module.exports = {
         references: {
           model: 'Users',
           key: 'id',
-          as: 'follow'
+          as: 'following'
         }
-      },
-      followee: {
-        type: Sequelize.STRING,
-        allowNull: false
       },
       createdAt: {
         allowNull: false,

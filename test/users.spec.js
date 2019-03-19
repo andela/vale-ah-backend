@@ -10,6 +10,8 @@ const { User } = db;
 
 chai.use(chaiHttp);
 const user1 = generateRandomUser();
+const user2 = generateRandomUser();
+
 const { username, password, email } = generateRandomUser();
 
 const tokenPayload = {};
@@ -247,7 +249,7 @@ describe('User', () => {
     return chai
       .request(server)
       .post('/api/users/login')
-      .send({ email: user1.email, password: user1.password })
+      .send({ email: user1.email, password: user1.password }, {})
       .then(res => {
         loggedInUser = res.body.user;
       });
@@ -561,13 +563,57 @@ describe('User', () => {
       });
   });
 
-  it('should return an error is username is current user', done => {
+  it('should return an error if username is current user', done => {
     chai
       .request(server)
       .post(`/api/profiles/${user1.username}/follow`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
-        expect(res).to.have.status(400);
+        expect(res).to.have.status(403);
+        done(err);
+      });
+  });
+
+  it('should follow a user', done => {
+    chai
+      .request(server)
+      .post(`/api/profiles/Jacob/follow`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done(err);
+      });
+  });
+
+  it('should return an error if username does not exist', done => {
+    chai
+      .request(server)
+      .post(`/api/profiles/${user2}/follow`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should return all followers of the current user', done => {
+    chai
+      .request(server)
+      .get(`/api/user/followers`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done(err);
+      });
+  });
+
+  it('should return all followees of the current user', done => {
+    chai
+      .request(server)
+      .get(`/api/user/following`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
         done(err);
       });
   });
@@ -578,7 +624,29 @@ describe('User', () => {
       .delete(`/api/profiles/${user1.username}/follow`)
       .set({ authorization: loggedInUser.token })
       .end((err, res) => {
-        expect(res).to.have.status(500);
+        expect(res).to.have.status(403);
+        done(err);
+      });
+  });
+
+  it('should return an error if username was not found', done => {
+    chai
+      .request(server)
+      .delete('/api/profiles/someone/follow')
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should unfollow a user', done => {
+    chai
+      .request(server)
+      .delete(`/api/profiles/Jacob/follow`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
         done(err);
       });
   });
