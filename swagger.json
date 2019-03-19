@@ -9,8 +9,11 @@
     },
     "version": "1.0.0"
   },
-  "host": "localhost:4000",
-  "basePath": "/api",
+  "servers": [
+    {
+      "url": "https://vale-ah-backend-staging.herokuapp.com/api"
+    }
+  ],
   "tags": [
     {
       "name": "Naija Recipes",
@@ -21,7 +24,7 @@
     "/users": {
       "post": {
         "tags": [
-          "Users"
+          "Auth"
         ],
         "summary": "Create user",
         "description": "Creates a new user in system",
@@ -52,7 +55,156 @@
         }
       }
     },
+    "/users/verify" : {
+      "get" : {
+        "description" : "Verify if the user is verified",
+        "tags": [
+          "Auth"
+        ],
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
+        } ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "400" : {
+            "description" : "Verification token error",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "Account verification success"
+          }
+        }
+      }
+    },
+    "/user" : {
+      "get" : {
+        "description" : "Get a Current user",
+        "tags": [
+          "Users"
+        ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "headers",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          
+          "200" : {
+            "description" : "User Found"
+          }
+        }
+      }
+    },
+    "/user/password" : {
+      "put" : {
+        "description" : "Update user profile",
+        "tags": [
+          "Users"
+        ],
+        "parameters" : [ {
+          "in": "body",
+          "name": "password",
+          "description": "password to be updated",
+          "schema": {
+            "$ref": "#/definitions/User"
+          }
+        } ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "200" : {
+            "description" : "Success"
+          }
+        }
+      }
+    },
+    "/profiles" : {
+      "get" : {
+        "description" : "Get all users profile",
+        "tags": [
+          "Profile"
+        ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "400" : {
+            "description" : "Verification token error",
+            "content" : {
+              "application/json; charset=utf-8" : {
+                "schema" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "200" : {
+            "description" : "Record Found"
+          }
+        }
+      }
+    },
+    "/profiles/{username}" : {
+      "get" : {
+        "description" : "Get a specific user profile",
+        "tags": [
+          "Profile"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "username",
+            "description": "username of user",
+            "schema": {
+              "type":"string"
+            }
+          }
+        ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "200" : {
+            "description" : "Success"
+          }
+        }
+      }
+    },
     "/recipes": {
+      "get" : {
+        "description" : "Get all recipes",
+        "summary": "Fetch all recipes ",
+        "tags": [
+          "Recipes"
+        ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "200" : {
+            "description" : "Success"
+          }
+        }
+      },
       "post": {
         "tags": [
           "Recipes"
@@ -88,6 +240,33 @@
       }
     },
     "/recipes/{slug}": {
+      "get" : {
+        "description" : "Get single recipe by slug",
+        "summary": "Fetch one recipe by slug",
+        "tags": [
+          "Recipes"
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "schema": {
+              "type":"string"
+            }
+          }
+        ],
+        "responses" : {
+          "500" : {
+            "description" : "Database connection error"
+          },
+          "404": {
+            "description":"recipe not found"
+          },
+          "200" : {
+            "description" : "Success"
+          }
+        }
+      },
       "put": {
         "tags": [
           "Recipes"
@@ -120,9 +299,7 @@
             "content": {}
           }
         }
-      }
-    },
-    "/recipes/{slug}": {
+      },
       "delete": {
         "tags": [
           "Recipes"
@@ -147,40 +324,6 @@
           }
         }
       }
-    },
-    "/users/verify": {
-      "get": {
-        "description": "Verify if the user is verified",
-        "parameters": [{
-          "name": "token",
-          "in": "query",
-          "schema": {
-            "type": "string"
-          },
-          "example": "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
-        }],
-        "responses": {
-          "500": {
-            "description": "Database connection error"
-          },
-          "400": {
-            "description": "Verification token error",
-            "content": {
-              "application/json; charset=utf-8": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Account verification success"
-          }
-        }
-      },
-      "servers": [{
-        "url": "https://vale-ah-backend-staging.herokuapp.com"
-      }]
     }
   },
   "components": {

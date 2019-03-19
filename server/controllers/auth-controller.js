@@ -54,10 +54,11 @@ class UsersController {
           delete user.hash;
 
           mailer
-            .sendVerificationMail(
-              user.email,
-              generateVerificationLink(verificationToken)
-            )
+            .sendVerificationMail({
+              email: user.email,
+              username: user.username,
+              verificationLink: generateVerificationLink(verificationToken)
+            })
             .then(() => {
               return successResponse(res, { user, emailSent: true }, 201);
             })
@@ -115,17 +116,12 @@ class UsersController {
       ) {
         errorResponse(res, 'Invalid token, verification unsuccessful', 400);
       } else {
-        return errorResponse(
+        errorResponse(
           res,
-          'Invalid token, verification unsuccessful',
-          400
+          'Something went wrong, verification unsuccessful',
+          500
         );
       }
-      return errorResponse(
-        res,
-        'Something went wrong, verification unsuccessful',
-        500
-      );
     }
   }
 

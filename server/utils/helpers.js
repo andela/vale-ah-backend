@@ -105,3 +105,42 @@ export const generateVerificationLink = token =>
   UI_CLIENT_HOST
     ? `${UI_CLIENT_HOST}/users/verify/?token=${token}`
     : `${API_SERVER_HOST}/api/users/verify/?token=${token}`;
+
+/**
+ * Returns a slugified variant of a given string
+ *
+ * @param {string} string
+ * @returns {string} Slugified string
+ */
+/* eslint-disable no-useless-escape */
+export const slugifyTitle = string =>
+  string
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/&/g, '-and-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+
+export default slugifyTitle;
+
+/**
+ * Returns a list of dataValue objects from an array of sequelize rows
+ * @param {Array} sequelizeRowArray Array of rows from Sequelize query
+ * @returns {Array} Array of dataValue objects
+ */
+export const rowArrayToObjectList = sequelizeRowArray =>
+  sequelizeRowArray.reduce(
+    (dataValueArray, { dataValues }) => [...dataValueArray, dataValues],
+    []
+  );
+
+/**
+ * Generate a random hexadecimal string
+ * @returns {string} random alphanumeric string
+ */
+export const randomHex = () =>
+  Math.floor(Math.random() * Date.now()).toString(16);

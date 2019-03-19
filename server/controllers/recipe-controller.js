@@ -3,12 +3,24 @@ import {
   successResponse,
   errorResponse,
   validate,
-  validationErrorResponse
+  validationErrorResponse,
+  rowArrayToObjectList
 } from '../utils/helpers';
 import { recipeSchema, recipeUpdateSchema } from '../utils/validators';
-import slugifyTitle from '../utils/slugify';
 
-const { Recipe } = db;
+const { Recipe, User } = db;
+
+const defaultRecipeDbFilter = {
+  attributes: {
+    exclude: ['userId']
+  },
+  include: {
+    model: User,
+    attributes: {
+      exclude: ['hash', 'id', 'email', 'verified', 'createdAt', 'updatedAt']
+    }
+  }
+};
 
 /**
  * The controllers for recipe route
@@ -36,11 +48,9 @@ class RecipeController {
     } = req.body;
     try {
       await validate(req.body, recipeSchema);
-      const slug = slugifyTitle(title);
       Recipe.create({
         userId: req.user.id,
         title,
-        slug,
         ingredients,
         steps,
         cookingTime,
@@ -130,6 +140,52 @@ class RecipeController {
     } catch (error) {
       return errorResponse(res, error.message);
     }
+  }
+
+  /**
+   * Fetch all recipes
+   * @param {Object} req Express request object
+   * @param {Object} res Express response object
+   * @returns {undefined}
+   */
+  static getRecipes(req, res) {
+    Recipe.findAll(defaultRecipeDbFilter)
+      .then(recipeRows =>
+        recipeRows.length
+          ? successResponse(res, {
+              recipes: rowArrayToObjectList(recipeRows)
+            })
+          : successResponse(res, {
+              recipes: [],
+              message: 'no recipes have been created'
+            })
+      )
+      .catch(() => {
+        errorResponse(res, 'Oops, an error occured. Please try again', 500);
+      });
+  }
+
+  /**
+   * Fetch recipe by slug
+   * @param {string} req.params.slug Request URL Slug param
+   * @param {Object} res Express response object
+   * @returns {undefined}
+   */
+  static getRecipeBySlug(
+    {
+      params: { slug }
+    },
+    res
+  ) {
+    Recipe.findOne({ ...defaultRecipeDbFilter, where: { slug } })
+      .then(recipe =>
+        recipe
+          ? successResponse(res, { recipe })
+          : errorResponse(res, 'recipe Not found', 404)
+      )
+      .catch(() => {
+        errorResponse(res, 'Oops, an error occured. Please try again', 500);
+      });
   }
 }
 
