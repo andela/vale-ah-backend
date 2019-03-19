@@ -160,6 +160,17 @@ describe('Recipes', () => {
         });
     });
 
+    it('should return an error if recipe does not exist', done => {
+      chai
+        .request(server)
+        .put(`${baseUrl}/sometext`)
+        .set({ authorization: token })
+        .end((err, res) => {
+          expect(res).to.have.status(404);
+          done(err);
+        });
+    });
+
     it('should return an error if user does not exist', done => {
       chai
         .request(server)

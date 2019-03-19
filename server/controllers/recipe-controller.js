@@ -68,21 +68,13 @@ class RecipeController {
   static async updateRecipe(req, res) {
     const { id } = req.user;
     const { slug } = req.params;
-    const {
-      title,
-      ingredients,
-      steps,
-      cookingTime,
-      preparationTime
-    } = req.body;
+    const { ...newRecipe } = req.body;
     try {
-      await validate(req.body, recipeUpdateSchema);
+      await validate(newRecipe, recipeUpdateSchema);
       const recipe = await Recipe.findOne({ where: { slug } });
-
       if (!recipe) {
         return errorResponse(res, 'recipe not found', 404);
       }
-
       if (recipe.userId !== id) {
         return errorResponse(
           res,
@@ -92,11 +84,11 @@ class RecipeController {
       }
       const data = await recipe.update(
         {
-          title: title || recipe.title,
-          ingredients: ingredients || recipe.ingredients,
-          cookingTime: cookingTime || recipe.cookingTime,
-          preparationTime: preparationTime || recipe.preparationTime,
-          steps: steps || recipe.steps
+          title: newRecipe.title || recipe.title,
+          ingredients: newRecipe.ingredients || recipe.ingredients,
+          cookingTime: newRecipe.cookingTime || recipe.cookingTime,
+          preparationTime: newRecipe.preparationTime || recipe.preparationTime,
+          steps: newRecipe.steps || recipe.steps
         },
         { returning: true }
       );
