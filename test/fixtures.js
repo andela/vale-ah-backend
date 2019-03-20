@@ -23,6 +23,12 @@ export const recipeTestUser = {
   password: 'jakejake'
 };
 
+export const commentTestUser = {
+  username: 'Jacob2',
+  email: 'jake2@jake.jake',
+  password: 'jakejake'
+};
+
 export const comment = {
   body: 'This is a new comment'
 };

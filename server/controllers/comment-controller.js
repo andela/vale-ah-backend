@@ -30,7 +30,7 @@ class CommentController {
       user: { id: userId }
     } = req;
     try {
-      await validate(commentSchema, req.body);
+      await validate(req.body, commentSchema);
       const recipe = await Recipe.findOne({ where: { slug } });
       if (!recipe) {
         return errorResponse(res, 'does not exist', 400);
