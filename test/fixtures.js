@@ -23,6 +23,10 @@ export const recipeTestUser = {
   password: 'jakejake'
 };
 
+export const comment = {
+  body: 'This is a new comment'
+};
+
 /**
  * generate random user details
  * @return {object} random user
