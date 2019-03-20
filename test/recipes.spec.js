@@ -130,7 +130,7 @@ describe('Recipes', () => {
 
   describe('GET /api/recipes', () => {
     before(async () => {
-      await db.Recipe.destroy({ truncate: true });
+      await db.Recipe.destroy({ truncate: true, cascade: true });
     });
 
     describe('Fetching before create', () => {
@@ -191,7 +191,7 @@ describe('Recipes', () => {
 
   describe('GET api/recipes/:slug', () => {
     before(async () => {
-      await db.Recipe.destroy({ truncate: true });
+      await db.Recipe.destroy({ truncate: true, cascade: true });
     });
 
     describe('Fetching before create', () => {
