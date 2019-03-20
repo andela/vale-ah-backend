@@ -4,13 +4,16 @@ import faker from 'faker';
 import server from '../server';
 import { generateToken } from '../server/utils/helpers';
 import { generateRandomUser } from './fixtures';
+import db from '../server/models';
+
+const { User } = db;
 
 chai.use(chaiHttp);
 const user1 = generateRandomUser();
 const { username, password, email } = generateRandomUser();
 
+const tokenPayload = {};
 describe('Authentication', () => {
-  const tokenPayload = {};
   describe('POST /api/users', () => {
     const baseUrl = '/api/users';
     it('should register a user with valid details', done => {
@@ -484,6 +487,94 @@ describe('User', () => {
       .send({ newPassword, oldPassword })
       .end((err, res) => {
         expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+});
+
+describe('Password reset', () => {
+  const baseUrl = '/api/users';
+  const url = `${baseUrl}/reset-password`;
+  it('should send an email for an existing user', done => {
+    chai
+      .request(server)
+      .post(`${url}/email`)
+      .send({ email: 'jake@jake.jake' })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.message).to.contain('sent');
+        done(err);
+      });
+  });
+
+  it('should not send an email for a user that does not exist', done => {
+    chai
+      .request(server)
+      .post(`${url}/email`)
+      .send({ email: 'not.exist@jake.jake' })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body.errors).to.be.an('Array');
+        done(err);
+      });
+  });
+
+  it('should not send an email for an invalid request email', done => {
+    chai
+      .request(server)
+      .post(`${url}/email`)
+      .send({ email: 'invalid email' })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body.errors).to.haveOwnProperty('email');
+        done(err);
+      });
+  });
+
+  it("should change the user's password", done => {
+    let passwordHash;
+    User.findOne({ where: { id: tokenPayload.id } })
+      .then(({ hash }) => {
+        passwordHash = hash;
+      })
+      .catch(err => done(err));
+    chai
+      .request(server)
+      .post(url)
+      .set({ Authorization: generateToken(tokenPayload) })
+      .send({ password: 'newpassword' })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.message).to.contain('changed');
+        User.findOne({ where: { id: tokenPayload.id } })
+          .then(({ hash }) => {
+            expect(hash).to.not.equal(passwordHash);
+          })
+          .catch(err => done(err));
+        done(err);
+      });
+  });
+
+  it("should not change the user's password if password is invalid", done => {
+    let passwordHash;
+    User.findOne({ id: tokenPayload.id })
+      .then(({ hash }) => {
+        passwordHash = hash;
+      })
+      .catch(err => done(err));
+    chai
+      .request(server)
+      .post(url)
+      .set({ Authorization: generateToken(tokenPayload) })
+      .send({ password: '#*@*' })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body.errors).to.haveOwnProperty('password');
+        User.findOne({ id: tokenPayload.id })
+          .then(({ hash }) => {
+            expect(hash).to.equal(passwordHash);
+          })
+          .catch(err => done(err));
         done(err);
       });
   });

@@ -32,6 +32,34 @@ const sendVerificationMail = ({ email, username, verificationLink }) => {
   return sendgrid.send(mail);
 };
 
+/**
+ * Sends a password reset link to a user's email
+ *
+ * @param {object} options mail options
+ * @param {string} options.email Recipient email address
+ * @param {string} options.username Recipient username
+ * @param {string} options.resetPasswordLink Account verification link
+ * @returns {Promise} Sendgrid response
+ */
+const sendResetMail = ({ email, username, resetPasswordLink }) => {
+  const mail = {
+    to: email,
+    from: ADMIN_EMAIL,
+    text: `Please follow this link to reset your ${siteName} account passoword:  ${resetPasswordLink}`,
+    html: ' ',
+    templateId: 'd-79785a424ade464192f178d6af66b6d4',
+    dynamic_template_data: {
+      subject: `Reset your account password - ${siteName}`,
+      siteName,
+      username,
+      resetPasswordLink
+    }
+  };
+
+  return sendgrid.send(mail);
+};
+
 export default {
-  sendVerificationMail
+  sendVerificationMail,
+  sendResetMail
 };
