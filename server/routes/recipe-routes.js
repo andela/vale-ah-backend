@@ -10,5 +10,4 @@ router.get('/:slug', controller.getRecipeBySlug);
 router.put('/:slug', User.validUser, controller.updateRecipe);
 router.delete('/:slug', User.validUser, controller.deleteRecipe);
 
-router.delete('/:slug', User.validUser, controller.deleteRecipe);
 export default router;

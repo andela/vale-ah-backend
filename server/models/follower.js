@@ -15,5 +15,12 @@ export default (sequelize, DataTypes) => {
     },
     {}
   );
+
+  Follower.associate = models => {
+    Follower.belongsTo(models.User, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+  };
   return Follower;
 };

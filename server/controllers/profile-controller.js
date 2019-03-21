@@ -1,7 +1,7 @@
 import { successResponse, errorResponse } from '../utils/helpers';
 import db from '../models';
 
-const { User } = db;
+const { User, Follower } = db;
 
 /**
  * The controllers for users route
@@ -19,22 +19,26 @@ class ProfileController {
    */
   static async getProfile(req, res) {
     const { username } = req.params;
+    const { id } = req.user;
     try {
-      return User.findOne({ where: { username } })
-        .then(data => {
-          if (!data) {
-            return errorResponse(res, 'username does not exist', 404);
+      const profile = await User.findOne({
+        where: { username },
+        include: [
+          {
+            model: Follower,
+            where: {
+              followerId: id
+            }
           }
-          delete data.dataValues.hash;
-          return successResponse(
-            res,
-            {
-              user: data.dataValues
-            },
-            200
-          );
-        })
-        .catch(() => errorResponse(res));
+        ],
+        attributes: ['id', 'username', 'email', 'bio', 'image']
+      });
+      console.log(profile);
+      if (!profile) {
+        return errorResponse(res, 'user not found', 404);
+      }
+      const isFollower = await profile.hasFollower(id);
+      return successResponse(res, { user: profile, following: isFollower });
     } catch (error) {
       return errorResponse(res, error.message);
     }

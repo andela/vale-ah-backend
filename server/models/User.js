@@ -1,7 +1,5 @@
 import { hashPassword } from '../utils/helpers';
-import models from './index';
 
-const { Follower } = models;
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     'User',
@@ -49,17 +47,26 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  User.associate = model => {
-    User.belongsToMany(model.User, {
-      through: model.Follower,
+  User.associate = models => {
+    User.hasMany(models.Recipe, {
+      foreignKey: 'userId',
+      as: 'recipe'
+    });
+
+    User.belongsToMany(models.User, {
+      through: models.Follower,
       foreignKey: 'userId',
       as: 'followers'
     });
 
     User.belongsToMany(User, {
-      through: model.Follower,
+      through: models.Follower,
       foreignKey: 'followerId',
       as: 'following'
+    });
+
+    User.hasMany(models.Follower, {
+      foreignKey: 'userId'
     });
   };
 
