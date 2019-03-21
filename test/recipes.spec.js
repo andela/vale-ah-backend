@@ -334,27 +334,25 @@ describe('Recipes', () => {
 
   describe('Pagination', () => {
     const url = '/api/recipes';
-    let items;
     before(async () => {
       const array = Array(50)
         .fill()
-        .map(() => {
-          return chai
+        .map(() =>
+          chai
             .request(server)
             .post('/api/recipes')
             .set({ authorization: runtimeFixture.token })
-            .send(recipe);
-        });
+            .send(recipe)
+        );
       await Promise.all(array);
     });
 
-    it('should get all recipes when no page or limit is set', done => {
+    it('should get all recipes when no offset or limit is set', done => {
       chai
         .request(server)
         .get(url)
         .end((err, res) => {
           const { recipes } = res.body;
-          items = recipes;
           expect(res).to.have.status(200);
           expect(recipes)
             .to.be.an('Array')
@@ -363,7 +361,7 @@ describe('Recipes', () => {
         });
     });
 
-    it('should get the first 30 recipes when limit is 30 but page is not set', done => {
+    it('should get the first 30 recipes when limit is 30 but offset is not set', done => {
       chai
         .request(server)
         .get(`${url}?limit=30`)
@@ -373,70 +371,67 @@ describe('Recipes', () => {
           expect(recipes)
             .to.be.an('Array')
             .and.has.lengthOf(30);
-          expect(recipes[0].id).to.equal(items[0].id);
           done(err);
         });
     });
 
-    it('should get the second set of 10 recipes when page is 2 and no limit is set', done => {
+    it('should get 20 recipes when offset is 10 limit is not set', done => {
       chai
         .request(server)
-        .get(`${url}?page=2`)
+        .get(`${url}?offset=10`)
         .end((err, res) => {
           const { recipes } = res.body;
           expect(res).to.have.status(200);
           expect(recipes).to.be.an('Array');
-          expect(recipes.length).to.equal(10);
-          expect(recipes[0].id).to.not.equal(items[0].id);
+          expect(recipes).to.have.lengthOf(20);
           done(err);
         });
     });
 
-    it('should get the second set of 25 recipes when page is 2 and limit is 25', done => {
+    it('should get 25 recipes when offset is 20 and limit is 25', done => {
       chai
         .request(server)
-        .get(`${url}?page=2&limit=25`)
+        .get(`${url}?offset=20&limit=25`)
         .end((err, res) => {
           const { recipes } = res.body;
           expect(res).to.have.status(200);
           expect(recipes).to.be.an('Array');
           expect(recipes.length).to.equal(25);
-          expect(recipes[0].id).to.not.equal(items[0].id);
           done(err);
         });
     });
 
-    it('should not get recipes if page or limit is a negative number', done => {
+    it('should not get recipes if offset or limit is a negative number', done => {
       chai
         .request(server)
-        .get(`${url}?page=-1&limit=-1`)
+        .get(`${url}?offset=-1&limit=-1`)
         .end((err, res) => {
           expect(res).to.have.status(400);
-          expect(res.body.errors).to.haveOwnProperty('page');
+          expect(res.body.errors).to.haveOwnProperty('offset');
           expect(res.body.errors).to.haveOwnProperty('limit');
           done(err);
         });
     });
 
-    it('should not get recipes if page or limit is zero', done => {
+    it('should not get recipes if offset or limit is zero', done => {
       chai
         .request(server)
-        .get(`${url}?page=0&limit=0`)
+        .get(`${url}?offset=0&limit=0`)
         .end((err, res) => {
           expect(res).to.have.status(400);
-          expect(res.body.errors).to.haveOwnProperty('page');
+          expect(res.body.errors).to.haveOwnProperty('offset');
           expect(res.body.errors).to.haveOwnProperty('limit');
           done(err);
         });
     });
 
-    it('should not get recipes if page or limit is not an integer', done => {
+    it('should not get recipes if offset or limit is not an integer', done => {
       chai
         .request(server)
-        .get(`${url}?page=text&limit=text`)
+        .get(`${url}?offset=text&limit=text`)
         .end((err, res) => {
           expect(res).to.have.status(400);
-          expect(res.body.errors).to.haveOwnProperty('page');
+          expect(res.body.errors).to.haveOwnProperty('offset');
           expect(res.body.errors).to.haveOwnProperty('limit');
           done(err);
         });
