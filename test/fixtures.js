@@ -24,13 +24,13 @@ export const recipeTestUser = {
 };
 
 export const commentTestUser = {
-  username: 'Jacob2',
-  email: 'jake2@jake.jake',
-  password: 'jakejake'
+  username: faker.internet.userName(),
+  email: faker.internet.email(),
+  password: faker.random.alphaNumeric(10)
 };
 
 export const comment = {
-  body: 'This is a new comment'
+  body: faker.lorem.text()
 };
 
 /**
