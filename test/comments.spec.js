@@ -88,5 +88,19 @@ describe('Comments', () => {
           done(err);
         });
     });
+
+    it('should return error when recipe is invalid', done => {
+      chai
+        .request(server)
+        .post(`/api/recipes/invalid-recipe-slug/comments`)
+        .set({ authorization: runtimeFixture.token })
+        .send(comment)
+        .end((err, res) => {
+          const { body } = res;
+          expect(res).to.have.status(400);
+          expect(body.errors).to.contain('This recipe does not exist');
+          done(err);
+        });
+    });
   });
 });

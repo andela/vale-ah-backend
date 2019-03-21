@@ -9,13 +9,6 @@ import { commentSchema } from '../utils/validators';
 
 const { Comment, Recipe } = db;
 
-// const userFilter = {
-//   attributes: {
-//     include: [],
-//     exclude: []
-//   }
-// };
-
 /**
  * The controllers for comment route
  *
@@ -40,7 +33,7 @@ class CommentController {
       await validate(req.body, commentSchema);
       const recipe = await Recipe.findOne({ where: { slug } });
       if (!recipe) {
-        return errorResponse(res, 'does not exist', 400);
+        return errorResponse(res, 'This recipe does not exist', 400);
       }
       const {
         dataValues: { id: recipeId }
