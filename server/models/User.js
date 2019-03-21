@@ -53,6 +53,11 @@ module.exports = (sequelize, DataTypes) => {
       as: 'recipe'
     });
 
+    User.hasMany(models.CommentLike, {
+      foreignKey: 'userId',
+      as: 'commentlikes'
+    });
+
     User.belongsToMany(models.User, {
       through: models.Follower,
       foreignKey: 'userId',
