@@ -30,16 +30,17 @@ class BookmarkController {
    * @returns {undefined}
    */
   static async createBookmark(req, res) {
-    const { id } = req.user;
+    const { ...user } = req.user;
     const { slug } = req.params;
     try {
       const recipe = await Recipe.findOne({ where: { slug } });
       if (!recipe) {
         return errorResponse(res, 'recipe not found', 404);
       }
-      const check = await Bookmark.findOne({
-        where: { userId: id, recipeId: recipe.id }
-      });
+      // const check = await Bookmark.findOne({
+      //   where: { userId: id, recipeId: recipe.id }
+      // });
+      const check = await user.hasRecipe(recipe.dataValues.id);
       if (check) {
         const deleted = await check.destroy();
         return deleted
@@ -48,7 +49,7 @@ class BookmarkController {
       }
       await Bookmark.create({
         recipeId: recipe.id,
-        userId: id
+        userId: user.id
       });
       return successResponse(res, 'bookmarked successful', 200);
     } catch (error) {

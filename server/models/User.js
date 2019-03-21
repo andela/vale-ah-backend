@@ -78,6 +78,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'recipe'
     });
+    User.hasMany(models.Bookmark, {});
   };
   return User;
 };

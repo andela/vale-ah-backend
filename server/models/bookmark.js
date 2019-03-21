@@ -4,7 +4,12 @@ module.exports = (sequelize, DataTypes) => {
     {
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id',
+          as: 'bookmarks'
+        }
       },
       recipeId: {
         type: DataTypes.INTEGER,
@@ -20,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
       as: 'owner'
     });
+
     Bookmark.belongsTo(models.Recipe, {
       foreignKey: 'recipeId',
       onDelete: 'CASCADE'
