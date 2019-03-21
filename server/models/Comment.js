@@ -2,18 +2,18 @@ module.exports = (sequelize, DataTypes) => {
   const Comment = sequelize.define(
     'Comment',
     {
-      body: DataTypes.STRING
+      body: DataTypes.TEXT
     },
     {}
   );
   Comment.associate = models => {
     Comment.belongsTo(models.Recipe, {
       foreignKey: 'recipeId',
-      onDelete: 'CASCADE'
+      onDelete: 'SET NULL'
     });
     Comment.belongsTo(models.User, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE'
+      onDelete: 'SET NULL'
     });
   };
   return Comment;

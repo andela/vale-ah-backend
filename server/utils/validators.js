@@ -68,7 +68,7 @@ export const changePasswordSchema = Joi.object().keys({
 
 export const commentSchema = Joi.object().keys({
   body: Joi.string()
-    .max(250)
+    .max(1500)
     .required()
 });
 

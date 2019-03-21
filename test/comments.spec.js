@@ -47,7 +47,7 @@ describe('Comments', () => {
         });
     });
 
-    it('should not create a comment when token is absent', done => {
+    it('should not create a comment when token is invalid', done => {
       chai
         .request(server)
         .post(`/api/recipes/${runtimeFixture.slug}/comments`)
@@ -57,6 +57,20 @@ describe('Comments', () => {
           const { body } = res;
           expect(res).to.have.status(404);
           expect(body.errors).to.contain('User does not exist');
+          done(err);
+        });
+    });
+
+    it('should not create a comment when token is absent', done => {
+      chai
+        .request(server)
+        .post(`/api/recipes/${runtimeFixture.slug}/comments`)
+        .set({})
+        .send(comment)
+        .end((err, res) => {
+          const { body } = res;
+          expect(res).to.have.status(400);
+          expect(body.errors).to.contain('Token is not provided');
           done(err);
         });
     });

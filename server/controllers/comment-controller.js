@@ -9,6 +9,13 @@ import { commentSchema } from '../utils/validators';
 
 const { Comment, Recipe } = db;
 
+// const userFilter = {
+//   attributes: {
+//     include: [],
+//     exclude: []
+//   }
+// };
+
 /**
  * The controllers for comment route
  *

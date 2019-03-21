@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     Recipe.hasMany(models.Comment, {
       foreignKey: 'recipeId',
-      as: 'comment'
+      as: 'comments'
     });
   };
 
