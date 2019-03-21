@@ -1,7 +1,7 @@
 import db from '../models';
 import { successResponse, errorResponse } from '../utils/helpers';
 
-const { Recipe, Bookmark } = db;
+const { User, Recipe, Bookmark } = db;
 
 const defaultRecipeDbFilter = {
   // attributes: {
@@ -30,29 +30,41 @@ class BookmarkController {
    * @returns {undefined}
    */
   static async createBookmark(req, res) {
-    const { ...user } = req.user;
+    const { id } = req.user;
     const { slug } = req.params;
+    const currentUser = await User.findOne({ where: { id } });
     try {
       const recipe = await Recipe.findOne({ where: { slug } });
       if (!recipe) {
         return errorResponse(res, 'recipe not found', 404);
       }
+      console.log(recipe);
+      // Users belongs to many Recipes through Bookmark
+      const bookmarks = await currentUser.getBookmark({ raw: true });
+      console.log(bookmarks);
       // const check = await Bookmark.findOne({
       //   where: { userId: id, recipeId: recipe.id }
       // });
-      const check = await user.hasRecipe(recipe.dataValues.id);
+      const check = await currentUser.hasBookmark(recipe.id);
+      // const bookmarkId = await Bookmark.findOne({
+      //   where: { userId: id, recipeId: recipe.id }
+      // });
+      // console.log(bookmarkId)
+
+      const result = await currentUser.removeBookmark(recipe.id);
       if (check) {
-        const deleted = await check.destroy();
-        return deleted
-          ? successResponse(res, 'delete successful')
-          : errorResponse(res, 'could not delete', 500);
+        await currentUser.removeBookmark(recipe);
+        return successResponse(res, 'delete successful');
       }
+      console.log(result);
+
       await Bookmark.create({
         recipeId: recipe.id,
-        userId: user.id
+        userId: id
       });
       return successResponse(res, 'bookmarked successful', 200);
     } catch (error) {
+      // console.log(error);
       errorResponse(res, error.message);
     }
   }

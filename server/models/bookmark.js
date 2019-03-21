@@ -5,10 +5,10 @@ module.exports = (sequelize, DataTypes) => {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        onDelete: 'CASCADE',
         references: {
           model: 'Users',
-          key: 'id',
-          as: 'bookmarks'
+          key: 'id'
         }
       },
       recipeId: {
@@ -22,8 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     Bookmark.belongsTo(models.User, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
-      as: 'owner'
+      onDelete: 'CASCADE'
     });
 
     Bookmark.belongsTo(models.Recipe, {

@@ -8,7 +8,14 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       userId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Users',
+          key: 'id',
+          as: 'bookmarks'
+        }
       },
       recipeId: {
         type: Sequelize.INTEGER
@@ -24,6 +31,6 @@ module.exports = {
     });
   },
   down: (queryInterface /* , Sequelize */) => {
-    return queryInterface.dropTable('bookmarks');
+    return queryInterface.dropTable('Bookmarks');
   }
 };
