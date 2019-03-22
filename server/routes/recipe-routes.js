@@ -14,22 +14,15 @@ router.get('/:slug/comments', CommentController.getAllComments);
 router.put('/:slug', User.validUser, controller.updateRecipe);
 router.delete('/:slug', User.validUser, controller.deleteRecipe);
 
-// Recipe clap
-router.post('/:slug/like', User.validUser, RecipeReactionController.likeRecipe);
 router.post(
-  '/:slug/dislike',
+  '/:slug/:reaction(like||dislike)',
   User.validUser,
-  RecipeReactionController.dislikeRecipe
+  RecipeReactionController.likeOrDislike
 );
 router.get(
-  '/:slug/dislike',
+  '/:slug/:reaction(like||dislike)',
   User.validUser,
-  RecipeReactionController.fetchAllRecipeDislike
-);
-router.get(
-  '/:slug/like',
-  User.validUser,
-  RecipeReactionController.fetchAllRecipeLike
+  RecipeReactionController.fetchAllRecipeLikeOrDislike
 );
 
 export default router;

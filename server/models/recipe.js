@@ -39,9 +39,15 @@ module.exports = (sequelize, DataTypes) => {
       target: 'id',
       onDelete: 'CASCADE'
     });
+
     Recipe.hasMany(models.Comment, {
       foreignKey: 'recipeId',
       as: 'comments'
+    });
+
+    Recipe.belongsTo(models.User, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
     });
   };
 

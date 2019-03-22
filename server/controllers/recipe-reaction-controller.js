@@ -10,44 +10,47 @@ const { RecipeReaction, Recipe } = db;
  */
 class RecipeReactionController {
   /**
-   * @description like a user's recipe.
-   * @function likeRecipe
+   * @description like or dislike a recipe
+   * @function likeOrDislike
    * @static
    * @param {*} req
    * @param {*} res
    * @memberof RecipeReactionController
-   * @returns {object} response
+   *@returns {object} response
    */
-  static async likeRecipe(req, res) {
+  static async likeOrDislike(req, res) {
     const { id } = req.user;
-    const { slug } = req.params;
+    const { slug, reaction } = req.params;
 
     try {
       const recipe = await Recipe.findOne({ where: { slug } });
-      const like = await RecipeReaction.findOne({
+      const likeOrDislike = await RecipeReaction.findOne({
         where: { userId: id, recipeId: recipe.id }
       });
 
-      if (!like) {
+      if (!likeOrDislike) {
         await RecipeReaction.create({
           userId: id,
           recipeId: recipe.id,
-          isLike: true
+          isLike: reaction === 'like'
         });
         successResponse(
           res,
           {
-            message: 'you like this recipe'
+            message: `you ${reaction} this recipe`
           },
           201
         );
       } else {
-        if (like && like.isLike === false) {
+        if (
+          likeOrDislike &&
+          likeOrDislike.isLike === (reaction === 'dislike')
+        ) {
           await RecipeReaction.update(
             {
               userId: id,
               recipeId: recipe.id,
-              isLike: true
+              isLike: reaction === 'like'
             },
             {
               where: {
@@ -58,18 +61,18 @@ class RecipeReactionController {
           );
           return successResponse(
             res,
-            { message: 'you like this recipe (updated)' },
+            { message: `you ${reaction} this recipe (updated)` },
             200
           );
         }
-        if (like && like.isLike === true) {
+        if (likeOrDislike && likeOrDislike.isLike === (reaction === 'like')) {
           await RecipeReaction.destroy({
             where: { recipeId: recipe.id }
           });
           successResponse(
             res,
             {
-              message: 'you unlike this recipe'
+              message: `you retrived your ${reaction}`
             },
             200
           );
@@ -81,140 +84,23 @@ class RecipeReactionController {
   }
 
   /**
-   * @description dislike a user's recipe.
-   * @function dislikeRecipe
+   * @description gets all the like or dislikes a recipe has.
+   *
    * @static
    * @param {*} req
    * @param {*} res
-   * @memberof RecipeReactionController
    * @returns {object} response
-   */
-  static async dislikeRecipe(req, res) {
-    const { id } = req.user;
-    const { slug } = req.params;
-
-    try {
-      const recipe = await Recipe.findOne({ where: { slug } });
-      const like = await RecipeReaction.findOne({
-        where: { userId: id, recipeId: recipe.id }
-      });
-
-      if (!like) {
-        await RecipeReaction.create({
-          userId: id,
-          recipeId: recipe.id,
-          isLike: false
-        });
-        successResponse(
-          res,
-          {
-            message: 'you dislike this recipe'
-          },
-          201
-        );
-      } else {
-        if (like && like.isLike === true) {
-          await RecipeReaction.update(
-            {
-              userId: id,
-              recipeId: recipe.id,
-              isLike: false
-            },
-            {
-              where: {
-                userId: id,
-                recipeId: recipe.id
-              }
-            }
-          );
-          return successResponse(
-            res,
-            { message: 'you dislike this recipe (updated)' },
-            200
-          );
-        }
-        if (like && like.isLike === false) {
-          await RecipeReaction.destroy({
-            where: { recipeId: recipe.id }
-          });
-
-          successResponse(
-            res,
-            {
-              message: 'you undislike this recipe:) '
-            },
-            200
-          );
-        }
-      }
-    } catch (err) {
-      errorResponse(res, 'Something went wrong', 500);
-    }
-  }
-
-  /**
-   * @description  get all recipe dislikes.
-   * @function fetchAllRecipeReaction
-   * @static
-   * @param {*} req
-   * @param {*} res
-   * @returns
    * @memberof RecipeReactionController
-   * @returns {object} response
    */
-  static async fetchAllRecipeLike(req, res) {
-    const { slug } = req.params;
-
-    try {
-      const recipe = await Recipe.findOne({ where: { slug } });
-      const allRecipeReactions = await RecipeReaction.findAll({
-        where: {
-          recipeId: recipe.id,
-          isLike: true
-        }
-      });
-
-      if (!allRecipeReactions.length) {
-        return errorResponse(
-          res,
-          {
-            message: 'no recipe like found'
-          },
-          404
-        );
-      }
-      successResponse(
-        res,
-        {
-          message: 'Recipe like retrieved successfully',
-          likes: allRecipeReactions.length
-        },
-        200
-      );
-    } catch (err) {
-      errorResponse(res, 'Error retrieving recipe likes', 500);
-    }
-  }
-
-  /**
-   * @description  get all recipe dislikes.
-   * @function fetchAllRecipeReaction
-   * @static
-   * @param {*} req
-   * @param {*} res
-   * @returns
-   * @memberof RecipeReactionController
-   * @returns {object} response
-   */
-  static async fetchAllRecipeDislike(req, res) {
-    const { slug } = req.params;
+  static async fetchAllRecipeLikeOrDislike(req, res) {
+    const { slug, reaction } = req.params;
 
     try {
       const recipe = await Recipe.findOne({ where: { slug } });
       const allRecipeDislikes = await RecipeReaction.findAll({
         where: {
           recipeId: recipe.id,
-          isLike: false
+          isLike: reaction === 'like'
         }
       });
 
@@ -222,7 +108,7 @@ class RecipeReactionController {
         return errorResponse(
           res,
           {
-            message: 'no recipe dislike found'
+            message: `no recipe ${reaction} found`
           },
           404
         );
@@ -230,13 +116,13 @@ class RecipeReactionController {
       successResponse(
         res,
         {
-          message: 'Recipe dislikes retrieved successfully',
-          dislikes: allRecipeDislikes.length
+          message: `Recipe ${reaction} retrieved successfully`,
+          reaction: `${allRecipeDislikes.length} ${reaction}(s)`
         },
         200
       );
     } catch (err) {
-      errorResponse(res, 'Error retrieving recipe dislikes', 500);
+      errorResponse(res, `Error retrieving recipe ${reaction}`, 500);
     }
   }
 }
