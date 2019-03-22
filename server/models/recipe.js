@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
     Recipe.belongsToMany(models.User, {
       through: 'Bookmark',
       foreignKey: 'recipeId',
-      as: 'bookmark'
+      as: 'bookmarkers'
     });
   };
 

@@ -4,13 +4,13 @@ import { successResponse, errorResponse } from '../utils/helpers';
 const { Recipe, User } = db;
 
 /**
- * The controllers for bookmark route
+ * The controllers for user bookmarks
  *
  * @class BookmarkController
  */
 class BookmarkController {
   /**
-   * create and remove bookmark controller
+   * toggle bookmark controller
    *
    * @static
    * @param {*} req
@@ -19,7 +19,7 @@ class BookmarkController {
    * @memberof RecipeController
    * @returns {undefined}
    */
-  static async createBookmark(req, res) {
+  static async toggleBookmark(req, res) {
     const { id } = req.user;
     const { slug } = req.params;
     try {
@@ -27,17 +27,17 @@ class BookmarkController {
       if (!recipe) {
         return errorResponse(res, 'recipe not found', 404);
       }
-      const check = await recipe.hasBookmark(id);
+      const check = await recipe.hasBookmarkers(id);
       if (check) {
-        const deleted = await recipe.removeBookmark(id);
+        const deleted = await recipe.removeBookmarkers(id);
         return deleted
           ? successResponse(res, 'delete successful')
           : errorResponse(res, 'could not delete', 500);
       }
-      await recipe.addBookmark(id);
-      return successResponse(res, 'bookmarked successful', 200);
+      await recipe.addBookmarkers(id);
+      return successResponse(res, 'bookmarked successful');
     } catch (error) {
-      errorResponse(res, error.message);
+      return errorResponse(res, error.message);
     }
   }
 
@@ -55,7 +55,7 @@ class BookmarkController {
     try {
       const { id } = req.user;
       const user = await User.findOne({ where: { id } });
-      const bookmarks = await user.getBookmark();
+      const bookmarks = await user.getBookmarks();
       if (!bookmarks) {
         return successResponse(res, 'you do not have any bookmark');
       }
@@ -64,7 +64,7 @@ class BookmarkController {
       }));
       return successResponse(res, bookmarkArr);
     } catch (err) {
-      errorResponse(res, err.message);
+      return errorResponse(res, err.message);
     }
   }
 }

@@ -1,6 +1,6 @@
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Bookmarks', {
+  up: (queryInterface, Sequelize) =>
+    queryInterface.createTable('Bookmarks', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,7 +13,7 @@ module.exports = {
         references: {
           model: 'Users',
           key: 'id',
-          as: 'booked'
+          as: 'bookmarks'
         }
       },
       recipeId: {
@@ -22,7 +22,7 @@ module.exports = {
         references: {
           model: 'Recipe',
           key: 'id',
-          as: 'recipe'
+          as: 'bookmakers'
         }
       },
       createdAt: {
@@ -33,9 +33,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    });
-  },
-  down: (queryInterface /* , Sequelize */) => {
-    return queryInterface.dropTable('Bookmarks');
-  }
+    }),
+  down: queryInterface => queryInterface.dropTable('Bookmarks')
 };
