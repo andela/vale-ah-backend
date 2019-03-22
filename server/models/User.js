@@ -73,7 +73,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'comments'
     });
-
-    return User;
   };
+  return User;
 };

@@ -58,6 +58,40 @@
         }
       }
     },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login user",
+        "description": "Login a new user in system",
+        "requestBody": {
+          "description": "User to be logged in",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userLogin"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "201": {
+            "description": "Login existing user",
+            "content": {}
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {}
+          },
+          "409": {
+            "description": "Database conflict",
+            "content": {}
+          }
+        }
+      }
+    },
     "/users/verify": {
       "get": {
         "description": "Verify if the user is verified",
@@ -96,18 +130,14 @@
     },
     "/user": {
       "get": {
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
         "description": "Get a Current user",
         "tags": [
           "Users"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "headers",
-            "schema": {
-              "type": "string"
-            }
-          }
         ],
         "responses": {
           "500": {
@@ -121,6 +151,11 @@
     },
     "/user/password": {
       "put": {
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
         "description": "Update user profile",
         "tags": [
           "Users"
@@ -128,8 +163,16 @@
         "parameters": [
           {
             "in": "body",
-            "name": "password",
-            "description": "password to be updated",
+            "name": "oldPassword",
+            "description": "old password",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          {
+            "in": "body",
+            "name": "newPassword",
+            "description": "new password to be updated",
             "schema": {
               "$ref": "#/definitions/User"
             }
@@ -147,6 +190,11 @@
     },
     "/profiles": {
       "get": {
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
         "description": "Get all users profile",
         "tags": [
           "Profile"
@@ -173,6 +221,11 @@
     },
     "/profiles/{username}": {
       "get": {
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
         "description": "Get a specific user profile",
         "tags": [
           "Profile"
@@ -236,15 +289,13 @@
         "tags": [
           "Recipes"
         ],
+        "security":
+          [{
+            "ApiKeyAuth": []
+
+          }],
         "summary": "Create new recipe",
         "description": "This endpoint will create a new recipe",
-        "parameters": [
-          {
-            "name": "accesstoken",
-            "in": "header",
-            "schema": {}
-          }
-        ],
         "requestBody": {
           "description": "Recipe to be created",
           "content": {
@@ -303,13 +354,20 @@
         "tags": [
           "Recipes"
         ],
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
         "summary": "update recipe",
         "description": "This endpoint will update a recipe",
         "parameters": [
           {
-            "name": "accesstoken",
-            "in": "header",
-            "schema": {}
+            "name": "slug",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -338,6 +396,11 @@
         "tags": [
           "Recipes"
         ],
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
         "summary": "delete recipe",
         "description": "This endpoint will delete a recipe",
         "parameters": [
@@ -400,15 +463,13 @@
         "tags": [
           "Comments"
         ],
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
         "summary": "Create new comment",
         "description" : "Post comments",
-        "parameters": [
-          {
-            "name": "accesstoken",
-            "in": "header",
-            "schema": {}
-          }
-        ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -535,6 +596,14 @@
     },
     "/profiles/{username}/follow": {
       "delete": {
+        "tag": [
+          "profile"
+        ],
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
         "summary": "unfollow user",
         "description": "This endpoint will unfollow a user",
         "parameters": [{
@@ -547,6 +616,37 @@
         "responses": {
           "200": {
             "description": "Successfully unfollowed a user",
+            "content": {}
+          },
+          "400": {
+            "description": "Error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/profiles/{username}/follow": {
+      "post": {
+        "tag": [
+          "profile"
+        ],
+        "security":
+        [{
+          "ApiKeyAuth": []
+
+        }],
+        "summary": "follow user",
+        "description": "This endpoint will follow a user",
+        "parameters": [{
+          "name": "username",
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Successfully followed a user",
             "content": {}
           },
           "400": {
@@ -574,6 +674,21 @@
             "type": "string"
           },
           "username": {
+            "type": "string"
+          }
+        }
+      },
+      "userLogin": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "email": {
             "type": "string"
           }
         }
@@ -635,6 +750,13 @@
           "type": "string"
         }
       }
+    }
+  },
+  "securitySchemes": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "authorization"
     }
   }
 }

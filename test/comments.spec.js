@@ -122,6 +122,12 @@ describe('Comments', () => {
           expect(res).to.have.status(200);
           expect(body).to.be.an('object');
           expect(body.comments).to.be.an('array');
+          expect(body.comments[0])
+            .to.haveOwnProperty('id')
+            .that.is.a('number');
+          expect(body.comments[0])
+            .to.haveOwnProperty('body')
+            .that.is.a('string');
           done(err);
         });
     });
