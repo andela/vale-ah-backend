@@ -402,6 +402,63 @@
         }
       }
     },
+    "/users/verify": {
+      "get": {
+        "description": "Verify if the user is verified",
+        "parameters": [{
+          "name": "token",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          },
+          "example": "eyJhbGciOiJIUzI1NiJ9.Mg.hbsvkNj_kZvQYNtZxa4r2GXoNRLq1q4xC9qSq48Dwhw"
+        }],
+        "responses": {
+          "500": {
+            "description": "Database connection error"
+          },
+          "400": {
+            "description": "Verification token error",
+            "content": {
+              "application/json; charset=utf-8": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Account verification success"
+          }
+        }
+      },
+      "servers": [{
+        "url": "https://vale-ah-backend-staging.herokuapp.com"
+      }]
+    },
+    "/profiles/{username}/follow": {
+      "post": {
+        "summary": "follow user",
+        "description": "This endpoint will follow a user",
+        "parameters": [{
+          "name": "username",
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Successfully followed a user",
+            "content": {}
+          },
+          "400": {
+            "description": "Error",
+            "content": {}
+          }
+        }
+      }
+    },
     "/users/reset-password": {
       "post": {
         "tags": [
@@ -452,6 +509,29 @@
           },
           "500": {
             "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/profiles/{username}/follow": {
+      "delete": {
+        "summary": "unfollow user",
+        "description": "This endpoint will unfollow a user",
+        "parameters": [{
+          "name": "username",
+          "in": "path",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Successfully unfollowed a user",
+            "content": {}
+          },
+          "400": {
+            "description": "Error",
+            "content": {}
           }
         }
       }

@@ -10,6 +10,8 @@ const { User } = db;
 
 chai.use(chaiHttp);
 const user1 = generateRandomUser();
+const user2 = generateRandomUser();
+
 const { username, password, email } = generateRandomUser();
 
 const tokenPayload = {};
@@ -247,7 +249,7 @@ describe('User', () => {
     return chai
       .request(server)
       .post('/api/users/login')
-      .send({ email: user1.email, password: user1.password })
+      .send({ email: user1.email, password: user1.password }, {})
       .then(res => {
         loggedInUser = res.body.user;
       });
@@ -342,13 +344,19 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if no token', done => {
+  it('should update based on previous data', done => {
     chai
       .request(server)
-      .get('/api/user')
-      .set({ authorization: generateToken({ id: 1000 }) })
+      .put('/api/user')
+      .send({ email: faker.internet.email() })
+      .set({ authorization: loggedInUser.token })
       .end((err, res) => {
-        expect(res).to.have.status(404);
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user.id).to.be.a('number');
+        expect(user).to.have.property('verified');
+        expect(user).to.have.property('createdAt');
+        expect(user).to.have.property('updatedAt');
         done(err);
       });
   });
@@ -388,9 +396,6 @@ describe('User', () => {
         expect(res).to.have.status(200);
         expect(user).to.be.an('object');
         expect(user.id).to.be.a('number');
-        expect(user).to.have.property('verified');
-        expect(user).to.have.property('createdAt');
-        expect(user).to.have.property('updatedAt');
         done(err);
       });
   });
@@ -406,7 +411,54 @@ describe('User', () => {
       });
   });
 
-  it('should return an error if token was not provided', done => {
+  it('should return an error if no current user', done => {
+    chai
+      .request(server)
+      .get('/api/user')
+      .set({ authorization: generateToken({ id: 1000 }) })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should get All profiles', done => {
+    chai
+      .request(server)
+      .get('/api/profiles')
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        const { user } = res.body;
+        expect(res).to.have.status(200);
+        expect(user).to.be.an('array');
+        expect(user[0].id).to.be.a('number');
+        done(err);
+      });
+  });
+
+  it('should return an error if no profile', done => {
+    chai
+      .request(server)
+      .get('/api/profile')
+      .set({ authorization: generateToken({ id: 1000 }) })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should return an error if profile is not found', done => {
+    chai
+      .request(server)
+      .get(`/api/profiles/andela`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should return an error if no token', done => {
     chai
       .request(server)
       .get('/api/profiles')
@@ -487,6 +539,94 @@ describe('User', () => {
       .send({ newPassword, oldPassword })
       .end((err, res) => {
         expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should return an error if username is current user', done => {
+    chai
+      .request(server)
+      .post(`/api/profiles/${user1.username}/follow`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(403);
+        done(err);
+      });
+  });
+
+  it('should follow a user', done => {
+    chai
+      .request(server)
+      .post(`/api/profiles/Jacob/follow`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done(err);
+      });
+  });
+
+  it('should return an error if username does not exist', done => {
+    chai
+      .request(server)
+      .post(`/api/profiles/${user2}/follow`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should return all followers of the current user', done => {
+    chai
+      .request(server)
+      .get(`/api/user/followers`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done(err);
+      });
+  });
+
+  it('should return all followees of the current user', done => {
+    chai
+      .request(server)
+      .get(`/api/user/following`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        done(err);
+      });
+  });
+
+  it('should return an error if user try to unfollow themself', done => {
+    chai
+      .request(server)
+      .delete(`/api/profiles/${user1.username}/follow`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(403);
+        done(err);
+      });
+  });
+
+  it('should return an error if username was not found', done => {
+    chai
+      .request(server)
+      .delete('/api/profiles/someone/follow')
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(404);
+        done(err);
+      });
+  });
+
+  it('should unfollow a user', done => {
+    chai
+      .request(server)
+      .delete(`/api/profiles/Jacob/follow`)
+      .set({ authorization: loggedInUser.token })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
         done(err);
       });
   });
