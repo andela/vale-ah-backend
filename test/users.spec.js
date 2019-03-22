@@ -396,9 +396,6 @@ describe('User', () => {
         expect(res).to.have.status(200);
         expect(user).to.be.an('object');
         expect(user.id).to.be.a('number');
-        expect(user).to.have.property('verified');
-        expect(user).to.have.property('createdAt');
-        expect(user).to.have.property('updatedAt');
         done(err);
       });
   });
@@ -446,23 +443,6 @@ describe('User', () => {
       .set({ authorization: generateToken({ id: 1000 }) })
       .end((err, res) => {
         expect(res).to.have.status(404);
-        done(err);
-      });
-  });
-
-  it('should get profile of a specific user', done => {
-    chai
-      .request(server)
-      .get(`/api/profiles/${user1.username}`)
-      .set({ authorization: loggedInUser.token })
-      .end((err, res) => {
-        const { user } = res.body;
-        expect(res).to.have.status(200);
-        expect(user).to.be.an('object');
-        expect(user.id).to.be.a('number');
-        expect(user).to.have.property('verified');
-        expect(user).to.have.property('createdAt');
-        expect(user).to.have.property('updatedAt');
         done(err);
       });
   });
