@@ -10,8 +10,7 @@
     "test": "cross-env NODE_ENV=test npm run initdb && DEBUG=vale-ah*  nyc --reporter=text --reporter=html mocha --timeout=20000 --recursive --exit",
     "coverage": "nyc report --reporter=lcov --reporter=text-lcov | coveralls",
     "devstart": "npm run initdb && DEBUG=vale-ah* nodemon server/index.js --exec babel-node",
-    "initdb": "babel-node server/utils/initdb.js",
-    "sequelize": "sequelize"
+    "initdb": "babel-node server/utils/initdb.js"
   },
   "engines": {
     "node": "11.x"

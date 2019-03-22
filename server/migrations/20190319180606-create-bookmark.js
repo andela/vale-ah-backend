@@ -10,15 +10,20 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        onDelete: 'CASCADE',
         references: {
           model: 'Users',
           key: 'id',
-          as: 'bookmarks'
+          as: 'booked'
         }
       },
       recipeId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Recipe',
+          key: 'id',
+          as: 'recipe'
+        }
       },
       createdAt: {
         allowNull: false,

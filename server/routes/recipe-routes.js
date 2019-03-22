@@ -17,7 +17,7 @@ router.post(
   User.validUser,
   bookmarkController.createBookmark
 );
-router.post('/bookmarks', User.validUser, bookmarkController.getBookmarks);
+router.get('/bookmarks', User.validUser, bookmarkController.getBookmarks);
 
 router.delete('/:slug', User.validUser, controller.deleteRecipe);
 

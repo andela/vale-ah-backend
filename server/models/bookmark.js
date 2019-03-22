@@ -4,12 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        onDelete: 'CASCADE',
-        references: {
-          model: 'Users',
-          key: 'id'
-        }
+        allowNull: false
       },
       recipeId: {
         type: DataTypes.INTEGER,
@@ -18,17 +13,5 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
-  Bookmark.associate = models => {
-    // associations can be defined here
-    Bookmark.belongsTo(models.User, {
-      foreignKey: 'userId',
-      onDelete: 'CASCADE'
-    });
-
-    Bookmark.belongsTo(models.Recipe, {
-      foreignKey: 'recipeId',
-      onDelete: 'CASCADE'
-    });
-  };
   return Bookmark;
 };

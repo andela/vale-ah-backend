@@ -74,13 +74,10 @@ module.exports = (sequelize, DataTypes) => {
       as: 'comments'
     });
 
-    User.hasMany(models.Bookmark, {
-      foreignKey: 'userId',
-      as: 'recipe'
-    });
-    User.hasMany(models.Bookmark, {
-      foreignKey: 'userId',
-      as: 'Bookmark'
+    User.belongsToMany(models.Recipe, {
+      through: 'Bookmark',
+      as: 'bookmark',
+      foreignKey: 'userId'
     });
   };
   return User;

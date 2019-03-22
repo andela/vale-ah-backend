@@ -12,5 +12,6 @@ router.get('/', User.validUser, userController.getProfile);
 router.get('/followers', User.validUser, followController.fetchFollowers);
 router.get('/following', User.validUser, followController.fetchFollowing);
 router.post('/:slug/bookmark', User.validUser, bookmark.createBookmark);
+router.get('/bookmarks', User.validUser, bookmark.getBookmarks);
 
 export default router;
