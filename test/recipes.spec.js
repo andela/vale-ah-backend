@@ -413,13 +413,12 @@ describe('Recipes', () => {
         });
     });
 
-    it('should not get recipes if offset or limit is zero', done => {
+    it('should not get recipes if limit is zero', done => {
       chai
         .request(server)
         .get(`${url}?offset=0&limit=0`)
         .end((err, res) => {
           expect(res).to.have.status(400);
-          expect(res.body.errors).to.haveOwnProperty('offset');
           expect(res.body.errors).to.haveOwnProperty('limit');
           done(err);
         });
