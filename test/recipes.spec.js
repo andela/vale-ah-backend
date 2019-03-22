@@ -334,6 +334,7 @@ describe('Recipes', () => {
 
   describe('Pagination', () => {
     const url = '/api/recipes';
+    let items;
     before(async () => {
       const array = Array(50)
         .fill()
@@ -345,6 +346,15 @@ describe('Recipes', () => {
             .send(recipe)
         );
       await Promise.all(array);
+
+      const {
+        body: { recipes }
+      } = await chai
+        .request(server)
+        .get('/api/recipes')
+        .set({ authorization: runtimeFixture.token });
+
+      items = recipes;
     });
 
     it('should get all recipes when no offset or limit is set', done => {
@@ -371,6 +381,21 @@ describe('Recipes', () => {
           expect(recipes)
             .to.be.an('Array')
             .and.has.lengthOf(30);
+          expect(res.body.recipes[0]).to.deep.equal(items[0]);
+          done(err);
+        });
+    });
+
+    it('should get 20 recipes when offset is 0 limit is not set', done => {
+      chai
+        .request(server)
+        .get(`${url}?offset=0`)
+        .end((err, res) => {
+          const { recipes } = res.body;
+          expect(res).to.have.status(200);
+          expect(recipes).to.be.an('Array');
+          expect(recipes).to.have.lengthOf(20);
+          expect(res.body.recipes[0]).to.deep.equal(items[0]);
           done(err);
         });
     });
@@ -384,6 +409,8 @@ describe('Recipes', () => {
           expect(res).to.have.status(200);
           expect(recipes).to.be.an('Array');
           expect(recipes).to.have.lengthOf(20);
+          expect(res.body.recipes[0]).to.not.deep.equal(items[0]);
+          expect(res.body.recipes[0]).to.deep.equal(items[10]);
           done(err);
         });
     });
@@ -397,6 +424,8 @@ describe('Recipes', () => {
           expect(res).to.have.status(200);
           expect(recipes).to.be.an('Array');
           expect(recipes.length).to.equal(25);
+          expect(res.body.recipes[0]).to.not.deep.equal(items[0]);
+          expect(res.body.recipes[0]).to.deep.equal(items[20]);
           done(err);
         });
     });

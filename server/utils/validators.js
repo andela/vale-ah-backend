@@ -70,7 +70,7 @@ export const changePasswordSchema = Joi.object().keys({
 export const paginationSchema = Joi.object().keys({
   offset: Joi.number()
     .integer()
-    .positive(),
+    .greater(-1),
   limit: Joi.number()
     .integer()
     .positive()
