@@ -1,7 +1,7 @@
 import { successResponse, errorResponse } from '../utils/helpers';
 import db from '../models';
 
-const { User, Follower } = db;
+const { User, Follower, sequelize } = db;
 
 /**
  * The controllers for users route
@@ -28,7 +28,12 @@ class ProfileController {
             model: Follower,
             where: {
               followerId: id
-            }
+            },
+            attributes: [
+              [sequelize.fn('COUNT', sequelize.col('followerId')), 'followers']
+            ],
+            group: ['User.id'],
+            required: false
           }
         ],
         attributes: ['id', 'username', 'email', 'bio', 'image']
@@ -37,8 +42,16 @@ class ProfileController {
       if (!profile) {
         return errorResponse(res, 'user not found', 404);
       }
+      const following = profile.Followers.length > 0;
+      delete profile.dataValues.Followers;
       const isFollower = await profile.hasFollower(id);
-      return successResponse(res, { user: profile, following: isFollower });
+      return successResponse(res, {
+        user: {
+          ...profile.dataValues,
+          following
+        },
+        following: isFollower
+      });
     } catch (error) {
       return errorResponse(res, error.message);
     }
