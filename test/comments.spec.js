@@ -19,6 +19,7 @@ describe('Comments', () => {
         runtimeFixture.token = token;
       })
   );
+
   describe('POST /api/recipes/:slug/comments', () => {
     before(done => {
       chai
@@ -42,7 +43,9 @@ describe('Comments', () => {
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(201);
-          expect(body.body).to.equal(body.body);
+          expect(body.userId).to.be.a('number');
+          expect(body.recipeId).to.be.a('number');
+          expect(body.body).to.be.a('string');
           done(err);
         });
     });
@@ -84,7 +87,10 @@ describe('Comments', () => {
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(400);
-          expect(body.errors).to.haveOwnProperty('body');
+          expect(body.errors)
+            .to.haveOwnProperty('body')
+            .to.be.an('array')
+            .to.contain('is required');
           done(err);
         });
     });
@@ -95,6 +101,36 @@ describe('Comments', () => {
         .post(`/api/recipes/invalid-recipe-slug/comments`)
         .set({ authorization: runtimeFixture.token })
         .send(comment)
+        .end((err, res) => {
+          const { body } = res;
+          expect(res).to.have.status(400);
+          expect(body)
+            .to.be.an('object')
+            .to.haveOwnProperty('errors');
+          expect(body.errors).to.contain('This recipe does not exist');
+          done(err);
+        });
+    });
+
+    it('should get all recipe comments', done => {
+      chai
+        .request(server)
+        .get(`/api/recipes/${runtimeFixture.slug}/comments`)
+        .set({})
+        .end((err, res) => {
+          const { body } = res;
+          expect(res).to.have.status(200);
+          expect(body).to.be.an('object');
+          expect(body.comments).to.be.an('array');
+          done(err);
+        });
+    });
+
+    it('should return error if recipe slug is absent', done => {
+      chai
+        .request(server)
+        .get(`/api/recipes/invalid-recipe-slug/comments`)
+        .set({})
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(400);

@@ -362,6 +362,40 @@
       }
     },
     "/api/recipes/{slug}/comments" : {
+      "get" : {
+        "tags": [
+          "Comments"
+        ],
+        "summary": "Gets all comments in a recipe",
+        "description" : "Get comments",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "body" : {
+                    "type" : "string"
+                  }
+                }
+              },
+              "examples" : {
+                "0" : {
+                  "value" : "{\n    \"body\": \"\"\n}"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Database connection error"
+          },
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
       "post" : {
         "tags": [
           "Comments"
@@ -433,7 +467,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "Password reset link sent successfully"
           },
           "404": {
