@@ -11,6 +11,9 @@
   },
   "servers": [
     {
+      "url": "http://localhost:3000/api"
+    },
+    {
       "url": "https://vale-ah-backend-staging.herokuapp.com/api"
     }
   ],
@@ -201,7 +204,26 @@
         "tags": [
           "Recipes"
         ],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
+          "400": {
+            "description": "Validation error"
+          },
           "500": {
             "description": "Database connection error"
           },
@@ -238,6 +260,9 @@
           "201": {
             "description": "Successfully created new recipe",
             "content": {}
+          },
+          "500": {
+            "description": "Database connection error"
           },
           "400": {
             "description": "Validation Error",

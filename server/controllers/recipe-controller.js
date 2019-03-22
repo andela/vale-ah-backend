@@ -6,7 +6,11 @@ import {
   validationErrorResponse,
   rowArrayToObjectList
 } from '../utils/helpers';
-import { recipeSchema, recipeUpdateSchema } from '../utils/validators';
+import {
+  recipeSchema,
+  paginationSchema,
+  recipeUpdateSchema
+} from '../utils/validators';
 
 const { Recipe, User } = db;
 
@@ -148,8 +152,17 @@ class RecipeController {
    * @param {Object} res Express response object
    * @returns {undefined}
    */
-  static getRecipes(req, res) {
-    Recipe.findAll(defaultRecipeDbFilter)
+  static async getRecipes(req, res) {
+    let { limit, offset } = req.query;
+    try {
+      await validate(req.query, paginationSchema);
+    } catch (error) {
+      return validationErrorResponse(res, error.details);
+    }
+    limit = offset && !limit ? 20 : limit;
+    offset = offset || 0;
+
+    Recipe.findAll({ ...defaultRecipeDbFilter, offset, limit })
       .then(recipeRows =>
         recipeRows.length
           ? successResponse(res, {
@@ -157,11 +170,11 @@ class RecipeController {
             })
           : successResponse(res, {
               recipes: [],
-              message: 'no recipes have been created'
+              message: 'no recipes found'
             })
       )
       .catch(() => {
-        errorResponse(res, 'Oops, an error occured. Please try again', 500);
+        errorResponse(res, 'Oops, an error occurred. Please try again', 500);
       });
   }
 
@@ -181,10 +194,10 @@ class RecipeController {
       .then(recipe =>
         recipe
           ? successResponse(res, { recipe })
-          : errorResponse(res, 'recipe Not found', 404)
+          : errorResponse(res, 'Recipe not found', 404)
       )
       .catch(() => {
-        errorResponse(res, 'Oops, an error occured. Please try again', 500);
+        errorResponse(res);
       });
   }
 }
