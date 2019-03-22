@@ -23,6 +23,16 @@ export const recipeTestUser = {
   password: 'jakejake'
 };
 
+export const commentTestUser = {
+  username: faker.internet.userName(),
+  email: faker.internet.email(),
+  password: faker.random.alphaNumeric(10)
+};
+
+export const comment = {
+  body: faker.lorem.text()
+};
+
 /**
  * generate random user details
  * @return {object} random user

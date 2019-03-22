@@ -64,6 +64,11 @@ export const changePasswordSchema = Joi.object().keys({
   password: Joi.string()
     .alphanum()
     .min(8)
+});
+
+export const commentSchema = Joi.object().keys({
+  body: Joi.string()
+    .max(1500)
     .required()
 });
 

@@ -36,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
+    Recipe.hasMany(models.Comment, {
+      foreignKey: 'recipeId',
+      as: 'comments'
+    });
   };
 
   return Recipe;
