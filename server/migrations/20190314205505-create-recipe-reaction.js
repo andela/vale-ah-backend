@@ -27,6 +27,6 @@ module.exports = {
     });
   },
   down: queryInterface => {
-    return queryInterface.dropTable('RecipeLikes');
+    return queryInterface.dropTable('RecipeReaction');
   }
 };

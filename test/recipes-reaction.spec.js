@@ -215,7 +215,7 @@ describe('Recipes reaction ', () => {
         });
     });
 
-    it('should be able to change the isLike property to false', done => {
+    it('should be able to dislike a recipe ', done => {
       chai
         .request(server)
         .post(`${baseUrl}/${slug}/dislike`)
@@ -231,7 +231,7 @@ describe('Recipes reaction ', () => {
         });
     });
 
-    it('should be able to change the isLike property to false', done => {
+    it('should not be able to change the like a recipe when the recipe slug is invalid or incorrect', done => {
       chai
         .request(server)
         .post(`${baseUrl}:slug/like`)
@@ -243,41 +243,7 @@ describe('Recipes reaction ', () => {
         });
     });
 
-    it('should be able to change the isLike property to false', done => {
-      chai
-        .request(server)
-        .get(`${baseUrl}:slug/like`)
-        .set({ authorization: token })
-        .end((err, res) => {
-          expect(res).to.have.status(404);
-          done(err);
-        });
-    });
-
-    it('should be able to change the isLike property to false', done => {
-      chai
-        .request(server)
-        .post(`${baseUrl}:slug/dislike`)
-        .set({ authorization: token })
-        .send(recipeLike)
-        .end((err, res) => {
-          expect(res).to.have.status(404);
-          done(err);
-        });
-    });
-
-    it('should be able to change the isLike property to false', done => {
-      chai
-        .request(server)
-        .get(`${baseUrl}:slug/dislike`)
-        .set({ authorization: token })
-        .end((err, res) => {
-          expect(res).to.have.status(404);
-          done(err);
-        });
-    });
-
-    it('should not be ble to dislike when the recipe is not found', done => {
+    it('should not be able to change the dislike a recipe when the recipe slug is invalid or incorrect', done => {
       chai
         .request(server)
         .get(`${baseUrl}:slug/dislike`)

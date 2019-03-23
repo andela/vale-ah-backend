@@ -37,7 +37,7 @@ class RecipeReactionController {
         successResponse(
           res,
           {
-            message: `you ${reaction} this recipe`
+            message: `you ${reaction}d this recipe`
           },
           201
         );
@@ -61,7 +61,7 @@ class RecipeReactionController {
           );
           return successResponse(
             res,
-            { message: `you ${reaction} this recipe (updated)` },
+            { message: `you ${reaction}d this recipe (updated)` },
             200
           );
         }
@@ -72,7 +72,7 @@ class RecipeReactionController {
           successResponse(
             res,
             {
-              message: `you retrived your ${reaction}`
+              message: `you retracted your ${reaction}`
             },
             200
           );

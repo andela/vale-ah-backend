@@ -1,3 +1,4 @@
+import sequelize from 'sequelize';
 import db from '../models';
 import {
   successResponse,
@@ -12,18 +13,32 @@ import {
   recipeUpdateSchema
 } from '../utils/validators';
 
-const { Recipe, User } = db;
+const { Recipe, User, RecipeReaction } = db;
 
 const defaultRecipeDbFilter = {
   attributes: {
-    exclude: ['userId']
+    exclude: ['userId'],
+    include: [
+      [
+        sequelize.fn('COUNT', sequelize.col('RecipeReactions.isLike')),
+        'like(s)'
+      ]
+    ]
   },
-  include: {
-    model: User,
-    attributes: {
-      exclude: ['hash', 'id', 'email', 'verified', 'createdAt', 'updatedAt']
+  include: [
+    {
+      model: User,
+      attributes: {
+        exclude: ['hash', 'id', 'email', 'verified', 'createdAt', 'updatedAt']
+      }
+    },
+    {
+      model: RecipeReaction,
+      attributes: []
     }
-  }
+  ],
+  group: ['Recipe.id', 'User.id', 'RecipeReactions.id'],
+  subQuery: false
 };
 
 /**

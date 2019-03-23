@@ -15,6 +15,7 @@ const user2 = generateRandomUser();
 const { username, password, email } = generateRandomUser();
 
 const tokenPayload = {};
+
 describe('Authentication', () => {
   describe('POST /api/users', () => {
     const baseUrl = '/api/users';
