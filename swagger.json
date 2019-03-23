@@ -271,6 +271,34 @@
             "schema": {
               "type": "number"
             }
+          },
+          {
+            "name": "minCookTime",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxCookTime",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "searchText",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -623,9 +651,7 @@
             "content": {}
           }
         }
-      }
-    },
-    "/profiles/{username}/follow": {
+      },
       "post": {
         "tag": [
           "profile"
@@ -720,7 +746,7 @@
           }
         }
       },
-    "Comments": {
+      "Comments": {
       "required": [
         "body"
       ],
@@ -730,8 +756,8 @@
           "type": "text"
         }
       }
-    },
-    "SendResetPasswordEmail": {
+      },
+      "SendResetPasswordEmail": {
       "required": [
         "email"
       ],
@@ -740,8 +766,8 @@
           "type": "string"
         }
       }
-    },
-    "ResetPasswordField": {
+      },
+      "ResetPasswordField": {
       "required": [
         "password"
       ],
@@ -749,6 +775,7 @@
         "password": {
           "type": "string"
         }
+      }
       }
     }
   },
@@ -759,5 +786,4 @@
       "name": "authorization"
     }
   }
-}
 }

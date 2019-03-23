@@ -7,7 +7,8 @@ export const registerSchema = Joi.object().keys({
   username: Joi.string()
     .min(3)
     .max(20)
-    .required(),
+    .required()
+    .trim(),
   password: Joi.string()
     .alphanum()
     .min(8)
@@ -77,6 +78,12 @@ export const paginationSchema = Joi.object().keys({
     .integer()
     .greater(-1),
   limit: Joi.number()
+    .integer()
+    .positive(),
+  minCookTime: Joi.number()
+    .integer()
+    .min(0),
+  maxCookTime: Joi.number()
     .integer()
     .positive()
 });

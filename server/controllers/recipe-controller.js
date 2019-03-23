@@ -1,10 +1,12 @@
+import { Op } from 'sequelize';
 import db from '../models';
 import {
   successResponse,
   errorResponse,
   validate,
   validationErrorResponse,
-  rowArrayToObjectList
+  rowArrayToObjectList,
+  paginationMeta
 } from '../utils/helpers';
 import {
   recipeSchema,
@@ -36,9 +38,8 @@ class RecipeController {
    * Recipe registration controller
    *
    * @static
-   * @param {*} req
-   * @param {*} res
-   * @param {Function} next
+   * @param {Request} req Express request object
+   * @param {Response} res Express response
    * @memberof RecipeController
    * @returns {undefined}
    */
@@ -73,9 +74,8 @@ class RecipeController {
    * Update Recipe
    *
    * @static
-   * @param {*} req
-   * @param {*} res
-   * @param {Function} next
+   * @param {Request} req Express request object
+   * @param {Response} res Express response
    * @memberof RecipeController
    * @returns {undefined}
    */
@@ -120,9 +120,8 @@ class RecipeController {
    * Delete Recipe
    *
    * @static
-   * @param {*} req
-   * @param {*} res
-   * @param {Function} next
+   * @param {Request} req Express request object
+   * @param {Response} res Express response
    * @memberof RecipeController
    * @returns {undefined}
    */
@@ -148,25 +147,42 @@ class RecipeController {
 
   /**
    * Fetch all recipes
-   * @param {Object} req Express request object
-   * @param {Object} res Express response object
+   * @static
+   * @param {Request} req Express request object
+   * @param {Response} res Express response object
+   * @memberof RecipeController
    * @returns {undefined}
    */
   static async getRecipes(req, res) {
-    let { limit, offset } = req.query;
+    const { offset = 0, limit: queryLimit, ...filters } = req.query;
+    const limit = offset && !queryLimit ? 20 : queryLimit;
+
     try {
       await validate(req.query, paginationSchema);
     } catch (error) {
       return validationErrorResponse(res, error.details);
     }
-    limit = offset && !limit ? 20 : limit;
-    offset = offset || 0;
 
-    Recipe.findAll({ ...defaultRecipeDbFilter, offset, limit })
-      .then(recipeRows =>
+    const filterParamKeys = Object.keys(filters);
+
+    if (filterParamKeys.length) {
+      req.filterParams = filters;
+      req.query.limit = limit;
+      req.query.offset = offset;
+
+      return RecipeController.getFilteredRecipes(req, res);
+    }
+    Recipe.findAndCountAll({ ...defaultRecipeDbFilter, offset, limit })
+      .then(({ rows: recipeRows, count }) =>
         recipeRows.length
           ? successResponse(res, {
-              recipes: rowArrayToObjectList(recipeRows)
+              recipes: rowArrayToObjectList(recipeRows),
+              ...paginationMeta({
+                count,
+                limit,
+                offset,
+                itemsOnPage: recipeRows.length
+              })
             })
           : successResponse(res, {
               recipes: [],
@@ -174,14 +190,84 @@ class RecipeController {
             })
       )
       .catch(() => {
-        errorResponse(res, 'Oops, an error occurred. Please try again', 500);
+        errorResponse(res, 'Oops, an error occured. Please try again', 500);
+      });
+  }
+
+  /**
+   * Fetch recipes filtered by params
+   * @static
+   * @param {Request} req Express request object
+   * @param {Response} res Express response object
+   * @memberof RecipeController
+   * @returns {undefined}
+   */
+  static getFilteredRecipes(req, res) {
+    const {
+      filterParams: { minCookTime, maxCookTime, user, searchText },
+      query: { limit, offset }
+    } = req;
+
+    const dbFilter = {};
+
+    if (user) {
+      dbFilter['$User.username$'] = {
+        [Op.iLike]: `${user}`
+      };
+    }
+
+    if (searchText) {
+      dbFilter[Op.or] = [
+        {
+          title: {
+            [Op.iLike]: `%${searchText}%`
+          }
+        },
+        {
+          slug: {
+            [Op.iLike]: `%${searchText}%`
+          }
+        }
+      ];
+    }
+
+    if (minCookTime && maxCookTime) {
+      dbFilter.cookingTime = {
+        [Op.between]: [minCookTime, maxCookTime]
+      };
+    }
+
+    Recipe.findAndCountAll({
+      ...defaultRecipeDbFilter,
+      where: dbFilter,
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset
+    })
+      .then(({ rows: recipeRows, count }) =>
+        recipeRows.length
+          ? successResponse(res, {
+              recipes: rowArrayToObjectList(recipeRows),
+              ...paginationMeta({
+                count,
+                limit,
+                offset,
+                itemsOnPage: recipeRows.length
+              })
+            })
+          : errorResponse(res, 'no matching recipes found', 404)
+      )
+      .catch(() => {
+        errorResponse(res, 'Oops, an error occured. Please try again', 500);
       });
   }
 
   /**
    * Fetch recipe by slug
+   * @static
    * @param {string} req.params.slug Request URL Slug param
-   * @param {Object} res Express response object
+   * @param {Response} res Express response object
+   * @memberof RecipeController
    * @returns {undefined}
    */
   static getRecipeBySlug(
@@ -194,10 +280,10 @@ class RecipeController {
       .then(recipe =>
         recipe
           ? successResponse(res, { recipe })
-          : errorResponse(res, 'Recipe not found', 404)
+          : errorResponse(res, 'recipe not found', 404)
       )
       .catch(() => {
-        errorResponse(res);
+        errorResponse(res, 'Oops, an error occured. Please try again', 500);
       });
   }
 }

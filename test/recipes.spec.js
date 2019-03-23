@@ -4,6 +4,7 @@ import server from '../server';
 import db from '../server/models';
 import { generateToken } from '../server/utils/helpers';
 import { recipe, recipeTestUser } from './fixtures';
+import { createRecipe, destroyTable, createUser } from './helpers';
 
 chai.use(chaiHttp);
 
@@ -298,7 +299,7 @@ describe('Recipes', () => {
     });
   });
 
-  describe('DELETE /recipes/:slug', () => {
+  describe('DELETE api/recipes/:slug', () => {
     it('should return an error if user does not exist', done => {
       chai
         .request(server)
@@ -355,6 +356,10 @@ describe('Recipes', () => {
         .set({ authorization: runtimeFixture.token });
 
       items = recipes;
+    });
+
+    after(async () => {
+      await destroyTable('Recipe', { truncate: true, cascade: true });
     });
 
     it('should get all recipes when no offset or limit is set', done => {
@@ -461,6 +466,123 @@ describe('Recipes', () => {
           expect(res).to.have.status(400);
           expect(res.body.errors).to.haveOwnProperty('offset');
           expect(res.body.errors).to.haveOwnProperty('limit');
+          done(err);
+        });
+    });
+  });
+
+  describe('Filtered Records -> GET api/recipes?', () => {
+    const filters = {};
+    before(async () => {
+      const {
+        body: {
+          user: { username, token }
+        }
+      } = await createUser();
+
+      await createRecipe('/api/recipes', token, recipe);
+      await createRecipe('/api/recipes', token, {
+        ...recipe,
+        cookingTime: 12000
+      });
+      await createRecipe('/api/recipes', token, {
+        ...recipe,
+        title: `lip smacking ofada sauce`
+      });
+
+      Object.assign(filters, { user: username, searchText: 'ofada' });
+    });
+
+    after(async () => {
+      await destroyTable('Recipe', { truncate: true, cascade: true });
+    });
+
+    it('should return error response when no matching records are found', done => {
+      chai
+        .request(server)
+        .get(`/api/recipes?user=SomeRandomNonExistentUser`)
+        .end((err, res) => {
+          const {
+            body: { errors }
+          } = res;
+
+          expect(res).to.have.status(404);
+          expect(errors)
+            .to.be.an('Array')
+            .with.lengthOf(1);
+
+          done(err);
+        });
+    });
+
+    it('should filter recipes by username', done => {
+      chai
+        .request(server)
+        .get(`/api/recipes?user=${filters.user}`)
+        .end((err, res) => {
+          const {
+            body: { recipes },
+            body: {
+              recipes: [firstMatch]
+            }
+          } = res;
+
+          expect(res).to.have.status(200);
+          expect(recipes)
+            .to.be.an('Array')
+            .with.lengthOf(3);
+          expect(firstMatch).to.be.an('object');
+          expect(firstMatch.id).to.be.a('number');
+          expect(firstMatch.title).to.contain('ofada');
+          expect(firstMatch.cookingTime).to.equal(recipe.cookingTime);
+
+          done(err);
+        });
+    });
+
+    it('should filter recipes by keyword/string', done => {
+      chai
+        .request(server)
+        .get(`/api/recipes?searchText=${filters.searchText}`)
+        .end((err, res) => {
+          const {
+            body: { recipes },
+            body: {
+              recipes: [firstMatch]
+            }
+          } = res;
+
+          expect(res).to.have.status(200);
+          expect(recipes)
+            .to.be.an('Array')
+            .with.lengthOf(1);
+          expect(firstMatch).to.be.an('object');
+          expect(firstMatch.id).to.be.a('number');
+          expect(firstMatch.title).to.contain('ofada');
+
+          done(err);
+        });
+    });
+
+    it('should filter recipes by time taken to cook', done => {
+      chai
+        .request(server)
+        .get(`/api/recipes?minCookTime=8000&maxCookTime=15000`)
+        .end((err, res) => {
+          const {
+            body: { recipes },
+            body: {
+              recipes: [firstMatch]
+            }
+          } = res;
+
+          expect(res).to.have.status(200);
+          expect(recipes)
+            .to.be.an('Array')
+            .with.lengthOf(1);
+          expect(firstMatch).to.be.an('object');
+          expect(firstMatch.id).to.be.a('number');
+
           done(err);
         });
     });

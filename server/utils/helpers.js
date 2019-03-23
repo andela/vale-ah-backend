@@ -154,3 +154,41 @@ export const rowArrayToObjectList = sequelizeRowArray =>
  */
 export const randomHex = () =>
   Math.floor(Math.random() * Date.now()).toString(16);
+
+/**
+ * Test if arg parses into an integer
+ * @param {*} arg  arg to parse
+ * @returns {boolean} isInt?
+ */
+export const jsonParsedInt = arg => {
+  let isInt = false;
+  try {
+    const parsed = JSON.parse(arg);
+    isInt = typeof parsed === 'number';
+  } catch (e) {
+    //
+  }
+  return isInt;
+};
+
+/**
+ * Compute pagination data based pn value of supplied args
+ * @param {Object} computeArgs pagination meradata config arguments
+ * @param {string} computeArgs.count total objectcount
+ * @param {number} computeArgs.limit max objects per page
+ * @param {number} computeArgs.offset records to skip
+ * @param {number} computeArgs.itemsOnPage records on current page
+ * @returns {Object} pagination metadata { page, pageCount }
+ */
+export const paginationMeta = ({ count, limit, offset, itemsOnPage }) =>
+  jsonParsedInt(limit)
+    ? {
+        page: Math.floor(offset / limit) + 1,
+        pageCount: Math.ceil(count / limit),
+        itemsOnPage
+      }
+    : {
+        page: 1,
+        pageCount: 1,
+        itemsOnPage
+      };
