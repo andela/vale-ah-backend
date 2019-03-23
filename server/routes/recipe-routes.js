@@ -11,6 +11,7 @@ router.get('/:slug', controller.getRecipeBySlug);
 router.post('/:slug/comments', User.validUser, CommentController.create);
 router.get('/:slug/comments', CommentController.getAllComments);
 router.put('/:slug', User.validUser, controller.updateRecipe);
+
 router.delete('/:slug', User.validUser, controller.deleteRecipe);
 
 export default router;

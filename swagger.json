@@ -130,11 +130,11 @@
     },
     "/user": {
       "get": {
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "description": "Get a Current user",
         "tags": [
           "Users"
@@ -151,11 +151,11 @@
     },
     "/user/password": {
       "put": {
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "description": "Update user profile",
         "tags": [
           "Users"
@@ -190,11 +190,11 @@
     },
     "/profiles": {
       "get": {
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "description": "Get all users profile",
         "tags": [
           "Profile"
@@ -221,11 +221,11 @@
     },
     "/profiles/{username}": {
       "get": {
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "description": "Get a specific user profile",
         "tags": [
           "Profile"
@@ -289,11 +289,11 @@
         "tags": [
           "Recipes"
         ],
-        "security":
-          [{
+        "security": [
+          {
             "ApiKeyAuth": []
-
-          }],
+          }
+        ],
         "summary": "Create new recipe",
         "description": "This endpoint will create a new recipe",
         "requestBody": {
@@ -354,11 +354,11 @@
         "tags": [
           "Recipes"
         ],
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "summary": "update recipe",
         "description": "This endpoint will update a recipe",
         "parameters": [
@@ -396,11 +396,11 @@
         "tags": [
           "Recipes"
         ],
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "summary": "delete recipe",
         "description": "This endpoint will delete a recipe",
         "parameters": [
@@ -424,27 +424,27 @@
         }
       }
     },
-    "/api/recipes/{slug}/comments" : {
-      "get" : {
+    "/api/recipes/{slug}/comments": {
+      "get": {
         "tags": [
           "Comments"
         ],
         "summary": "Gets all comments in a recipe",
-        "description" : "Get comments",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "object",
-                "properties" : {
-                  "body" : {
-                    "type" : "string"
+        "description": "Get comments",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string"
                   }
                 }
               },
-              "examples" : {
-                "0" : {
-                  "value" : "{\n    \"body\": \"\"\n}"
+              "examples": {
+                "0": {
+                  "value": "{\n    \"body\": \"\"\n}"
                 }
               }
             }
@@ -459,31 +459,31 @@
           }
         }
       },
-      "post" : {
+      "post": {
         "tags": [
           "Comments"
         ],
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "summary": "Create new comment",
-        "description" : "Post comments",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "object",
-                "properties" : {
-                  "body" : {
-                    "type" : "string"
+        "description": "Post comments",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string"
                   }
                 }
               },
-              "examples" : {
-                "0" : {
-                  "value" : "{\n    \"body\": \"\"\n}"
+              "examples": {
+                "0": {
+                  "value": "{\n    \"body\": \"\"\n}"
                 }
               }
             }
@@ -599,20 +599,22 @@
         "tag": [
           "profile"
         ],
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "summary": "unfollow user",
         "description": "This endpoint will unfollow a user",
-        "parameters": [{
-          "name": "username",
-          "in": "path",
-          "schema": {
-            "type": "string"
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "responses": {
           "200": {
             "description": "Successfully unfollowed a user",
@@ -623,27 +625,27 @@
             "content": {}
           }
         }
-      }
-    },
-    "/profiles/{username}/follow": {
+      },
       "post": {
         "tag": [
           "profile"
         ],
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "summary": "follow user",
         "description": "This endpoint will follow a user",
-        "parameters": [{
-          "name": "username",
-          "in": "path",
-          "schema": {
-            "type": "string"
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
           }
-        }],
+        ],
         "responses": {
           "200": {
             "description": "Successfully followed a user",
@@ -655,7 +657,59 @@
           }
         }
       }
-    }
+    },
+      "/user/bookmarks": {
+        "get": {
+          "security": [
+            {
+              "ApiKeyAuth": []
+            }
+          ],
+          "description": "Get user bookmark",
+          "tags": [
+            "Users"
+          ],
+          "responses": {
+            "500": {
+              "description": "Database connection error"
+            },
+            "200": {
+              "description": "success"
+            }
+          }
+        }
+      },
+          "/user/{slug}/bookmark": {
+            "post": {
+              "security": [
+                {
+                  "ApiKeyAuth": []
+                }
+              ],
+              "description": "Bookmark an article",
+              "tags": [
+                "Users"
+              ],
+              "parameters": [
+                {
+                  "in": "path",
+                  "name": "slug",
+                  "description": "recipe to be bookmarked",
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "responses": {
+                "500": {
+                  "description": "Database connection error"
+                },
+                "200": {
+                  "description": "Success"
+                }
+              }
+            }
+          }
   },
   "components": {
     "schemas": {
@@ -720,44 +774,44 @@
           }
         }
       },
-    "Comments": {
-      "required": [
-        "body"
-      ],
-      "type": "text",
-      "properties": {
-        "body": {
-          "type": "text"
+      "Comments": {
+        "required": [
+          "body"
+        ],
+        "type": "text",
+        "properties": {
+          "body": {
+            "type": "text"
+          }
+        }
+      },
+      "SendResetPasswordEmail": {
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "ResetPasswordField": {
+        "required": [
+          "password"
+        ],
+        "properties": {
+          "password": {
+            "type": "string"
+          }
         }
       }
     },
-    "SendResetPasswordEmail": {
-      "required": [
-        "email"
-      ],
-      "properties": {
-        "email": {
-          "type": "string"
-        }
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "authorization"
       }
-    },
-    "ResetPasswordField": {
-      "required": [
-        "password"
-      ],
-      "properties": {
-        "password": {
-          "type": "string"
-        }
-      }
-    }
-  },
-  "securitySchemes": {
-    "ApiKeyAuth": {
-      "type": "apiKey",
-      "in": "header",
-      "name": "authorization"
     }
   }
-}
 }

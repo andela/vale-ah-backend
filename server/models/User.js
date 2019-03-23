@@ -73,6 +73,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'comments'
     });
+
+    User.belongsToMany(models.Recipe, {
+      through: 'Bookmark',
+      as: 'bookmarks',
+      foreignKey: 'userId'
+    });
   };
   return User;
 };
