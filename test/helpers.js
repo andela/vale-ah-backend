@@ -20,6 +20,12 @@ export const createRecipe = async (url = '/api/recipes', token, recipe) =>
     .set({ authorization: token })
     .send(recipe);
 
+/**
+ * Send a request to create a new user
+ * @param {string} url API route
+ * @param {object} user user to create
+ * @returns {Promise} Request Response
+ */
 export const createUser = async (
   url = '/api/users',
   user = generateRandomUser()
