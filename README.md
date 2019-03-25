@@ -2,11 +2,11 @@
 [![Build Status](https://travis-ci.com/andela/vale-ah-backend.svg?branch=develop)](https://travis-ci.com/andela/vale-ah-backend)
 [![Coverage Status](https://coveralls.io/repos/github/andela/vale-ah-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/vale-ah-backend?branch=develop)
 
-Authors Haven - A Social platform for the creative at heart.
+Naija Chop Chop - A Social platform for Foodies.
 =======
 
 ## Vision
-Create a community of like minded authors to foster inspiration and innovation
+Create a community of like minded foodies to foster the spead of delicious Nigerian delicacies 
 by leveraging the modern web.
 
 ---
@@ -38,20 +38,29 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
-### Single Article
+### Single Recipe
 ```source-json
 {
-  "article": {
-    "slug": "how-to-train-your-dragon",
-    "title": "How to train your dragon",
-    "description": "Ever wonder how?",
-    "body": "It takes a Jacobian",
-    "tagList": ["dragons", "training"],
+  "recipe": {
+    "title": "How to prepare your finest recipe",
+    "slug": "how-to-prepare-your-finest-recipe-4ac3f232"
+    "ingredients": ['A spoon of awesomeness', 'A cup of dedication'],
+    "steps": {
+      "1": {
+        description: "Add a spoon of awesomeness to the mixer",
+        images: ["https://i.stack.imgur.com/xHWG8.jp"']
+      },
+      "2": {
+        description: "Add a spoon of awesomeness to the mixer",
+        images: ["https://i.stack.imgur.com/xHWG8.jpg"]
+      }
+    },
+    "cookingTime": 1000,
+    "preparationTime": 3000
+    "tags": ["dragons", "training"],
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:48:35.824Z",
-    "favorited": false,
-    "favoritesCount": 0,
-    "author": {
+    "user": {
       "username": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
@@ -60,44 +69,64 @@ The preferred JSON object to be returned by the API should be structured as foll
   }
 }
 ```
-### Multiple Articles
+### Multiple Recipes
 ```source-json
 {
-  "articles":[{
-    "slug": "how-to-train-your-dragon",
-    "title": "How to train your dragon",
-    "description": "Ever wonder how?",
-    "body": "It takes a Jacobian",
-    "tagList": ["dragons", "training"],
+  "recipes":[{
+    "title": "How to prepare your finest recipe",
+    "slug": "how-to-prepare-your-finest-recipe-4ac3f232"
+    "ingredients": ['A spoon of awesomeness', 'A cup of dedication'],
+    "steps": {
+      "1": {
+        description: "Add a spoon of awesomeness to the mixer",
+        images: ["https://i.stack.imgur.com/xHWG8.jp"']
+      },
+      "2": {
+        description: "Add a spoon of awesomeness to the mixer",
+        images: ["https://i.stack.imgur.com/xHWG8.jpg"]
+      }
+    },
+    "cookingTime": 1000,
+    "preparationTime": 3000
+    "tags": ["dragons", "training"],
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:48:35.824Z",
-    "favorited": false,
-    "favoritesCount": 0,
-    "author": {
+    "user": {
       "username": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
     }
   }, {
-
-    "slug": "how-to-train-your-dragon-2",
-    "title": "How to train your dragon 2",
-    "description": "So toothless",
-    "body": "It a dragon",
-    "tagList": ["dragons", "training"],
+    "title": "How to prepare your finest recipe",
+    "slug": "how-to-prepare-your-finest-recipe-6dc3a327"
+    "ingredients": ['A spoon of awesomeness', 'A cup of dedication'],
+    "steps": {
+      "1": {
+        description: "Add a spoon of awesomeness to the mixer",
+        images: ["https://i.stack.imgur.com/xHWG8.jp"']
+      },
+      "2": {
+        description: "Add a spoon of awesomeness to the mixer",
+        images: ["https://i.stack.imgur.com/xHWG8.jpg"]
+      }
+    },
+    "cookingTime": 1000,
+    "preparationTime": 3000
+    "tags": ["dragons", "training"],
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:48:35.824Z",
-    "favorited": false,
-    "favoritesCount": 0,
-    "author": {
+    "user": {
       "username": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
     }
+  }
   }],
-  "articlesCount": 2
+  "page": 1,
+  "pageCount": 1,
+  "itemsOnPage": 2
 }
 ```
 ### Single Comment
@@ -108,7 +137,7 @@ The preferred JSON object to be returned by the API should be structured as foll
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:22:56.637Z",
     "body": "It takes a Jacobian",
-    "author": {
+    "user": {
       "username": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
@@ -125,7 +154,7 @@ The preferred JSON object to be returned by the API should be structured as foll
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:22:56.637Z",
     "body": "It takes a Jacobian",
-    "author": {
+    "user": {
       "username": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
@@ -248,53 +277,57 @@ Authentication required, returns a Profile
 
 No additional parameters required
 
-### List Articles
+### List Recipes
 
-`GET /api/articles`
+`GET /api/recipes`
 
-Returns most recent articles globally by default, provide `tag`, `author` or `favorited` query parameter to filter results
+Returns most recent recipes globally by default, provide `tag`, `user`, `favorited` or `minCookTime & maxCookTime` query parameters to filter results
 
 Query Parameters:
 
 Filter by tag:
 
-`?tag=AngularJS`
+`?tag=hot`
 
-Filter by author:
+Filter by user:
 
-`?author=jake`
+`?user=jake`
+
+Filter by cooking time range (minutes)
+
+`?minCookTime=100&maxCookTime=500`
 
 Favorited by user:
 
 `?favorited=jake`
 
-Limit number of articles (default is 20):
+Limit number of recipes (default is 20):
 
 `?limit=20`
 
-Offset/skip number of articles (default is 0):
+Offset/skip number of recipes (default is 0):
 
 `?offset=0`
 
-Authentication optional, will return multiple articles, ordered by most recent first
+Authentication optional, will return multiple recipes, ordered by most recent first
 
-### Feed Articles
+### Feed Recipes
 
-`GET /api/articles/feed`
+`GET /api/recipes/feed`
 
-Can also take `limit` and `offset` query parameters like List Articles
+Can also take `limit` and `offset` query parameters like List Recipes
 
-Authentication required, will return multiple articles created by followed users, ordered by most recent first.
+Authentication required, will return multiple recipes created by followed users, ordered by most recent first.
 
-### Get Article
+### Get Recipe
 
-`GET /api/articles/:slug`
+`GET /api/recipes/:slug`
 
-No authentication required, will return single article
+No authentication required, will return single recipe
 
-### Create Article
+### Create Recipe
 
-`POST /api/articles`
+`POST /api/recipes`
 
 Example request body:
 
@@ -307,15 +340,15 @@ Example request body:
 }
 ```
 
-Authentication required, will return an Article
+Authentication required, will return a Recipe
 
 Required fields: `title`, `description`, `body`
 
 Optional fields: `tagList` as an array of Strings
 
-### Update Article
+### Update Recipe
 
-`PUT /api/articles/:slug`
+`PUT /api/recipes/:slug`
 
 Example request body:
 
@@ -325,21 +358,21 @@ Example request body:
 }
 ```
 
-Authentication required, returns the updated Article
+Authentication required, returns the updated Recipe
 
 Optional fields: `title`, `description`, `body`
 
 The `slug` also gets updated when the `title` is changed
 
-### Delete Article
+### Delete Recipe
 
-`DELETE /api/articles/:slug`
+`DELETE /api/recipes/:slug`
 
 Authentication required
 
-### Add Comments to an Article
+### Add Comments to a Recipe
 
-`POST /api/articles/:slug/comments`
+`POST /api/recipes/:slug/comments`
 
 Example request body:
 
@@ -352,30 +385,30 @@ Example request body:
 Authentication required, returns the created Comment
 Required field: `body`
 
-### Get Comments from an Article
+### Get Comments from a Recipe
 
-`GET /api/articles/:slug/comments`
+`GET /api/recipes/:slug/comments`
 
 Authentication optional, returns multiple comments
 
 ### Delete Comment
 
-`DELETE /api/articles/:slug/comments/:id`
+`DELETE /api/recipes/:slug/comments/:id`
 
 Authentication required
 
-### Favorite Article
+### Favorite Recipe
 
-`POST /api/articles/:slug/favorite`
+`POST /api/recipes/:slug/favorite`
 
-Authentication required, returns the Article
+Authentication required, returns the Recipe
 No additional parameters required
 
-### Unfavorite Article
+### Unfavorite Recipe
 
-`DELETE /api/articles/:slug/favorite`
+`DELETE /api/recipes/:slug/favorite`
 
-Authentication required, returns the Article
+Authentication required, returns the Recipe
 
 No additional parameters required
 

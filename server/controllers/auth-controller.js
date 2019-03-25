@@ -42,10 +42,10 @@ class UsersController {
   static register(req, res) {
     const { body } = req;
     validate(body, registerSchema)
-      .then(async () => {
+      .then(async data => {
         try {
           const { dataValues: user } = await User.create({
-            ...body,
+            ...data,
             hash: body.password
           });
           const { id, username } = user;
