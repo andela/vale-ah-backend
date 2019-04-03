@@ -31,12 +31,6 @@ app.use(
   })
 );
 
-app.get('/', (req, res) => {
-  return res.status(200).json({
-    status: 200,
-    message: 'home'
-  });
-});
 routes(app);
 app.listen(env.PORT, () => {
   logger(`Listening on port ${env.PORT}`);
