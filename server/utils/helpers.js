@@ -154,3 +154,12 @@ export const rowArrayToObjectList = sequelizeRowArray =>
  */
 export const randomHex = () =>
   Math.floor(Math.random() * Date.now()).toString(16);
+
+export const socialAuthCallback = (
+  accessToken,
+  refreshToken,
+  profile,
+  done
+) => {
+  done(null, profile);
+};
