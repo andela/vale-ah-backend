@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 
 app.use(
   session({
-    secret: 'authorshaven',
+    secret: env.SECRET,
     cookie: { maxAge: 60000 },
     resave: false,
     saveUninitialized: false

@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       username: {
         type: DataTypes.STRING,
         unique: true,
-        allowNull: false,
+        allowNull: true,
         validate: {
           len: {
             args: [3, 20],
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: { isEmail: { msg: '"email" must be a valid email' } }
       },
-      hash: { type: DataTypes.STRING, allowNull: false },
+      hash: { type: DataTypes.STRING, allowNull: true },
       bio: DataTypes.TEXT,
       verified: {
         type: DataTypes.BOOLEAN,
