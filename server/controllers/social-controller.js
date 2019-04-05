@@ -12,25 +12,31 @@ const { User } = db;
  * @param {*} res Express request object
  * @returns{undefined}
  */
-function authUser(req, res) {
+const authUser = (req, res) => {
   const userInfo = req.user;
   if (userInfo.emails === undefined) {
     return errorResponse(res, 'No email found. Add email', 500);
   }
   User.findOrCreate({
     where: { email: userInfo.emails[0].value },
-    default: {
-      username: userInfo.displayName.split(' ')[0],
-      email: userInfo.emails,
+    defaults: {
+      username: userInfo.displayName,
+      email: userInfo.emails[0].value,
       image: userInfo.photos[0].value,
-      provider: userInfo.provider
+      socialProvider: userInfo.provider
     }
   }).then(([user]) => {
-    const { email } = user;
+    const {
+      dataValues: { email }
+    } = user;
+    user.username = userInfo.displayName;
+    user.image = userInfo.photos[0].value;
+    user.email = userInfo.emails[0].value;
+    user.socialProvider = userInfo.provider;
     const verificationToken = generateToken({ email }, '1d');
     user.token = verificationToken;
-    return successResponse(res, user, 200);
+    return successResponse(res, user.dataValues, 200);
   });
-}
+};
 
 export default authUser;
