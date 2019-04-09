@@ -1,13 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import Passport from 'passport';
-
-const user = {
-  id: '354496',
-  displayName: 'Jason Boxman',
-  emails: [{ value: 'jasonb@edseek.com' }],
-  photos: [{ value: 'https://idnbdjfbdjfhdf.googleusecontent.com' }],
-  provider: 'mock'
-};
+import { randomSocialUser } from './fixtures';
 
 /**
  * MockStrategy Class
@@ -21,7 +14,7 @@ class MockStrategy extends Passport.Strategy {
     super(name, callback);
     this.name = name;
     this._cb = callback;
-    this._user = user;
+    this._user = randomSocialUser;
   }
 
   /**
@@ -35,4 +28,4 @@ class MockStrategy extends Passport.Strategy {
   }
 }
 
-export { MockStrategy, user };
+export { MockStrategy, randomSocialUser };

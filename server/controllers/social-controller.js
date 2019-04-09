@@ -15,7 +15,7 @@ const { User } = db;
 const authUser = (req, res) => {
   const userInfo = req.user;
   if (userInfo.emails === undefined) {
-    return errorResponse(res, 'No email found. Add email', 500);
+    return errorResponse(res, 'No email found. Add email', 400);
   }
   User.findOrCreate({
     where: { email: userInfo.emails[0].value },

@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false
       },
       socialProvider: {
-        type: DataTypes.STRING
+        type: DataTypes.ENUM(['google', 'facebook', 'twitter'])
       },
       image: {
         type: DataTypes.STRING,
