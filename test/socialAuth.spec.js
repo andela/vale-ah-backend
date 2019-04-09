@@ -16,6 +16,7 @@ describe('GET Social Authentication', () => {
           expect(res.body.username).to.equal(randomSocialUser.displayName);
           expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
           expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
+          expect(res.body.socialProvider).to.equal(randomSocialUser.provider);
           done(err);
         });
     });
@@ -29,6 +30,7 @@ describe('GET Social Authentication', () => {
           expect(res.body.username).to.equal(randomSocialUser.displayName);
           expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
           expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
+          expect(res.body.socialProvider).to.equal(randomSocialUser.provider);
           done(err);
         });
     });
@@ -42,6 +44,7 @@ describe('GET Social Authentication', () => {
           expect(res.body.username).to.equal(randomSocialUser.displayName);
           expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
           expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
+          expect(res.body.socialProvider).to.equal(randomSocialUser.provider);
           done(err);
         });
     });
