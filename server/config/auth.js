@@ -3,7 +3,7 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
 import env from './env-config';
-import { MockStrategy } from '../../test/mockStrategy';
+import { MockStrategy } from '../utils/mockStrategy';
 import { socialAuthCallback } from '../utils/helpers';
 import db from '../models';
 

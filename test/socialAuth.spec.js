@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import server from '../server';
-import { randomSocialUser } from './mockStrategy';
+import { randomSocialUser } from '../server/utils/mockStrategy';
 
 chai.use(chaiHttp);
 

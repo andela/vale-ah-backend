@@ -1,6 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import Passport from 'passport';
-import { randomSocialUser } from './fixtures';
+import faker from 'faker';
+
+const randomSocialUser = {
+  id: faker.random.number(),
+  displayName: faker.random.alphaNumeric(10),
+  emails: [{ value: faker.internet.email() }],
+  photos: [{ value: faker.image.image() }]
+};
 
 /**
  * MockStrategy Class
