@@ -29,6 +29,10 @@ export const commentTestUser = {
   password: faker.random.alphaNumeric(10)
 };
 
+export const userEmailValue = {
+  email: faker.internet.email()
+};
+
 export const comment = {
   body: faker.lorem.text()
 };
@@ -42,3 +46,10 @@ export const generateRandomUser = () => ({
   email: faker.internet.email(),
   password: faker.random.alphaNumeric(10)
 });
+
+export const randomSocialUser = {
+  id: faker.random.number(),
+  displayName: faker.random.alphaNumeric(10),
+  emails: [{ value: faker.internet.email() }],
+  photos: [{ value: faker.image.image() }]
+};

@@ -21,12 +21,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: { isEmail: { msg: '"email" must be a valid email' } }
       },
-      hash: { type: DataTypes.STRING, allowNull: false },
+      hash: { type: DataTypes.STRING, allowNull: true },
       bio: DataTypes.TEXT,
       verified: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+      },
+      socialProvider: {
+        type: DataTypes.ENUM(['google', 'facebook', 'twitter'])
       },
       image: {
         type: DataTypes.STRING,

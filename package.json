@@ -4,12 +4,12 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
     "heroku-postbuild": "npm run initdb && npm run build",
     "build": "babel server -d dist --source-maps",
     "test": "cross-env NODE_ENV=test npm run initdb && DEBUG=vale-ah*  nyc --reporter=text --reporter=html mocha --timeout=20000 --recursive --exit",
     "coverage": "nyc report --reporter=lcov --reporter=text-lcov | coveralls",
-    "devstart": "npm run initdb && DEBUG=vale-ah* nodemon server/index.js --exec babel-node",
+    "devstart": "cross-env NODE_ENV=development npm run initdb && DEBUG=vale-ah* nodemon server/index.js --exec babel-node",
     "initdb": "babel-node server/utils/initdb.js"
   },
   "engines": {
@@ -33,6 +33,9 @@
     "jsonwebtoken": "8.5.0",
     "morgan": "1.9.1",
     "passport": "0.4.0",
+    "passport-facebook": "3.0.0",
+    "passport-google-oauth20": "2.0.0",
+    "passport-twitter": "1.0.4",
     "pg": "7.8.1",
     "pg-hstore": "2.3.2",
     "sequelize": "4.43.0",
