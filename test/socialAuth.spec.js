@@ -16,7 +16,7 @@ describe('GET Social Authentication', () => {
           expect(res.body.username).to.equal(randomSocialUser.displayName);
           expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
           expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
-          expect(res.body.socialProvider).to.equal(randomSocialUser.provider);
+          expect(res.body.socialProvider).to.equal('twitter');
           done(err);
         });
     });
@@ -30,7 +30,7 @@ describe('GET Social Authentication', () => {
           expect(res.body.username).to.equal(randomSocialUser.displayName);
           expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
           expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
-          expect(res.body.socialProvider).to.equal(randomSocialUser.provider);
+          expect(res.body.socialProvider).to.equal('facebook');
           done(err);
         });
     });
@@ -44,7 +44,7 @@ describe('GET Social Authentication', () => {
           expect(res.body.username).to.equal(randomSocialUser.displayName);
           expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
           expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
-          expect(res.body.socialProvider).to.equal(randomSocialUser.provider);
+          expect(res.body.socialProvider).to.equal('google');
           done(err);
         });
     });
@@ -55,17 +55,38 @@ describe('GET Social Authentication', () => {
         refreshToken: undefined,
         profile: {
           id: 1256,
-          emails: [{ value: randomSocialUser.emails[0] }],
-          provider: randomSocialUser.provider
+          emails: [{ value: randomSocialUser.emails[0] }]
         }
       };
-      const googleUserInfo = (verifysocialAuthCallback.accessToken,
-      verifysocialAuthCallback.refreshToken,
-      verifysocialAuthCallback.profile);
-      expect(googleUserInfo).to.be.an('object');
-      expect(googleUserInfo.id).to.a('number');
-      expect(googleUserInfo.emails).to.be.an('array');
-      expect(googleUserInfo.provider).to.equal('twitter');
+      it('should verify a google user', () => {
+        const googleUserInfo = (verifysocialAuthCallback.accessToken,
+        verifysocialAuthCallback.refreshToken,
+        { ...verifysocialAuthCallback.profile, provider: 'google' });
+        expect(googleUserInfo).to.be.an('object');
+        expect(googleUserInfo.id).to.a('number');
+        expect(googleUserInfo.emails).to.be.an('array');
+        expect(googleUserInfo.provider).to.equal('google');
+      });
+
+      it('should verify a facebook user', () => {
+        const facebookUserInfo = (verifysocialAuthCallback.accessToken,
+        verifysocialAuthCallback.refreshToken,
+        { ...verifysocialAuthCallback.profile, provider: 'facebook' });
+        expect(facebookUserInfo).to.be.an('object');
+        expect(facebookUserInfo.id).to.a('number');
+        expect(facebookUserInfo.emails).to.be.an('array');
+        expect(facebookUserInfo.provider).to.equal('facebook');
+      });
+
+      it('should verify a twitter user', () => {
+        const twitterUserInfo = (verifysocialAuthCallback.accessToken,
+        verifysocialAuthCallback.refreshToken,
+        { ...verifysocialAuthCallback.profile, provider: 'twitter' });
+        expect(twitterUserInfo).to.be.an('object');
+        expect(twitterUserInfo.id).to.a('number');
+        expect(twitterUserInfo.emails).to.be.an('array');
+        expect(twitterUserInfo.provider).to.equal('twitter');
+      });
     });
   });
 });

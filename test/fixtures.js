@@ -51,6 +51,5 @@ export const randomSocialUser = {
   id: faker.random.number(),
   displayName: faker.random.alphaNumeric(10),
   emails: [{ value: faker.internet.email() }],
-  photos: [{ value: faker.image.image() }],
-  provider: 'twitter'
+  photos: [{ value: faker.image.image() }]
 };

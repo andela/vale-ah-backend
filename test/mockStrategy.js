@@ -14,7 +14,7 @@ class MockStrategy extends Passport.Strategy {
     super(name, callback);
     this.name = name;
     this._cb = callback;
-    this._user = randomSocialUser;
+    this._user = { ...randomSocialUser, provider: name };
   }
 
   /**
