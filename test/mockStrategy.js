@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
-import Passport from 'passport';
+import passport from 'passport';
 import faker from 'faker';
+import { socialAuthCallback } from '../server/utils/helpers';
 
 const randomSocialUser = {
   id: faker.random.number(),
@@ -9,10 +10,11 @@ const randomSocialUser = {
   photos: [{ value: faker.image.image() }]
 };
 
+// }
 /**
  * MockStrategy Class
  */
-class MockStrategy extends Passport.Strategy {
+class MockStrategy extends passport.Strategy {
   /**
    * @param {*} name
    * @param {*} callback
@@ -34,5 +36,9 @@ class MockStrategy extends Passport.Strategy {
     });
   }
 }
+
+passport.use(new MockStrategy('google', socialAuthCallback));
+passport.use(new MockStrategy('facebook', socialAuthCallback));
+passport.use(new MockStrategy('twitter', socialAuthCallback));
 
 export { MockStrategy, randomSocialUser };
