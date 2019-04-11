@@ -9,7 +9,6 @@ import passport from 'passport';
 import { setUpPassport, setUpSerialize } from './config/auth';
 import env from './config/env-config';
 import routes from './routes/index';
-// import { setUpPassport } from '../test/helpers';
 
 const app = express();
 const logger = debug('vale-ah::server: ');
@@ -23,13 +22,8 @@ app.use(
   })
 );
 
-const passportSetUp =
-  env.NODE_ENV === 'test'
-    ? () => {}
-    : () => {
-        setUpPassport();
-      };
-passportSetUp();
+if (env.NODE_ENV !== 'test') setUpPassport();
+
 setUpSerialize();
 
 app.use(passport.initialize());
