@@ -4,23 +4,14 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
 import debug from 'debug';
-import passport from 'passport';
 import session from 'express-session';
-import passportSetUp from './config/auth';
+import passport from 'passport';
+import { setUpPassport, setUpSerialize } from './config/auth';
 import env from './config/env-config';
 import routes from './routes/index';
 
 const app = express();
 const logger = debug('vale-ah::server: ');
-
-passportSetUp();
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(cors());
-app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
 app.use(
   session({
@@ -30,6 +21,18 @@ app.use(
     saveUninitialized: false
   })
 );
+
+if (env.NODE_ENV !== 'test') setUpPassport();
+
+setUpSerialize();
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(cors());
+app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 routes(app);
 app.listen(env.PORT, () => {

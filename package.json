@@ -4,7 +4,7 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "start": "node dist/index.js",
     "heroku-postbuild": "npm run initdb && npm run build",
     "build": "babel server -d dist --source-maps",
     "test": "cross-env NODE_ENV=test npm run initdb && DEBUG=vale-ah*  nyc --reporter=text --reporter=html mocha --timeout=20000 --recursive --exit",

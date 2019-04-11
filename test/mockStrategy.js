@@ -1,11 +1,12 @@
 /* eslint-disable no-underscore-dangle */
-import Passport from 'passport';
+import passport from 'passport';
 import { randomSocialUser } from './fixtures';
+import { socialAuthCallback } from '../server/utils/helpers';
 
 /**
  * MockStrategy Class
  */
-class MockStrategy extends Passport.Strategy {
+class MockStrategy extends passport.Strategy {
   /**
    * @param {*} name
    * @param {*} callback
@@ -22,10 +23,14 @@ class MockStrategy extends Passport.Strategy {
    * @returns {undefined}
    */
   authenticate() {
-    this._cb(null, null, this._user, (error, passedUser) => {
-      this.success(passedUser);
+    this._cb(null, null, this._user, (error, user) => {
+      this.success(user);
     });
   }
 }
+
+passport.use(new MockStrategy('google', socialAuthCallback));
+passport.use(new MockStrategy('facebook', socialAuthCallback));
+passport.use(new MockStrategy('twitter', socialAuthCallback));
 
 export { MockStrategy, randomSocialUser };
