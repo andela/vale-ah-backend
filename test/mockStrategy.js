@@ -1,16 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import passport from 'passport';
-import faker from 'faker';
+import { randomSocialUser } from './fixtures';
 import { socialAuthCallback } from '../server/utils/helpers';
 
-const randomSocialUser = {
-  id: faker.random.number(),
-  displayName: faker.random.alphaNumeric(10),
-  emails: [{ value: faker.internet.email() }],
-  photos: [{ value: faker.image.image() }]
-};
-
-// }
 /**
  * MockStrategy Class
  */
@@ -31,8 +23,8 @@ class MockStrategy extends passport.Strategy {
    * @returns {undefined}
    */
   authenticate() {
-    this._cb(null, null, this._user, (error, passedUser) => {
-      this.success(passedUser);
+    this._cb(null, null, this._user, (error, user) => {
+      this.success(user);
     });
   }
 }

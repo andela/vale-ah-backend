@@ -46,7 +46,9 @@ const setUpPassport = () => {
       socialAuthCallback
     )
   );
+};
 
+const setUpSerialize = () => {
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
@@ -58,4 +60,4 @@ const setUpPassport = () => {
   });
 };
 
-export default setUpPassport;
+export { setUpPassport, setUpSerialize };
