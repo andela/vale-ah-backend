@@ -22,9 +22,6 @@ module.exports = {
       verified: {
         type: Sequelize.BOOLEAN
       },
-      socialProvider: {
-        type: Sequelize.STRING
-      },
       image: {
         type: Sequelize.STRING
       },

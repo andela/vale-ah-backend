@@ -1,11 +1,11 @@
 module.exports = {
   up: (queryInterface, Sequelize) =>
-    queryInterface.changeColumn('Users', 'socialProvider', {
-      type: Sequelize.ENUM(['facebook', 'google', 'twitter'])
-    }),
-
-  down: (queryInterface, Sequelize) =>
-    queryInterface.changeColumn('Users', 'socialProvider', {
-      type: Sequelize.STRING
-    })
+    queryInterface.sequelize
+      .query('drop type if exists "enum_Users_socialProvider"')
+      .then(() =>
+        queryInterface.addColumn('Users', 'socialProvider', {
+          type: Sequelize.ENUM(['facebook', 'google', 'twitter'])
+        })
+      ),
+  down: queryInterface => queryInterface.removeColumn('Users', 'socialProvider')
 };
