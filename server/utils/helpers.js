@@ -60,11 +60,13 @@ export const errorResponse = (
  */
 export const validationErrorResponse = (res, errorDetails = []) => {
   const errors = errorDetails.reduce((acc, e) => {
-    const { key } = e.context;
+    const [key] = e.path;
+    const message = `${e.message.replace(`"${key}" `, '')}`;
+
     if (acc[key]) {
-      acc[key].push(e.message.replace(`"${key}" `, ''));
+      acc[key].push(message);
     } else {
-      acc[key] = [e.message.replace(`"${key}" `, '')];
+      acc[key] = [message];
     }
     return acc;
   }, {});

@@ -48,7 +48,8 @@ class RecipeController {
       ingredients,
       steps,
       cookingTime,
-      preparationTime
+      preparationTime,
+      videoList
     } = req.body;
     try {
       await validate(req.body, recipeSchema);
@@ -58,7 +59,8 @@ class RecipeController {
         ingredients,
         steps,
         cookingTime,
-        preparationTime
+        preparationTime,
+        videoList
       })
         .then(({ dataValues }) => {
           return successResponse(res, { recipe: dataValues }, 201);
