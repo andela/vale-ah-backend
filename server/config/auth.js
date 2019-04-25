@@ -14,7 +14,7 @@ const setUpPassport = () => {
       {
         clientID: env.GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
-        callbackURL: 'http://localhost:3000/api/auth/google/callback'
+        callbackURL: `${env.GOOGLE_CALLBACK}`
       },
       socialAuthCallback
     )
@@ -25,7 +25,7 @@ const setUpPassport = () => {
       {
         clientID: env.FACEBOOK_CLIENT_ID,
         clientSecret: env.FACEBOOK_CLIENT_SECRET,
-        callbackURL: 'http://localhost:3000/api/auth/facebook/callback',
+        callbackURL: `${env.FACEBOOK_CALLBACK}`,
         profileFields: ['id', 'name', 'displayName', 'email', 'photos']
       },
       socialAuthCallback
@@ -37,7 +37,7 @@ const setUpPassport = () => {
       {
         consumerKey: env.TWITTER_CONSUMER_KEY,
         consumerSecret: env.TWITTER_CONSUMER_SECRET,
-        callbackURL: 'http://localhost:3000/api/auth/twitter/callback',
+        callbackURL: `${env.TWITTER_CALLBACK}`,
         userProfileURL:
           'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
         includeEmail: true,

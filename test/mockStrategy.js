@@ -10,12 +10,13 @@ class MockStrategy extends passport.Strategy {
   /**
    * @param {*} name
    * @param {*} callback
+   * @param {*} user
    */
-  constructor(name, callback) {
+  constructor(name, callback, user) {
     super(name, callback);
     this.name = name;
     this._cb = callback;
-    this._user = { ...randomSocialUser, provider: name };
+    this._user = { ...user, provider: name };
   }
 
   /**
@@ -29,8 +30,10 @@ class MockStrategy extends passport.Strategy {
   }
 }
 
-passport.use(new MockStrategy('google', socialAuthCallback));
-passport.use(new MockStrategy('facebook', socialAuthCallback));
-passport.use(new MockStrategy('twitter', socialAuthCallback));
+passport.use(new MockStrategy('google', socialAuthCallback, randomSocialUser));
+passport.use(
+  new MockStrategy('facebook', socialAuthCallback, randomSocialUser)
+);
+passport.use(new MockStrategy('twitter', socialAuthCallback, randomSocialUser));
 
 export { MockStrategy, randomSocialUser };

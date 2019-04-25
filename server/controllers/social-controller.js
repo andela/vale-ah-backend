@@ -1,8 +1,4 @@
-import {
-  generateToken,
-  successResponse,
-  errorResponse
-} from '../utils/helpers';
+import { generateToken, errorResponse } from '../utils/helpers';
 import db from '../models';
 
 const { User } = db;
@@ -26,16 +22,16 @@ const authUser = (req, res) => {
       socialProvider: userInfo.provider
     }
   }).then(([user]) => {
-    const {
-      dataValues: { email }
-    } = user;
+    const { id, email } = user;
     user.username = userInfo.displayName;
     user.image = userInfo.photos[0].value;
     user.email = userInfo.emails[0].value;
     user.socialProvider = userInfo.provider;
-    const verificationToken = generateToken({ email }, '1d');
+    const verificationToken = generateToken({ id, email }, '1d');
     user.token = verificationToken;
-    return successResponse(res, user.dataValues, 200);
+    return res.redirect(
+      `${process.env.UI_CLIENT_HOST}/api/auth?token=${user.token}`
+    );
   });
 };
 

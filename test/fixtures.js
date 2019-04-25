@@ -53,3 +53,9 @@ export const randomSocialUser = {
   emails: [{ value: faker.internet.email() }],
   photos: [{ value: faker.image.image() }]
 };
+
+export const userWithNoEmail = {
+  id: faker.random.number(),
+  displayName: faker.random.alphaNumeric(10),
+  photos: [{ value: faker.image.image() }]
+};

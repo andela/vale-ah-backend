@@ -66,7 +66,9 @@ describe('Recipes', () => {
         .end((err, res) => {
           const { body } = res;
           expect(res).to.have.status(400);
-          expect(body.errors.title).to.be.an('array');
+          expect(body.errors.title)
+            .to.be.an('array')
+            .to.contain('is required');
           done(err);
         });
     });
