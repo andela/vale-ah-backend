@@ -17,6 +17,29 @@ export const recipe = {
   preparationTime: 3000
 };
 
+export const invalidRecipe = {
+  title: '',
+  ingredients: [],
+  cookingTime: 'time',
+  preparationTime: 'fifty seconds',
+  videoList: [faker.random.number(3000)]
+};
+
+export const videoBearingSteps = {
+  '1': {
+    description: 'Add a spoon of awesomeness to the mixer',
+    images: ['https://i.stack.imgur.com/xHWG8.jpg'],
+    videos: [faker.internet.url()]
+  },
+  '2': {
+    description: 'Add a spoon of awesomeness to the mixer',
+    images: ['https://i.stack.imgur.com/xHWG8.jpg'],
+    videos: [faker.internet.url()]
+  }
+};
+
+export const validVideoList = [faker.internet.url()];
+
 export const recipeTestUser = {
   username: 'Jacob',
   email: 'jake@jake.jake',

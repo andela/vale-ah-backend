@@ -23,13 +23,14 @@ export const recipeSchema = Joi.object().keys({
     .required()
     .max(50),
   ingredients: Joi.array()
-    .items(Joi.string().required(), Joi.string().required())
+    .items(Joi.string().required())
     .required(),
   steps: Joi.object()
     .keys({
       id: Joi.object().keys({
         description: Joi.string().required(),
-        images: Joi.array().items(Joi.string())
+        images: Joi.array().items(Joi.string()),
+        videos: Joi.array().items(Joi.string())
       })
     })
     .required(),
@@ -38,20 +39,23 @@ export const recipeSchema = Joi.object().keys({
     .required(),
   preparationTime: Joi.number()
     .positive()
-    .required()
+    .required(),
+  videoList: Joi.array().items(Joi.string())
 });
 
 export const recipeUpdateSchema = Joi.object().keys({
   title: Joi.string().max(50),
-  ingredients: Joi.array().items(Joi.string(), Joi.string().required()),
+  ingredients: Joi.array().items(Joi.string().required()),
   steps: Joi.object().keys({
     id: Joi.object().keys({
       description: Joi.string().required(),
-      images: Joi.array().items(Joi.string())
+      images: Joi.array().items(Joi.string()),
+      videos: Joi.array().items(Joi.string())
     })
   }),
   cookingTime: Joi.number().positive(),
-  preparationTime: Joi.number().positive()
+  preparationTime: Joi.number().positive(),
+  videoList: Joi.array().items(Joi.string())
 });
 
 export const passwordResetSchema = Joi.object().keys({
