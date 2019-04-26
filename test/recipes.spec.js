@@ -3,7 +3,13 @@ import chaiHttp from 'chai-http';
 import server from '../server';
 import db from '../server/models';
 import { generateToken } from '../server/utils/helpers';
-import { recipe, recipeTestUser } from './fixtures';
+import {
+  recipe,
+  recipeTestUser,
+  validVideoList,
+  videoBearingSteps,
+  invalidRecipe
+} from './fixtures';
 
 chai.use(chaiHttp);
 
@@ -124,6 +130,93 @@ describe('Recipes', () => {
           expect(res).to.have.status(400);
           expect(body.errors).to.haveOwnProperty('preparationTime');
           done(err);
+        });
+    });
+
+    it('should not create recipe with empty ingredient list', done => {
+      chai
+        .request(server)
+        .post(baseUrl)
+        .set({ authorization: runtimeFixture.token })
+        .send({ ...recipe, ingredients: [] })
+        .end((err, res) => {
+          const {
+            body: { errors }
+          } = res;
+
+          expect(errors).to.be.an('object');
+          expect(errors).to.haveOwnProperty('ingredients');
+          expect(errors.ingredients)
+            .to.be.an('array')
+            .with.lengthOf(1);
+          expect(errors.ingredients[0])
+            .to.be.a('string')
+            .that.eq('does not contain 1 required value(s)');
+
+          done(err);
+        });
+    });
+
+    it('should create new recipe with full-length video', done => {
+      chai
+        .request(server)
+        .post(baseUrl)
+        .set({ authorization: runtimeFixture.token })
+        .send({ ...recipe, videoList: validVideoList })
+        .end((err, res) => {
+          const { body } = res;
+
+          expect(body.recipe.videoList)
+            .to.be.an('array')
+            .that.has.lengthOf(1);
+          expect(body.recipe.videoList[0]).to.eq(validVideoList[0]);
+          done(err);
+        });
+    });
+
+    it('should not create recipe with invalid  full-length video url list', done => {
+      chai
+        .request(server)
+        .post(baseUrl)
+        .set({ authorization: runtimeFixture.token })
+        .send({ ...recipe, videoList: invalidRecipe.videoList })
+        .end((err, res) => {
+          const {
+            body: { errors }
+          } = res;
+
+          expect(errors).to.be.an('object');
+          expect(errors).to.haveOwnProperty('videoList');
+          expect(errors.videoList)
+            .to.be.an('array')
+            .with.lengthOf(1);
+          expect(errors.videoList).to.include('"0" must be a string');
+          done(err);
+        });
+    });
+
+    it('should create recipes with videos for steps', done => {
+      chai
+        .request(server)
+        .post(baseUrl)
+        .set({ authorization: runtimeFixture.token })
+        .send({ ...recipe, steps: videoBearingSteps })
+        .end((err, res) => {
+          const {
+            body: {
+              recipe: { steps }
+            }
+          } = res;
+
+          expect(steps).to.be.an('object');
+
+          Object.values(steps).forEach(step => {
+            expect(step.videos)
+              .to.be.an('array')
+              .with.lengthOf(1);
+          });
+
+          done();
         });
     });
   });
@@ -290,9 +383,19 @@ describe('Recipes', () => {
         .request(server)
         .put(`/api/recipes/${runtimeFixture.updatedSlug}`)
         .set({ authorization: runtimeFixture.token })
-        .send({ preparationTime: 'time' })
+        .send(invalidRecipe)
         .end((err, res) => {
-          expect(res).to.have.status(500);
+          const {
+            body: { errors }
+          } = res;
+
+          expect(res).to.have.status(400);
+          expect(errors).to.haveOwnProperty('title');
+          expect(errors).to.haveOwnProperty('ingredients');
+          expect(errors).to.haveOwnProperty('cookingTime');
+          expect(errors).to.haveOwnProperty('preparationTime');
+          expect(errors).to.haveOwnProperty('videoList');
+
           done(err);
         });
     });

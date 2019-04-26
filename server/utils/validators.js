@@ -23,13 +23,14 @@ export const recipeSchema = Joi.object().keys({
     .required()
     .max(50),
   ingredients: Joi.array()
-    .items(Joi.string())
+    .items(Joi.string().required())
     .required(),
   steps: Joi.object()
     .keys({
       id: Joi.object().keys({
         description: Joi.string().required(),
-        images: Joi.array().items(Joi.string())
+        images: Joi.array().items(Joi.string()),
+        videos: Joi.array().items(Joi.string())
       })
     })
     .required(),
@@ -44,7 +45,7 @@ export const recipeSchema = Joi.object().keys({
 
 export const recipeUpdateSchema = Joi.object().keys({
   title: Joi.string().max(50),
-  ingredients: Joi.array().items(Joi.string()),
+  ingredients: Joi.array().items(Joi.string().required()),
   steps: Joi.object().keys({
     id: Joi.object().keys({
       description: Joi.string().required(),

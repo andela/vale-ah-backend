@@ -5,5 +5,10 @@ module.exports = {
       allowNull: false,
       unique: true
     }),
-  down: queryInterface => queryInterface.removeColumn('Users', 'email')
+  down: (queryInterface, Sequelize) =>
+    queryInterface.changeColumn('Users', 'email', {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: false
+    })
 };
