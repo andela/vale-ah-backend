@@ -48,7 +48,8 @@ class RecipeController {
       ingredients,
       steps,
       cookingTime,
-      preparationTime
+      preparationTime,
+      videoList
     } = req.body;
     try {
       await validate(req.body, recipeSchema);
@@ -58,7 +59,8 @@ class RecipeController {
         ingredients,
         steps,
         cookingTime,
-        preparationTime
+        preparationTime,
+        videoList
       })
         .then(({ dataValues }) => {
           return successResponse(res, { recipe: dataValues }, 201);
@@ -82,9 +84,16 @@ class RecipeController {
   static async updateRecipe(req, res) {
     const { id } = req.user;
     const { slug } = req.params;
-    const { ...newRecipe } = req.body;
+    const {
+      title,
+      ingredients,
+      steps,
+      cookingTime,
+      preparationTime,
+      videoList
+    } = req.body;
     try {
-      await validate(newRecipe, recipeUpdateSchema);
+      await validate(req.body, recipeUpdateSchema);
       const recipe = await Recipe.findOne({ where: { slug } });
       if (!recipe) {
         return errorResponse(res, 'recipe not found', 404);
@@ -98,11 +107,12 @@ class RecipeController {
       }
       const data = await recipe.update(
         {
-          title: newRecipe.title || recipe.title,
-          ingredients: newRecipe.ingredients || recipe.ingredients,
-          cookingTime: newRecipe.cookingTime || recipe.cookingTime,
-          preparationTime: newRecipe.preparationTime || recipe.preparationTime,
-          steps: newRecipe.steps || recipe.steps
+          title,
+          ingredients,
+          steps,
+          cookingTime,
+          preparationTime,
+          videoList
         },
         { returning: true }
       );
@@ -112,7 +122,7 @@ class RecipeController {
         200
       );
     } catch (error) {
-      return errorResponse(res, error.message);
+      return validationErrorResponse(res, error.details);
     }
   }
 
