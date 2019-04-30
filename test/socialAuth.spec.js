@@ -1,50 +1,112 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
+import passport from 'passport';
 import server from '../server';
-import { randomSocialUser } from './mockStrategy';
+import { MockStrategy, randomSocialUser } from './mockStrategy';
+import { userWithNoEmail } from './fixtures';
+import { socialAuthCallback } from '../server/utils/helpers';
 
 chai.use(chaiHttp);
 
 describe('GET Social Authentication', () => {
   describe('GET Social Auth Callback', () => {
     it('should save a twitter user to database', done => {
-      chai
-        .request(server)
-        .get('/api/auth/twitter/callback')
+      const app = chai.request(server).keepOpen();
+      app
+        .get('/api/auth/twitter/callback', socialAuthCallback, randomSocialUser)
         .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res.body.username).to.equal(randomSocialUser.displayName);
-          expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
-          expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
-          expect(res.body.socialProvider).to.equal('twitter');
-          done(err);
+          if (err) {
+            done(err);
+          } else {
+            expect(res.redirects.length).to.equal(1);
+            expect(res.redirects[0].includes('/api/auth?token=')).to.equal(
+              true
+            );
+            const token = res.redirects[0].split('token=')[1];
+            app
+              .get('/api/user')
+              .set('authorization', token)
+              .end((secondErr, secondRes) => {
+                const { user } = secondRes.body;
+                expect(user.username).to.equal(randomSocialUser.displayName);
+                expect(user.email).to.equal(randomSocialUser.emails[0].value);
+                expect(user.image).to.equal(randomSocialUser.photos[0].value);
+                expect(user.socialProvider).to.equal('twitter');
+                done(secondErr);
+              });
+          }
         });
     });
 
     it('should save a facebook user to database', done => {
-      chai
-        .request(server)
-        .get('/api/auth/facebook/callback')
+      const app = chai.request(server).keepOpen();
+      app
+        .get(
+          '/api/auth/facebook/callback',
+          socialAuthCallback,
+          randomSocialUser
+        )
         .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res.body.username).to.equal(randomSocialUser.displayName);
-          expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
-          expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
-          expect(res.body.socialProvider).to.equal('facebook');
-          done(err);
+          if (err) {
+            done(err);
+          } else {
+            expect(res.redirects.length).to.equal(1);
+            expect(res.redirects[0].includes('/api/auth?token=')).to.equal(
+              true
+            );
+            const token = res.redirects[0].split('token=')[1];
+            app
+              .get('/api/user')
+              .set('authorization', token)
+              .end((secondErr, secondRes) => {
+                const { user } = secondRes.body;
+                expect(user.username).to.equal(randomSocialUser.displayName);
+                expect(user.email).to.equal(randomSocialUser.emails[0].value);
+                expect(user.image).to.equal(randomSocialUser.photos[0].value);
+                expect(user.provider).to.equal(randomSocialUser.socialProvider);
+                done(secondErr);
+              });
+          }
         });
     });
 
     it('should save a google user to database', done => {
+      const app = chai.request(server).keepOpen();
+      app
+        .get('/api/auth/google/callback', socialAuthCallback, randomSocialUser)
+        .end((err, res) => {
+          if (err) {
+            done(err);
+          } else {
+            expect(res.redirects.length).to.equal(1);
+            expect(res.redirects[0].includes('/api/auth?token=')).to.equal(
+              true
+            );
+            const token = res.redirects[0].split('token=')[1];
+            app
+              .get('/api/user')
+              .set({ authorization: token })
+              .end((secondErr, secondRes) => {
+                const { user } = secondRes.body;
+                expect(user.username).to.equal(randomSocialUser.displayName);
+                expect(user.email).to.equal(randomSocialUser.emails[0].value);
+                expect(user.image).to.equal(randomSocialUser.photos[0].value);
+                expect(user.provider).to.equal(randomSocialUser.socialProvider);
+                done(secondErr);
+              });
+          }
+        });
+    });
+
+    it('should return an error if no email is present', done => {
+      passport.use(
+        new MockStrategy('facebook', socialAuthCallback, userWithNoEmail)
+      );
       chai
         .request(server)
-        .get('/api/auth/google/callback')
+        .get('/api/auth/facebook/callback')
         .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res.body.username).to.equal(randomSocialUser.displayName);
-          expect(res.body.email).to.equal(randomSocialUser.emails[0].value);
-          expect(res.body.image).to.equal(randomSocialUser.photos[0].value);
-          expect(res.body.socialProvider).to.equal('google');
+          expect(res.body.errors[0]).to.equal('No email found. Add email');
           done(err);
         });
     });

@@ -219,7 +219,8 @@ class UsersController {
    * @returns {undefined}
    */
   static changePassword(req, res) {
-    const token = req.headers.authorization || req.body.token;
+    const token =
+      req.headers.authorization || req.body.token || req.query.token;
     const { password } = req.body;
 
     try {
