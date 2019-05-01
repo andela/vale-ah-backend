@@ -409,8 +409,45 @@
             "in": "path",
             "schema": {
               "type": "string"
-            }
+            }}
+        ],
+    "/recipes/{slug}/like": {
+      "post": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Like a recipe",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "params",
+            "schema": {
+              "type": "string"
+            },
+            "example": "how-to-prepare-your-finest-recipe"
           }
+        ],
+        "description": "This endpoint will like a recipe",
+        "responses": {
+          "201": {
+            "description": "successful creation of a resource"
+          },
+          "200": {
+            "description": "A successful unlike"
+          },
+          "404": {
+            "description": "resource not found"
+          },
+          "500": {
+            "description": "server connection error"
+          }
+        }
+      }
+    },
+    "/recipes/{slug}/dislike": {
+      "post": {
+        "tags": [
+          "Recipes"
         ],
         "responses": {
           "201": {
@@ -625,33 +662,68 @@
         }
       }
     },
-    "/profiles/{username}/follow": {
-      "post": {
-        "tag": [
-          "profile"
+    "/recipes/:slug/dislike": {
+      "get": {
+        "tags": [
+          "Recipes"
         ],
-        "security":
-        [{
-          "ApiKeyAuth": []
-
-        }],
-        "summary": "follow user",
-        "description": "This endpoint will follow a user",
-        "parameters": [{
-          "name": "username",
-          "in": "path",
-          "schema": {
-            "type": "string"
+        "summary": "Get the number of dislikes in  a recipe",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "params",
+            "schema": {
+              "type": "string"
+            },
+            "example": "how-to-prepare-your-finest-recipe"
           }
-        }],
+        ],
+        "description": "This endpoint will dislike a recipe",
         "responses": {
-          "200": {
-            "description": "Successfully followed a user",
-            "content": {}
+          "201": {
+            "description": "successful creation of a resource"
           },
-          "400": {
-            "description": "Error",
-            "content": {}
+          "200": {
+            "description": "dislike found"
+          },
+          "404": {
+            "description": "resource not found"
+          },
+          "500": {
+            "description": "server connection error"
+          }
+        }
+      }
+    },
+    "/recipes/:slug/like": {
+      "get": {
+        "tags": [
+          "Recipes"
+        ],
+        "summary": "Get the number of likes in  a recipe",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "params",
+            "schema": {
+              "type": "string"
+            },
+            "example": "how-to-prepare-your-finest-recipe"
+          }
+        ],
+        "description": "This endpoint will dislike a recipe",
+        "responses": {
+          "201": {
+            "description": "successful creation of a resource"
+          },
+          "200": {
+            "description": "dislike found"
+          },
+          "404": {
+            "description": "resource not found"
+          },
+          "500": {
+            "description": "server connection error"
           }
         }
       }
@@ -758,6 +830,8 @@
       "in": "header",
       "name": "authorization"
     }
+  }
+}
   }
 }
 }

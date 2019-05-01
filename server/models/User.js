@@ -51,9 +51,19 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   User.associate = models => {
-    User.hasMany(models.Recipe, {
+    const { RecipeReaction, Recipe } = models;
+
+    User.hasMany(Recipe, {
+      foreignKey: 'recipeId',
+      as: 'recipe',
+      target: 'id',
+      onDelete: 'CASCADE'
+    });
+
+    User.hasMany(RecipeReaction, {
       foreignKey: 'userId',
-      as: 'recipe'
+      target: 'id',
+      onDelete: 'CASCADE'
     });
 
     User.belongsToMany(models.User, {
