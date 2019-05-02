@@ -1,3 +1,4 @@
+import sequelize from 'sequelize';
 import db from '../models';
 import {
   successResponse,
@@ -7,7 +8,7 @@ import {
 } from '../utils/helpers';
 import { commentSchema } from '../utils/validators';
 
-const { Comment, Recipe, User } = db;
+const { Comment, Recipe, CommentLike, User } = db;
 
 /**
  * The controllers for comment route
@@ -64,18 +65,80 @@ class CommentController {
     }
     await Comment.findAll({
       attributes: {
-        exclude: ['recipeId', 'userId']
+        exclude: ['recipeId', 'userId'],
+        include: [
+          [
+            sequelize.fn('COUNT', sequelize.col('CommentLikes.commentId')),
+            'like(s)'
+          ]
+        ]
       },
       include: [
         {
           as: 'author',
           model: User,
           attributes: ['username', 'bio', 'image']
+        },
+        {
+          model: CommentLike,
+          attributes: []
         }
-      ]
+      ],
+      group: ['CommentLikes.id', 'Comment.id', 'author.id'],
+      subQuery: false
     })
       .then(dataValue => successResponse(res, { comments: dataValue }, 200))
-      .catch(err => errorResponse(res, err.message, 400));
+      .catch(err => {
+        return errorResponse(res, err.message, 400);
+      });
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @memberof CommentController
+   * @returns {object} response
+   */
+  static async commentLikes(req, res) {
+    const { id } = req.user;
+    const { commentId } = req.params;
+
+    try {
+      const comment = await Comment.findOne({
+        where: { userId: id, id: commentId }
+      });
+      if (comment === null) {
+        return errorResponse(res, 'comment not found', 404);
+      }
+
+      const like = await CommentLike.findOne({
+        where: {
+          userId: id,
+          commentId: comment.id
+        }
+      });
+
+      if (!comment) {
+        return errorResponse(res, { message: 'comment not found' }, 404);
+      }
+      if (!like) {
+        await CommentLike.create({
+          userId: id,
+          commentId: comment.id
+        });
+        successResponse(res, { message: 'you like this comment' }, 201);
+      } else {
+        await CommentLike.destroy({
+          where: { userId: id, commentId: comment.id }
+        });
+        successResponse(res, { message: 'you retracted your like' }, 200);
+      }
+    } catch (err) {
+      errorResponse(res);
+    }
   }
 }
 

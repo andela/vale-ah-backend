@@ -28,6 +28,7 @@ describe('Comments', () => {
         .set({ authorization: runtimeFixture.token })
         .send(recipe)
         .end((err, res) => {
+          runtimeFixture.commentId = res.body.recipe.id;
           const { slug } = res.body.recipe;
           runtimeFixture.slug = slug;
           done(err);
@@ -141,6 +142,56 @@ describe('Comments', () => {
           const { body } = res;
           expect(res).to.have.status(400);
           expect(body.errors).to.contain('This recipe does not exist');
+          done(err);
+        });
+    });
+  });
+
+  describe('POST /api/comment/:commentId/like', () => {
+    it('should be able to like a comment', done => {
+      chai
+        .request(server)
+        .post(`/api/recipes/comment/${runtimeFixture.commentId}/like`)
+        .set({ authorization: runtimeFixture.token })
+        .send()
+        .end((err, res) => {
+          expect(res).to.have.status(201);
+          done(err);
+        });
+    });
+
+    it('should be able to retract a like', done => {
+      chai
+        .request(server)
+        .post(`/api/recipes/comment/${runtimeFixture.commentId}/like`)
+        .set({ authorization: runtimeFixture.token })
+        .send()
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          done(err);
+        });
+    });
+
+    it('should not be able to like a comment if the comment is not is found', done => {
+      chai
+        .request(server)
+        .post(`/api/recipes/comment/7888/like`)
+        .set({ authorization: runtimeFixture.token })
+        .send()
+        .end((err, res) => {
+          expect(res).to.have.status(404);
+          done(err);
+        });
+    });
+
+    it('should not be able to like a comment if the comment slug is invalid', done => {
+      chai
+        .request(server)
+        .post(`/api/recipes/comment/dfdf/like`)
+        .set({ authorization: runtimeFixture.token })
+        .send()
+        .end((err, res) => {
+          expect(res).to.have.status(500);
           done(err);
         });
     });

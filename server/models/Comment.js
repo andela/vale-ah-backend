@@ -16,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'SET NULL',
       as: 'author'
     });
+
+    Comment.hasMany(models.CommentLike, {
+      foreignKey: 'commentId',
+      onDelete: 'SET NULL'
+    });
   };
   return Comment;
 };
