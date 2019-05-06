@@ -128,6 +128,11 @@ describe('Comments', () => {
           expect(body.comments[0])
             .to.haveOwnProperty('body')
             .that.is.a('string');
+          expect(body.comments[0].chef)
+            .to.be.an('object')
+            .to.haveOwnProperty('username')
+            .that.is.a('string');
+          expect(body.comments[0].threaded).to.be.an('array');
           done(err);
         });
     });

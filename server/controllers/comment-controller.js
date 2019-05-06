@@ -40,9 +40,45 @@ class CommentController {
       const {
         dataValues: { id: recipeId }
       } = recipe;
-      Comment.create({ userId, recipeId, body }, { returning: true })
-        .then(({ dataValues }) => successResponse(res, dataValues, 201))
+      const parentId = recipeId;
+      Comment.create({ userId, recipeId, parentId, body })
+        .then(dataValues => {
+          successResponse(res, dataValues, 201);
+        })
         .catch(err => errorResponse(res, err, 400));
+    } catch (err) {
+      return validationErrorResponse(res, err.details);
+    }
+  }
+
+  /**
+   * Child comment registeration controller
+   * @static
+   * @param {*} req Express request object
+   * @param {*} res Express request object
+   * @memberof CommentController
+   * @returns {undefined}
+   */
+  static async createChildComment(req, res) {
+    const {
+      params: { parentId },
+      body: { body },
+      user: { id: userId }
+    } = req;
+    try {
+      await validate(req.body, commentSchema);
+      const comment = await Comment.findOne({
+        where: { parentId }
+      });
+      if (!comment) {
+        return errorResponse(res, 'This comment does not exist', 400);
+      }
+      const {
+        dataValues: { id: commentId }
+      } = comment;
+      Comment.create({ userId, commentId, parentId, body })
+        .then(({ dataValues }) => successResponse(res, dataValues, 201))
+        .catch(err => errorResponse(res, err.message, 400));
     } catch (err) {
       return validationErrorResponse(res, err.details);
     }
@@ -68,13 +104,20 @@ class CommentController {
       },
       include: [
         {
-          as: 'author',
+          as: 'chef',
           model: User,
           attributes: ['username', 'bio', 'image']
+        },
+        {
+          as: 'threaded',
+          model: Comment,
+          attributes: ['id', 'createdAt', 'updatedAt', 'body']
         }
       ]
     })
-      .then(dataValue => successResponse(res, { comments: dataValue }, 200))
+      .then(dataValue => {
+        successResponse(res, { comments: dataValue }, 200);
+      })
       .catch(err => errorResponse(res, err.message, 400));
   }
 }
